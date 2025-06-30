@@ -1,0 +1,54 @@
+package com.enigma.lastbite.entity;
+
+import com.enigma.lastbite.constant.WithdrawalStatus;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "withdrawal_requests")
+public class WithdrawalRequest {
+
+    @Id
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "VARCHAR(36)")
+    private String id;
+
+    @ManyToOne
+    @JoinColumn(name = "seller_id", referencedColumnName = "id", nullable = false)
+    private SellerProfile seller;
+
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal amount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private WithdrawalStatus status;
+
+    @CreationTimestamp
+    @Column(name = "request_date", updatable = false)
+    private OffsetDateTime requestDate;
+
+    @Column(name = "processed_date")
+    private OffsetDateTime processedDate;
+
+    @ManyToOne
+    @JoinColumn(name = "processed_by_id")
+    private User processedBy;
+
+    @Column(name = "proof_of_payment_url")
+    private String proofOfPaymentUrl;
+}
