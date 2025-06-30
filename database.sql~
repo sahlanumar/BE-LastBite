@@ -1,0 +1,335 @@
+-- Dihapus oleh AI: Saya sengaja tidak menyertakan perintah 'DROP' untuk menghindari penghapusan data yang tidak disengaja.
+-- Jika Anda perlu menjalankan ulang skrip ini pada database yang sudah ada, Anda dapat menambahkan perintah 'DROP' secara manual,
+-- misalnya: DROP TABLE IF EXISTS users CASCADE;
+
+-- ---------------------------------
+-- -- 1. Enum Definitions
+-- ---------------------------------
+-- Membuat tipe data kustom (enum) untuk memastikan konsistensi data.
+
+CREATE TYPE user_role AS ENUM (
+  'customer',
+  'seller',
+  'admin'
+);
+
+CREATE TYPE user_status AS ENUM (
+  'active',
+  'inactive',
+  'suspended'
+);
+
+CREATE TYPE listing_status AS ENUM (
+  'available',
+  'sold_out'
+);
+
+CREATE TYPE order_status AS ENUM (
+  'pending_payment',
+  'paid',
+  'preparing',
+  'ready_for_pickup',
+  'completed',
+  'cancelled'
+);
+
+CREATE TYPE payment_status AS ENUM (
+  'pending',
+  'success',
+  'failed',
+  'expired'
+);
+
+CREATE TYPE withdrawal_status AS ENUM (
+    'PENDING',
+    'APPROVED',
+    'REJECTED'
+);
+
+
+-- ---------------------------------
+-- -- 2. Table Definitions
+-- ---------------------------------
+
+-- Tabel untuk menyimpan data pengguna
+CREATE TABLE users (
+                       id VARCHAR(36) PRIMARY KEY,
+                       username VARCHAR(100) NOT NULL UNIQUE,
+                       full_name VARCHAR(255) NOT NULL,
+                       email VARCHAR(255) NOT NULL UNIQUE,
+                       password_hash VARCHAR(255) NOT NULL,
+                       phone_number VARCHAR(20) UNIQUE,
+                       role user_role NOT NULL,
+                       status user_status NOT NULL DEFAULT 'active',
+                       suspended_until TIMESTAMPTZ, -- Digunakan oleh admin untuk menetapkan periode suspensi
+                       created_at TIMESTAMPTZ DEFAULT now(),
+                       updated_at TIMESTAMPTZ DEFAULT now()
+);
+COMMENT ON COLUMN users.suspended_until IS 'Digunakan oleh admin untuk menetapkan periode suspensi';
+
+
+-- Tabel untuk menyimpan profil detail penjual
+CREATE TABLE seller_profiles (
+                                 id VARCHAR(36) PRIMARY KEY,
+                                 user_id VARCHAR(36) NOT NULL UNIQUE,
+                                 store_name VARCHAR(255) NOT NULL,
+                                 store_description TEXT,
+                                 address TEXT,
+                                 latitude DECIMAL(10, 8) NOT NULL, -- Krusial untuk pencarian berbasis lokasi
+                                 longitude DECIMAL(11, 8) NOT NULL, -- Krusial untuk pencarian berbasis lokasi
+                                 average_rating DECIMAL(3, 2) DEFAULT 0.00, -- Dihitung dari seller_reviews
+                                 balance DECIMAL(15, 2) DEFAULT 0.00,
+                                 created_at TIMESTAMPTZ DEFAULT now(),
+                                 updated_at TIMESTAMPTZ DEFAULT now()
+);
+COMMENT ON COLUMN seller_profiles.latitude IS 'Krusial untuk pencarian berbasis lokasi';
+COMMENT ON COLUMN seller_profiles.longitude IS 'Krusial untuk pencarian berbasis lokasi';
+COMMENT ON COLUMN seller_profiles.average_rating IS 'Dihitung dari seller_reviews';
+
+
+-- Tabel untuk menu permanen yang dimiliki oleh penjual
+CREATE TABLE menu_items (
+                            id VARCHAR(36) PRIMARY KEY,
+                            seller_profile_id VARCHAR(36) NOT NULL,
+                            name VARCHAR(255) NOT NULL,
+                            description TEXT,
+                            image_url VARCHAR(255),
+                            average_rating DECIMAL(3, 2) DEFAULT 0.00, -- Dihitung dari menu_item_reviews
+                            created_at TIMESTAMPTZ DEFAULT now(),
+                            updated_at TIMESTAMPTZ DEFAULT now()
+);
+COMMENT ON COLUMN menu_items.average_rating IS 'Dihitung dari menu_item_reviews';
+
+
+-- Tabel untuk penawaran harian dari sebuah item menu
+CREATE TABLE daily_listings (
+                                id VARCHAR(36) PRIMARY KEY,
+                                menu_item_id VARCHAR(36) NOT NULL,
+                                original_price DECIMAL(10, 2) NOT NULL,
+                                discounted_price DECIMAL(10, 2) NOT NULL,
+                                quantity_available INT NOT NULL,
+                                display_start_time TIMESTAMPTZ NOT NULL, -- Penjual mengatur kapan item mulai terlihat
+                                display_end_time TIMESTAMPTZ NOT NULL, -- Penjual mengatur kapan item tidak lagi dijual
+                                status listing_status DEFAULT 'available',
+                                created_at TIMESTAMPTZ DEFAULT now()
+);
+COMMENT ON COLUMN daily_listings.display_start_time IS 'Penjual mengatur kapan item mulai terlihat';
+COMMENT ON COLUMN daily_listings.display_end_time IS 'Penjual mengatur kapan item tidak lagi dijual';
+
+
+-- Tabel untuk pesanan yang dibuat oleh pelanggan
+CREATE TABLE orders (
+                        id VARCHAR(36) PRIMARY KEY,
+                        customer_id VARCHAR(36) NOT NULL,
+                        seller_profile_id VARCHAR(36) NOT NULL,
+                        total_amount DECIMAL(10, 2) NOT NULL,
+                        order_status order_status NOT NULL,
+                        created_at TIMESTAMPTZ DEFAULT now(),
+                        updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+
+-- Tabel perantara yang menghubungkan pesanan dengan item yang dibeli
+CREATE TABLE order_items (
+                             id VARCHAR(36) PRIMARY KEY,
+                             order_id VARCHAR(36) NOT NULL,
+                             listing_id VARCHAR(36) NOT NULL,
+                             quantity_purchased INT NOT NULL,
+                             price_per_item DECIMAL(10, 2) NOT NULL
+);
+
+
+-- Tabel untuk mencatat detail transaksi pembayaran
+CREATE TABLE payments (
+                          id VARCHAR(36) PRIMARY KEY,
+                          order_id VARCHAR(36) NOT NULL,
+                          midtrans_transaction_id VARCHAR(255) NOT NULL UNIQUE,
+                          payment_type VARCHAR(50),
+                          amount DECIMAL(10, 2) NOT NULL,
+                          status payment_status NOT NULL,
+                          transaction_time TIMESTAMPTZ NOT NULL,
+                          created_at TIMESTAMPTZ DEFAULT now()
+);
+
+
+-- Tabel untuk ulasan yang diberikan pelanggan kepada penjual/toko
+CREATE TABLE seller_reviews (
+                                id VARCHAR(36) PRIMARY KEY,
+                                customer_id VARCHAR(36) NOT NULL,
+                                seller_profile_id VARCHAR(36) NOT NULL,
+                                rating INT NOT NULL,
+                                comment TEXT, -- Komentar bersifat opsional
+                                created_at TIMESTAMPTZ DEFAULT now(),
+                                CONSTRAINT unique_review_per_store UNIQUE (customer_id, seller_profile_id),
+                                CONSTRAINT valid_rating_seller CHECK (rating >= 1 AND rating <= 5)
+);
+COMMENT ON COLUMN seller_reviews.rating IS 'Nilai dari 1 hingga 5';
+COMMENT ON COLUMN seller_reviews.comment IS 'Komentar bersifat opsional';
+
+
+-- Tabel untuk ulasan yang diberikan pelanggan pada item menu tertentu
+CREATE TABLE menu_item_reviews (
+                                   id VARCHAR(36) PRIMARY KEY,
+                                   customer_id VARCHAR(36) NOT NULL,
+                                   menu_item_id VARCHAR(36) NOT NULL,
+                                   rating INT NOT NULL,
+                                   comment TEXT, -- Komentar bersifat opsional
+                                   created_at TIMESTAMPTZ DEFAULT now(),
+                                   CONSTRAINT unique_review_per_menu UNIQUE (customer_id, menu_item_id),
+                                   CONSTRAINT valid_rating_menu_item CHECK (rating >= 1 AND rating <= 5)
+);
+COMMENT ON COLUMN menu_item_reviews.rating IS 'Nilai dari 1 hingga 5';
+COMMENT ON COLUMN menu_item_reviews.comment IS 'Komentar bersifat opsional';
+
+-- Tabel untuk menyimpan keranjang belanja pelanggan
+CREATE TABLE carts (
+    id VARCHAR(36) PRIMARY KEY,
+    customer_id VARCHAR(36) NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Tabel untuk menyimpan item di keranjang belanja pelanggan sebelum checkout
+CREATE TABLE cart_items (
+                            id VARCHAR(36) PRIMARY KEY,
+                            cart_id VARCHAR(36) NOT NULL,
+                            listing_id VARCHAR(36) NOT NULL, -- Merujuk ke penawaran harian yang ditambahkan
+                            quantity INT NOT NULL CHECK (quantity > 0), -- Jumlah item yang ditambahkan
+                            created_at TIMESTAMPTZ DEFAULT now(),
+                            updated_at TIMESTAMPTZ DEFAULT now(), -- Diperbarui saat kuantitas diubah
+    -- Constraint untuk memastikan seorang pelanggan hanya punya satu baris untuk satu jenis listing
+                            CONSTRAINT unique_item_in_cart UNIQUE (cart_id, listing_id)
+);
+COMMENT ON COLUMN cart_items.quantity IS 'Jumlah item yang ditambahkan';
+COMMENT ON CONSTRAINT unique_item_in_cart ON cart_items IS 'Memastikan seorang pelanggan hanya punya satu baris untuk satu jenis listing di keranjangnya.';
+
+-- Tabel untuk permintaan penarikan dana oleh penjual
+CREATE TABLE withdrawal_requests (
+                                     id VARCHAR(36) PRIMARY KEY,
+                                     seller_id VARCHAR(36) NOT NULL,
+                                     amount DECIMAL(15, 2) NOT NULL,
+                                     status withdrawal_status NOT NULL,
+                                     request_date TIMESTAMPTZ DEFAULT now(),
+                                     processed_date TIMESTAMPTZ,
+                                     processed_by_id VARCHAR(36),
+                                     proof_of_payment_url VARCHAR(255)
+);
+
+-- ---------------------------------
+-- -- 3. Relationship Definitions (Foreign Keys)
+-- ---------------------------------
+-- Mendefinisikan relasi antar tabel.
+
+-- Relasi One-to-One: seller_profiles dengan users
+ALTER TABLE seller_profiles ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
+-- Relasi Many-to-One: menu_items dengan seller_profiles
+ALTER TABLE menu_items ADD FOREIGN KEY (seller_profile_id) REFERENCES seller_profiles(id) ON DELETE CASCADE;
+
+-- Relasi Many-to-One: daily_listings dengan menu_items
+ALTER TABLE daily_listings ADD FOREIGN KEY (menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE;
+
+-- Relasi Many-to-One: orders dengan users (customer)
+ALTER TABLE orders ADD FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE SET NULL;
+
+-- Relasi Many-to-One: orders dengan seller_profiles (seller)
+ALTER TABLE orders ADD FOREIGN KEY (seller_profile_id) REFERENCES seller_profiles(id) ON DELETE SET NULL;
+
+-- Relasi Many-to-One: order_items dengan orders
+ALTER TABLE order_items ADD FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
+
+-- Relasi Many-to-One: order_items dengan daily_listings
+ALTER TABLE order_items ADD FOREIGN KEY (listing_id) REFERENCES daily_listings(id) ON DELETE RESTRICT;
+
+-- Relasi Many-to-One: payments dengan orders
+ALTER TABLE payments ADD FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
+
+-- Relasi Many-to-One: seller_reviews dengan users (customer)
+ALTER TABLE seller_reviews ADD FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE;
+
+-- Relasi Many-to-One: seller_reviews dengan seller_profiles
+ALTER TABLE seller_reviews ADD FOREIGN KEY (seller_profile_id) REFERENCES seller_profiles(id) ON DELETE CASCADE;
+
+-- Relasi Many-to-One: menu_item_reviews dengan users (customer)
+ALTER TABLE menu_item_reviews ADD FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE;
+
+-- Relasi Many-to-One: menu_item_reviews dengan menu_items
+ALTER TABLE menu_item_reviews ADD FOREIGN KEY (menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE;
+
+-- Relasi One-to-One: carts dengan users (customer)
+ALTER TABLE carts ADD FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE;
+
+-- Relasi Many-to-One: cart_items dengan carts
+ALTER TABLE cart_items ADD FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE;
+
+-- Relasi Many-to-One: cart_items dengan daily_listings
+ALTER TABLE cart_items ADD FOREIGN KEY (listing_id) REFERENCES daily_listings(id) ON DELETE CASCADE;
+
+-- Relasi Many-to-One: withdrawal_requests dengan seller_profiles
+ALTER TABLE withdrawal_requests ADD FOREIGN KEY (seller_id) REFERENCES seller_profiles(id) ON DELETE CASCADE;
+
+-- Relasi Many-to-One: withdrawal_requests dengan users (admin)
+ALTER TABLE withdrawal_requests ADD FOREIGN KEY (processed_by_id) REFERENCES users(id) ON DELETE SET NULL;
+
+
+-- ---------------------------------
+-- -- 4. Index Definitions
+-- ---------------------------------
+-- Menambahkan indeks untuk mempercepat query pada kolom yang sering diakses.
+
+CREATE INDEX ON seller_profiles (latitude, longitude); -- Untuk pencarian lokasi
+CREATE INDEX ON menu_items (seller_profile_id);
+CREATE INDEX ON daily_listings (menu_item_id);
+CREATE INDEX ON daily_listings (display_start_time, display_end_time);
+CREATE INDEX ON orders (customer_id);
+CREATE INDEX ON orders (seller_profile_id);
+CREATE INDEX ON order_items (order_id);
+CREATE INDEX ON order_items (listing_id);
+CREATE INDEX ON payments (order_id);
+CREATE INDEX ON carts (customer_id);
+CREATE INDEX ON cart_items (cart_id);
+CREATE INDEX ON cart_items (listing_id);
+
+
+-- ---------------------------------
+-- -- 5. Automatic updated_at Trigger
+-- ---------------------------------
+-- Fungsi dan trigger ini akan secara otomatis memperbarui kolom 'updated_at' setiap kali sebuah baris diubah.
+
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+   NEW.updated_at = now();
+RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_users_updated_at
+    BEFORE UPDATE ON users
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_seller_profiles_updated_at
+    BEFORE UPDATE ON seller_profiles
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_menu_items_updated_at
+    BEFORE UPDATE ON menu_items
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_orders_updated_at
+    BEFORE UPDATE ON orders
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_carts_updated_at
+    BEFORE UPDATE ON carts
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_cart_items_updated_at
+    BEFORE UPDATE ON cart_items
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
