@@ -1,0 +1,4 @@
+package com.enigma.lastbite.repository;
+
+public class MenuItemRepository {
+}
