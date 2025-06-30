@@ -1,0 +1,19 @@
+package com.enigma.lastbite.mapper;
+
+import com.enigma.lastbite.dto.response.UserResponse;
+import com.enigma.lastbite.entity.User;
+
+public class UserMapper {
+    public static UserResponse toUserResponse(User user) {
+        return UserResponse.builder()
+                .id(user.getId().toString())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .updatedAt(user.getUpdatedAt())
+                .phoneNumber(user.getPhoneNumber())
+                .role(user.getRole().getName())
+                .suspendedUntil(user.getSuspendedUntil())
+                .build();
+    }
+}

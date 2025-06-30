@@ -136,4 +136,19 @@ public class JwtUtils {
         DecodedJWT jwt = JWT.decode(token);
         return jwt.getClaim("roles").asList(String.class);
     }
+
+    public String getTokenFromHeader() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) return null;
+
+        HttpServletRequest request = attributes.getRequest();
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+
+        return null;
+    }
+
 }

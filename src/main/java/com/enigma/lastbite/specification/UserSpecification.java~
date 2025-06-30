@@ -1,0 +1,103 @@
+package com.enigma.lastbite.specification;
+
+import com.enigma.lastbite.constant.UserRole;
+import com.enigma.lastbite.constant.UserStatus;
+import com.enigma.lastbite.entity.Role;
+import com.enigma.lastbite.entity.User;
+import jakarta.persistence.criteria.Join;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
+
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+public class UserSpecification {
+
+    /**
+     * Menggabungkan beberapa spesifikasi menjadi satu.
+     * @param name - Filter untuk username, fullName, atau email.
+     * @param role - Filter untuk role.
+     * @param status - Filter untuk status.
+     * @param startDate - Filter tanggal mulai.
+     * @param endDate - Filter tanggal akhir.
+     * @return Specification<User> gabungan.
+     */
+    public static Specification<User> getSpecification(String name, UserRole role, UserStatus status, LocalDateTime startDate, LocalDateTime endDate) {
+        return Specification.where(hasRole(role))
+                .and(hasStatus(status))
+                .and(createdBetween(startDate, endDate))
+                // Menggunakan OR untuk mencari di beberapa kolom teks
+                .and(
+                        Specification.where(likeUsername(name))
+                                .or(likeFullName(name))
+                                .or(likeEmail(name))
+                );
+    }
+
+    private static Specification<User> hasRole(UserRole role) {
+        return (root, query, criteriaBuilder) -> {
+            if (role == null) {
+                return criteriaBuilder.conjunction();
+            }
+            Join<User, Role> roleJoin = root.join("role");
+            return criteriaBuilder.equal(roleJoin.get("name"), role);
+        };
+    }
+
+    private static Specification<User> hasStatus(UserStatus status) {
+        return (root, query, criteriaBuilder) -> {
+            if (status == null) {
+                return criteriaBuilder.conjunction();
+            }
+            return criteriaBuilder.equal(root.get("status"), status);
+        };
+    }
+
+    private static Specification<User> likeUsername(String name) {
+        return (root, query, criteriaBuilder) -> {
+            if (!StringUtils.hasText(name)) {
+                return null; // Mengembalikan null agar klausa OR berfungsi dengan benar
+            }
+            return criteriaBuilder.like(criteriaBuilder.lower(root.get("username")), "%" + name.toLowerCase() + "%");
+        };
+    }
+
+    private static Specification<User> likeFullName(String name) {
+        return (root, query, criteriaBuilder) -> {
+            if (!StringUtils.hasText(name)) {
+                return null;
+            }
+            return criteriaBuilder.like(criteriaBuilder.lower(root.get("fullName")), "%" + name.toLowerCase() + "%");
+        };
+    }
+
+    private static Specification<User> likeEmail(String name) {
+        return (root, query, criteriaBuilder) -> {
+            if (!StringUtils.hasText(name)) {
+                return null;
+            }
+            return criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), "%" + name.toLowerCase() + "%");
+        };
+    }
+
+    private static Specification<User> createdBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return (root, query, criteriaBuilder) -> {
+            // Jika keduanya null, tidak ada filter tanggal
+            if (startDate == null && endDate == null) {
+                return criteriaBuilder.conjunction();
+            }
+            // Jika keduanya ada, cari di antara rentang tersebut
+            if (startDate != null && endDate != null) {
+                // Set waktu ke akhir hari untuk mencakup semua data pada tanggal tersebut
+                return criteriaBuilder.between(root.get("createdAt"), startDate, endDate.with(LocalTime.MAX));
+            }
+            // Jika hanya tanggal mulai, cari dari tanggal itu hingga sekarang
+            if (startDate != null) { // endDate pasti null di sini
+                return criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), startDate);
+            }
+            // Jika hanya tanggal akhir, cari dari awal hingga tanggal itu
+            // startDate pasti null di sini
+            return criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"), endDate.with(LocalTime.MAX));
+        };
+    }
+}

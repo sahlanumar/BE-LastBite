@@ -40,7 +40,7 @@ public class AuthController {
     /* ---------- REGISTER CUSTOMER ---------- */
     @PostMapping("/register-customer")
     public ResponseEntity<CommonResponse<RegisterResponse>> registerCustomer(
-            @Valid @RequestBody RegisterCustomerRequest req) {
+            @Valid @RequestBody CustomerRegisterRequest req) {
 
         RegisterResponse res = authService.registerCustomer(req);
         return ResponseUtil.buildResponse(HttpStatus.CREATED, "Registrasi Customer berhasil", res);
@@ -49,7 +49,7 @@ public class AuthController {
     /* ---------- REGISTER SELLER ---------- */
     @PostMapping("/register-seller")
     public ResponseEntity<CommonResponse<RegisterResponse>> registerSeller(
-            @Valid @RequestBody RegisterSellerRequest req) {
+            @Valid @RequestBody SellerRegisterRequest req) {
 
         RegisterResponse res = authService.registerSeller(req);
         return ResponseUtil.buildResponse(HttpStatus.CREATED, "Registrasi Seller berhasil", res);
@@ -58,7 +58,7 @@ public class AuthController {
     /* ---------- REGISTER ADMIN ---------- */
     @PostMapping("/register-admin")
     public ResponseEntity<CommonResponse<RegisterResponse>> registerAdmin(
-            @Valid @RequestBody RegisterAdminRequest req) {
+            @Valid @RequestBody AdminRegisterRequest req) {
 
         RegisterResponse res = authService.registerAdmin(req);
         return ResponseUtil.buildResponse(HttpStatus.CREATED, "Registrasi Admin berhasil", res);

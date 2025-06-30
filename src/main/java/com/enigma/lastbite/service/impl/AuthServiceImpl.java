@@ -11,15 +11,11 @@ import com.enigma.lastbite.entity.User;
 import com.enigma.lastbite.exception.CustomException;
 import com.enigma.lastbite.exception.ErrorCode;
 import com.enigma.lastbite.repository.SellerProfileRepository;
-import com.enigma.lastbite.repository.UserRepository;
 import com.enigma.lastbite.security.JwtUtils;
 import com.enigma.lastbite.service.AuthService;
 import com.enigma.lastbite.service.RoleService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,7 +26,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -46,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserDetailsService userDetailsService;
-    private final UserRepository userRepository;
+    private final UserServiceImpl userService;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final SellerProfileRepository sellerProfileRepository;
@@ -131,25 +126,25 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RegisterResponse registerCustomer(RegisterCustomerRequest registerCustomerRequest) {
-        if(userRepository.existsByEmail(registerCustomerRequest.getEmail())) {
+    public RegisterResponse registerCustomer(CustomerRegisterRequest customerRegisterRequest) {
+        if(userService.existsByEmail(customerRegisterRequest.getEmail())) {
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
-        if (userRepository.existsByUsername(registerCustomerRequest.getUsername())) {
+        if (userService.existsByUsername(customerRegisterRequest.getUsername())) {
             throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
         }
 
 
         User user = new User();
-        user.setEmail(registerCustomerRequest.getEmail());
-        user.setUsername(registerCustomerRequest.getUsername());
-        user.setFullName(registerCustomerRequest.getFullName());
-        user.setPasswordHash(passwordEncoder.encode(registerCustomerRequest.getPassword()));
+        user.setEmail(customerRegisterRequest.getEmail());
+        user.setUsername(customerRegisterRequest.getUsername());
+        user.setFullName(customerRegisterRequest.getFullName());
+        user.setPasswordHash(passwordEncoder.encode(customerRegisterRequest.getPassword()));
         user.setRole(roleService.getOrCreate(UserRole.ROLE_CUSTOMER));
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
-        User savedUser = userRepository.save(user);
+        User savedUser = userService.save(user);
         return RegisterResponse.builder()
                 .username(savedUser.getUsername())
                 .email(savedUser.getEmail())
@@ -161,11 +156,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RegisterResponse registerAdmin(RegisterAdminRequest registerAdminRequest) {
-        if (userRepository.existsByEmail(registerAdminRequest.getEmail())) {
+    public RegisterResponse registerAdmin(AdminRegisterRequest adminRegisterRequest) {
+        if (userService.existsByEmail(adminRegisterRequest.getEmail())) {
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
-        if (userRepository.existsByUsername(registerAdminRequest.getUsername())) {
+        if (userService.existsByUsername(adminRegisterRequest.getUsername())) {
             throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
         }
 
@@ -173,15 +168,15 @@ public class AuthServiceImpl implements AuthService {
         roles.add(roleService.getOrCreate(UserRole.ROLE_ADMIN));
 
         User user = new User();
-        user.setEmail(registerAdminRequest.getEmail());
-        user.setUsername(registerAdminRequest.getUsername());
-        user.setFullName(registerAdminRequest.getFullName());
-        user.setPasswordHash(passwordEncoder.encode(registerAdminRequest.getPassword()));
+        user.setEmail(adminRegisterRequest.getEmail());
+        user.setUsername(adminRegisterRequest.getUsername());
+        user.setFullName(adminRegisterRequest.getFullName());
+        user.setPasswordHash(passwordEncoder.encode(adminRegisterRequest.getPassword()));
         user.setRole(roleService.getOrCreate(UserRole.ROLE_ADMIN));
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
-        User savedUser = userRepository.save(user);
+        User savedUser = userService.save(user);
         return RegisterResponse.builder()
                 .username(savedUser.getUsername())
                 .email(savedUser.getEmail())
@@ -192,11 +187,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RegisterResponse registerSeller(RegisterSellerRequest registerSellerRequest) {
-        if (userRepository.existsByEmail(registerSellerRequest.getEmail())) {
+    public RegisterResponse registerSeller(SellerRegisterRequest sellerRegisterRequest) {
+        if (userService.existsByEmail(sellerRegisterRequest.getEmail())) {
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
-        if (userRepository.existsByUsername(registerSellerRequest.getUsername())) {
+        if (userService.existsByUsername(sellerRegisterRequest.getUsername())) {
             throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
         }
 
@@ -204,22 +199,22 @@ public class AuthServiceImpl implements AuthService {
         roles.add(roleService.getOrCreate(UserRole.ROLE_SELLER));
 
         User user = new User();
-        user.setEmail(registerSellerRequest.getEmail());
-        user.setFullName(registerSellerRequest.getFullName());
-        user.setUsername(registerSellerRequest.getUsername());
-        user.setPasswordHash(passwordEncoder.encode(registerSellerRequest.getPassword()));
+        user.setEmail(sellerRegisterRequest.getEmail());
+        user.setFullName(sellerRegisterRequest.getFullName());
+        user.setUsername(sellerRegisterRequest.getUsername());
+        user.setPasswordHash(passwordEncoder.encode(sellerRegisterRequest.getPassword()));
         user.setRole(roleService.getOrCreate(UserRole.ROLE_SELLER));
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
-        User savedUser = userRepository.save(user);
+        User savedUser = userService.save(user);
 
         SellerProfile seller = new SellerProfile();
-        seller.setStoreName(registerSellerRequest.getStoreName());
-        seller.setStoreDescription(registerSellerRequest.getStoreDescription());
-        seller.setAddress(registerSellerRequest.getAddress());
-        seller.setLatitude(registerSellerRequest.getLatitude());
-        seller.setLongitude(registerSellerRequest.getLongitude());
+        seller.setStoreName(sellerRegisterRequest.getStoreName());
+        seller.setStoreDescription(sellerRegisterRequest.getStoreDescription());
+        seller.setAddress(sellerRegisterRequest.getAddress());
+        seller.setLatitude(sellerRegisterRequest.getLatitude());
+        seller.setLongitude(sellerRegisterRequest.getLongitude());
         seller.setUser(savedUser);
         seller.setBalance(BigDecimal.ZERO);
         seller.setCreatedAt(LocalDateTime.now());

@@ -2,20 +2,16 @@ package com.enigma.lastbite.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.math.BigDecimal;
-
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterSellerRequest {
+public class AdminRegisterRequest {
 
-    // --- Data untuk tabel 'users' ---
     @NotBlank(message = "Username tidak boleh kosong")
     @Size(min = 3, max = 100, message = "Username harus antara 3 dan 100 karakter")
     private String username;
@@ -32,23 +28,6 @@ public class RegisterSellerRequest {
     @Size(min = 8, message = "Password minimal 8 karakter")
     private String password;
 
-    @NotBlank(message = "Nomor telepon tidak boleh kosong")
-    @Size(min = 10, max = 20, message = "Nomor telepon harus antara 10 dan 20 digit")
+    // Nomor telepon bisa opsional untuk Admin
     private String phoneNumber;
-
-    // --- Data untuk tabel 'seller_profiles' ---
-    @NotBlank(message = "Nama toko tidak boleh kosong")
-    @Size(max = 255)
-    private String storeName;
-
-    private String storeDescription;
-
-    @NotBlank(message = "Alamat tidak boleh kosong")
-    private String address;
-
-    @NotNull(message = "Latitude tidak boleh kosong")
-    private BigDecimal latitude;
-
-    @NotNull(message = "Longitude tidak boleh kosong")
-    private BigDecimal longitude;
 }

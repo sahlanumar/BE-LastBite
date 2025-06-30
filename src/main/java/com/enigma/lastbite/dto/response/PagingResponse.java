@@ -10,10 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class PagingResponse {
-    private Integer currentPage;
-    private Integer totalPage;
-    private Integer size;
-    private Long totalElements;
-    private Boolean hasNext;
-    private Boolean hasPrevious;
+    private int currentPage;
+    private int totalPage;
+    private int size;
+    private long totalElements;
+    private boolean hasNext;
+    private boolean hasPrevious;
+    private String nextPage;
+    private String previousPage;
 }

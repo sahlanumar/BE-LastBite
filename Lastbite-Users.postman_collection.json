@@ -1,0 +1,207 @@
+{
+	"info": {
+		"_postman_id": "e9a4f4e0-1c3b-4d6a-9e1a-2c1b0d2a8e3f",
+		"name": "Lastbite-Users",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Users",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}?page=0&size=10&sortField=createdAt&sortDir=desc&role=ROLE_CUSTOMER&status=ACTIVE&search=john.doe",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						},
+						{
+							"key": "sortField",
+							"value": "createdAt"
+						},
+						{
+							"key": "sortDir",
+							"value": "desc"
+						},
+						{
+							"key": "role",
+							"value": "ROLE_CUSTOMER"
+						},
+						{
+							"key": "status",
+							"value": "ACTIVE"
+						},
+						{
+							"key": "search",
+							"value": "john.doe"
+						}
+					]
+				},
+				"description": "Mengambil daftar semua pengguna dengan filter dan paginasi."
+			},
+			"response": []
+		},
+		{
+			"name": "Get User By ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/your_user_id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"your_user_id"
+					]
+				},
+				"description": "Mengambil detail pengguna berdasarkan ID."
+			},
+			"response": []
+		},
+		{
+			"name": "Update User By ID",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"fullName\": \"John Doe Updated\",\r\n    \"email\": \"john.doe.updated@example.com\",\r\n    \"phoneNumber\": \"081234567899\",\r\n    \"status\": \"ACTIVE\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/your_user_id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"your_user_id"
+					]
+				},
+				"description": "Memperbarui detail pengguna berdasarkan ID (biasanya untuk Admin)."
+			},
+			"response": []
+		},
+		{
+			"name": "Update My Profile",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"fullName\": \"My Updated Name\",\r\n    \"email\": \"my.updated.email@example.com\",\r\n    \"phoneNumber\": \"081234567890\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/me",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"me"
+					]
+				},
+				"description": "Memperbarui profil pengguna yang sedang login."
+			},
+			"response": []
+		},
+		{
+			"name": "Change Password By ID",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"oldPassword\": \"current_password\",\r\n    \"newPassword\": \"new_strong_password\",\r\n    \"confirmNewPassword\": \"new_strong_password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/your_user_id/password",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"your_user_id",
+						"password"
+					]
+				},
+				"description": "Mengubah kata sandi pengguna berdasarkan ID (biasanya untuk Admin)."
+			},
+			"response": []
+		},
+		{
+			"name": "Change My Password",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"oldPassword\": \"my_current_password\",\r\n    \"newPassword\": \"my_new_strong_password\",\r\n    \"confirmNewPassword\": \"my_new_strong_password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/me/password",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"me",
+						"password"
+					]
+				},
+				"description": "Mengubah kata sandi pengguna yang sedang login."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User By ID",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/your_user_id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"your_user_id"
+					]
+				},
+				"description": "Menghapus pengguna berdasarkan ID (biasanya untuk Admin)."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080/api/users",
+			"type": "string"
+		}
+	]
+}

@@ -18,7 +18,6 @@ public enum ErrorCode {
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "Invalid password"),
     INVALID_ROLE(HttpStatus.BAD_REQUEST, "Invalid role"),
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "Invalid user role"),
-    PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST, "Password not match"),
 
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "Menu not found"),
     INVALID_MENU_DATA(HttpStatus.BAD_REQUEST, "Invalid menu data"),
