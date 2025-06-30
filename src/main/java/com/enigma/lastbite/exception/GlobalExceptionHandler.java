@@ -1,7 +1,8 @@
 package com.enigma.lastbite.exception;
 
 
-import Group3.CourseApp.dto.response.CommonResponse;
+
+import com.enigma.lastbite.dto.response.CommonResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,0 +1,240 @@
+package com.enigma.lastbite.service.impl;
+
+import com.enigma.lastbite.constant.UserRole;
+import com.enigma.lastbite.dto.request.*;
+import com.enigma.lastbite.dto.response.JwtResponse;
+import com.enigma.lastbite.dto.response.RegisterResponse;
+import com.enigma.lastbite.dto.response.TokenRefreshResponse;
+import com.enigma.lastbite.entity.Role;
+import com.enigma.lastbite.entity.SellerProfile;
+import com.enigma.lastbite.entity.User;
+import com.enigma.lastbite.exception.CustomException;
+import com.enigma.lastbite.exception.ErrorCode;
+import com.enigma.lastbite.repository.SellerProfileRepository;
+import com.enigma.lastbite.repository.UserRepository;
+import com.enigma.lastbite.security.JwtUtils;
+import com.enigma.lastbite.service.AuthService;
+import com.enigma.lastbite.service.RoleService;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class AuthServiceImpl implements AuthService {
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
+    private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
+    private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
+    private final SellerProfileRepository sellerProfileRepository;
+
+    @Override
+    public JwtResponse login(LoginRequest loginRequest) {
+        // Authenticate user
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getUsername(),
+                        loginRequest.getPassword()
+                )
+        );
+
+        // Set authentication in SecurityContext
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Get user details
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        // Get user roles
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        // Get email dari User entity jika UserDetails adalah instance dari User
+        String email = null;
+        if (userDetails instanceof User) {
+            User user = (User) userDetails;
+            email = user.getEmail();
+        }
+
+        // Generate JWT token
+        String jwt = jwtUtils.generateJwtToken(authentication);
+
+        // Generate refresh token
+        String refreshToken = jwtUtils.generateRefreshToken(userDetails.getUsername());
+
+        // Return JWT response
+        return JwtResponse.builder()
+                .token(jwt)
+                .refreshToken(refreshToken)
+                .username(userDetails.getUsername())
+                .email(email)
+                .roles(roles)
+                .build();
+    }
+
+    @Override
+    public TokenRefreshResponse refreshToken(TokenRefreshRequest request) {
+        String requestRefreshToken = request.getRefreshToken();
+
+        // Validasi refresh token
+        if (!jwtUtils.validateJwtToken(requestRefreshToken)) {
+            throw new CustomException(ErrorCode.TOKEN_NOT_VALID);
+        }
+
+        // Cek apakah ini refresh token
+        if (!jwtUtils.isRefreshToken(requestRefreshToken)) {
+            throw new CustomException(ErrorCode.NOT_REFRESH_TOKEN);
+        }
+
+        // Dapatkan username dari refresh token
+        String username = jwtUtils.getUsernameFromJwtToken(requestRefreshToken);
+
+        // Load user details untuk mendapatkan roles dari database
+        // Ini lebih aman karena kita memastikan user masih ada dan roles masih valid
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        // Generate token baru
+        String newToken = jwtUtils.generateJwtToken(username, roles);
+
+        // Return new token with existing refresh token
+        return TokenRefreshResponse.builder()
+                .accessToken(newToken)
+                .refreshToken(requestRefreshToken) 
+                .tokenType("Bearer")
+                .build();
+    }
+
+    @Override
+    public RegisterResponse registerCustomer(RegisterCustomerRequest registerCustomerRequest) {
+        if(userRepository.existsByEmail(registerCustomerRequest.getEmail())) {
+            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+        if (userRepository.existsByUsername(registerCustomerRequest.getUsername())) {
+            throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
+        }
+
+
+        User user = new User();
+        user.setEmail(registerCustomerRequest.getEmail());
+        user.setUsername(registerCustomerRequest.getUsername());
+        user.setFullName(registerCustomerRequest.getFullName());
+        user.setPasswordHash(passwordEncoder.encode(registerCustomerRequest.getPassword()));
+        user.setRole(roleService.getOrCreate(UserRole.ROLE_CUSTOMER));
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        User savedUser = userRepository.save(user);
+        return RegisterResponse.builder()
+                .username(savedUser.getUsername())
+                .email(savedUser.getEmail())
+                .fullName(savedUser.getFullName())
+                .role("ROLE_CUSTOMER")
+                .id(savedUser.getId().toString())
+                .build();
+
+    }
+
+    @Override
+    public RegisterResponse registerAdmin(RegisterAdminRequest registerAdminRequest) {
+        if (userRepository.existsByEmail(registerAdminRequest.getEmail())) {
+            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+        if (userRepository.existsByUsername(registerAdminRequest.getUsername())) {
+            throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
+        }
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(roleService.getOrCreate(UserRole.ROLE_ADMIN));
+
+        User user = new User();
+        user.setEmail(registerAdminRequest.getEmail());
+        user.setUsername(registerAdminRequest.getUsername());
+        user.setFullName(registerAdminRequest.getFullName());
+        user.setPasswordHash(passwordEncoder.encode(registerAdminRequest.getPassword()));
+        user.setRole(roleService.getOrCreate(UserRole.ROLE_ADMIN));
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        User savedUser = userRepository.save(user);
+        return RegisterResponse.builder()
+                .username(savedUser.getUsername())
+                .email(savedUser.getEmail())
+                .fullName(savedUser.getFullName())
+                .role("ROLE_ADMIN")
+                .id(savedUser.getId().toString())
+                .build();
+    }
+
+    @Override
+    public RegisterResponse registerSeller(RegisterSellerRequest registerSellerRequest) {
+        if (userRepository.existsByEmail(registerSellerRequest.getEmail())) {
+            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+        if (userRepository.existsByUsername(registerSellerRequest.getUsername())) {
+            throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
+        }
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(roleService.getOrCreate(UserRole.ROLE_SELLER));
+
+        User user = new User();
+        user.setEmail(registerSellerRequest.getEmail());
+        user.setFullName(registerSellerRequest.getFullName());
+        user.setUsername(registerSellerRequest.getUsername());
+        user.setPasswordHash(passwordEncoder.encode(registerSellerRequest.getPassword()));
+        user.setRole(roleService.getOrCreate(UserRole.ROLE_SELLER));
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        User savedUser = userRepository.save(user);
+
+        SellerProfile seller = new SellerProfile();
+        seller.setStoreName(registerSellerRequest.getStoreName());
+        seller.setStoreDescription(registerSellerRequest.getStoreDescription());
+        seller.setAddress(registerSellerRequest.getAddress());
+        seller.setLatitude(registerSellerRequest.getLatitude());
+        seller.setLongitude(registerSellerRequest.getLongitude());
+        seller.setUser(savedUser);
+        seller.setBalance(BigDecimal.ZERO);
+        seller.setCreatedAt(LocalDateTime.now());
+        seller.setUpdatedAt(LocalDateTime.now());
+
+        SellerProfile savedSeller = sellerProfileRepository.save(seller);
+
+        return RegisterResponse.builder()
+                .username(savedUser.getUsername())
+                .email(savedUser.getEmail())
+                .fullName(savedUser.getFullName())
+                .role("ROLE_SELLER")
+                .id(savedUser.getId().toString())
+                .build();
+    }
+
+
+}

@@ -12,6 +12,7 @@ import com.enigma.lastbite.constant.ListingStatus;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Getter
@@ -51,10 +52,10 @@ public class MenuItem {
     private Integer quantityAvailable;
 
     @Column(name = "display_start_time", nullable = false)
-    private OffsetDateTime displayStartTime;
+    private LocalDateTime displayStartTime;
 
     @Column(name = "display_end_time", nullable = false)
-    private OffsetDateTime displayEndTime;
+    private LocalDateTime displayEndTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -65,9 +66,9 @@ public class MenuItem {
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
 }

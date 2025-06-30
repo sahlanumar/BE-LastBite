@@ -4,6 +4,9 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
 
+    TOKEN_NOT_VALID(HttpStatus.UNAUTHORIZED, "Refresh token tidak valid"),
+    NOT_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "Token yang diberikan bukan refresh token"),
+
     MIDTRANS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Midtrans error"),
 
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not found"),
@@ -24,6 +27,7 @@ public enum ErrorCode {
     CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "Customer not found"),
     INVALID_CUSTOMER_DATA(HttpStatus.BAD_REQUEST, "Invalid customer data"),
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "Email already exists"),
+    USERNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "Username already exists"),
     PHONENUMBER_ALREADY_EXISTS(HttpStatus.CONFLICT, "Phone already exists"),
 
     //Transaction related errors

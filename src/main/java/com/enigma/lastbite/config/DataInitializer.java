@@ -1,0 +1,28 @@
+package com.enigma.lastbite.config;
+
+
+
+import com.enigma.lastbite.constant.UserRole;
+import com.enigma.lastbite.entity.Role;
+import com.enigma.lastbite.repository.RoleRepository;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class DataInitializer {
+
+    private final RoleRepository roleRepository;
+
+    @PostConstruct
+    public void initRoles() {
+        for (UserRole role : UserRole.values()) {
+            if (!roleRepository.findByName(role).isPresent()) {
+                Role newRole = new Role();
+                newRole.setName(role);
+                roleRepository.save(newRole);
+            }
+        }
+    }
+}

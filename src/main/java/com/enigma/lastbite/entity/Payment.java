@@ -11,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Getter
@@ -45,9 +46,8 @@ public class Payment {
     private PaymentStatus status;
 
     @Column(name = "transaction_time", nullable = false)
-    private OffsetDateTime transactionTime;
+    private LocalDateTime transactionTime;
 
-    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 }

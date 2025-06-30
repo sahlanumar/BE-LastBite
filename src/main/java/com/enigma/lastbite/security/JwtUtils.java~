@@ -36,8 +36,8 @@ public class JwtUtils {
     @Value("${restaurant.jwt.issuer}")
     private String issuer;
 
-    @Value("${restaurant.jwt.refresh-token-expiration-in-second}")
-    private int refreshTokenExpirationInSecond;
+    @Value("${restaurant.jwt.refresh-token-expiration-ms}")
+    private int refreshTokenExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
@@ -76,7 +76,7 @@ public class JwtUtils {
         return JWT.create()
                 .withSubject(username)
                 .withIssuedAt(new Date())
-                .withExpiresAt(new Date((new Date()).getTime() + refreshTokenExpirationInSecond))
+                .withExpiresAt(new Date((new Date()).getTime() + refreshTokenExpirationMs))
                 .withClaim("tokenType", "refresh")
                 .sign(Algorithm.HMAC256(secretKey));
     }
