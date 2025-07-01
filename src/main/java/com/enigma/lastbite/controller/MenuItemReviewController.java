@@ -1,0 +1,75 @@
+package com.enigma.lastbite.controller;
+
+import com.enigma.lastbite.dto.request.CreateMenuItemReviewRequest;
+import com.enigma.lastbite.dto.response.CommonResponse;
+import com.enigma.lastbite.dto.response.MenuItemReviewResponse;
+import com.enigma.lastbite.service.MenuItemReviewService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/menu-item-reviews")
+@RequiredArgsConstructor
+public class MenuItemReviewController {
+
+    private final MenuItemReviewService menuItemReviewService;
+
+    @PostMapping
+    public ResponseEntity<CommonResponse<MenuItemReviewResponse>> createReview(
+            @RequestBody CreateMenuItemReviewRequest request) {
+
+        MenuItemReviewResponse review = menuItemReviewService.createReview(request);
+
+        CommonResponse<MenuItemReviewResponse> response = CommonResponse.<MenuItemReviewResponse>builder()
+                .statusCode(HttpStatus.CREATED.value())
+                .message("Successfully created review.")
+                .data(review)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<CommonResponse<Void>> deleteReview(@PathVariable String id) {
+        menuItemReviewService.deleteReview(id);
+
+        CommonResponse<Void> response = CommonResponse.<Void>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Successfully deleted review.")
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CommonResponse<MenuItemReviewResponse>> getReviewById(@PathVariable String id) {
+        MenuItemReviewResponse review = menuItemReviewService.getReviewById(id);
+
+        CommonResponse<MenuItemReviewResponse> response = CommonResponse.<MenuItemReviewResponse>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Successfully fetched review.")
+                .data(review)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/menu/{menuItemId}")
+    public ResponseEntity<CommonResponse<List<MenuItemReviewResponse>>> getReviewsByMenuItemId(
+            @PathVariable String menuItemId) {
+
+        List<MenuItemReviewResponse> reviews = menuItemReviewService.getReviewsByMenuItemId(menuItemId);
+
+        CommonResponse<List<MenuItemReviewResponse>> response = CommonResponse.<List<MenuItemReviewResponse>>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Successfully fetched reviews by menu item.")
+                .data(reviews)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+}

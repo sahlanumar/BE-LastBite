@@ -19,6 +19,7 @@ import com.enigma.lastbite.service.SellerService;
 import com.enigma.lastbite.service.UserService;
 import com.enigma.lastbite.specification.MenuItemSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MenuItemServiceImpl implements MenuItemService {
 
     private final MenuItemRepository menuItemRepository;
@@ -169,6 +171,11 @@ public class MenuItemServiceImpl implements MenuItemService {
     public void deleteById(String id) {
         MenuItem menuItem = findByIdOrThrowNotFound(id);
         menuItemRepository.delete(menuItem);
+    }
+
+    @Override
+    public MenuItem save(MenuItem menuItem) {
+        return menuItemRepository.save(menuItem);
     }
 
     @Override

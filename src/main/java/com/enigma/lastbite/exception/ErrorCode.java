@@ -3,6 +3,10 @@ package com.enigma.lastbite.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "Review not found"),
+    INVALID_RATING(HttpStatus.BAD_REQUEST, "Invalid rating"),
+    DUPLICATE_REVIEW(HttpStatus.BAD_REQUEST, "Duplicate review"),
+
     INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "Invalid quantity"),
     CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "Cart item not found"),
     CART_NOT_FOUND(HttpStatus.NOT_FOUND, "Cart not found"),

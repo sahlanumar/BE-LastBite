@@ -15,12 +15,14 @@ import com.enigma.lastbite.service.CartService;
 import com.enigma.lastbite.service.MenuItemService;
 import com.enigma.lastbite.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final JwtUtils jwtUtils;

@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 
 public interface MenuItemService {
 
+    MenuItem save(MenuItem menuItem);
+
     MenuItemResponse create(CreateMenuItemRequest request);
 
     MenuItemResponse getById(String id);
