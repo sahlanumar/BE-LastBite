@@ -41,11 +41,6 @@ public class SellerServiceImpl implements SellerService {
     }
 
     @Override
-    public SellerProfile getSellerProfileByUserId(String userId) {
-        return sellerProfileRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public Page<SellerResponse> getAll(String storeName, UserStatus status, int page, int size, String sortField, String sortDir) {
         Sort sort = Sort.by(

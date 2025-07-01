@@ -2,5 +2,6 @@ package com.enigma.lastbite.constant;
 
 public enum ListingStatus {
     AVAILABLE,
-    SOLD_OUT
+    SOLD_OUT,
+    NOT_AVAILABLE
 }

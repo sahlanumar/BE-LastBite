@@ -1,0 +1,121 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+		"name": "Lastbite-Sellers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Sellers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}?storeName=somename&status=ACTIVE&page=0&size=10&sortField=storeName&sortDir=asc",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "storeName",
+							"value": "somename"
+						},
+						{
+							"key": "status",
+							"value": "ACTIVE"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						},
+						{
+							"key": "sortField",
+							"value": "storeName"
+						},
+						{
+							"key": "sortDir",
+							"value": "asc"
+						}
+					]
+				},
+				"description": "Mengambil daftar semua penjual dengan filter dan paginasi."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Seller By ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/your_seller_id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"your_seller_id"
+					]
+				},
+				"description": "Mengambil detail penjual berdasarkan ID."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Seller By User ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/user/your_user_id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"user",
+						"your_user_id"
+					]
+				},
+				"description": "Mengambil detail penjual berdasarkan ID Pengguna."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Seller By ID",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"storeName\": \"New Store Name\",\r\n    \"address\": \"New Address\",\r\n    \"status\": \"ACTIVE\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/your_seller_id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"your_seller_id"
+					]
+				},
+				"description": "Memperbarui detail penjual berdasarkan ID."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080/api/sellers",
+			"type": "string"
+		}
+	]
+}

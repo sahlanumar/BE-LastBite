@@ -1,0 +1,111 @@
+package com.enigma.lastbite.controller;
+
+import com.enigma.lastbite.constant.ListingStatus;
+import com.enigma.lastbite.dto.request.CreateMenuItemRequest;
+import com.enigma.lastbite.dto.request.UpdateMenuItemRequest;
+import com.enigma.lastbite.dto.response.CommonResponse;
+import com.enigma.lastbite.dto.response.MenuItemResponse;
+import com.enigma.lastbite.service.MenuItemService;
+import com.enigma.lastbite.util.ResponseUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/menu-items")
+@RequiredArgsConstructor
+public class MenuItemController {
+
+    private final MenuItemService menuItemService;
+
+    @PostMapping
+    public ResponseEntity<CommonResponse<MenuItemResponse>> createMenuItem(
+            @RequestBody CreateMenuItemRequest request) {
+
+        MenuItemResponse response = menuItemService.create(request);
+        return ResponseUtil.buildResponse(HttpStatus.CREATED, "Menu item created", response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CommonResponse<MenuItemResponse>> getMenuItemById(@PathVariable String id) {
+        MenuItemResponse response = menuItemService.getById(id);
+        return ResponseUtil.buildResponse(HttpStatus.OK, "Menu item found", response);
+    }
+
+    @GetMapping
+    public ResponseEntity<CommonResponse<List<MenuItemResponse>>> getAllMenuItems(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String sellerId,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) Boolean isAvailable,
+            @RequestParam(required = false) ListingStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name") String sortField,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(defaultValue = "") String baseUrl) {
+
+        Page<MenuItemResponse> menuPage = menuItemService.getAll(
+                name, sellerId, maxPrice, minPrice, isAvailable, status,
+                page, size, sortField, sortDir);
+
+        return ResponseUtil.buildResponse(
+                HttpStatus.OK, "Menu items fetched",
+                menuPage.getContent(),
+                menuPage,
+                baseUrl,
+                null,          // tidak ada objek filter terpisah
+                sortField,
+                sortDir
+        );
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<CommonResponse<List<MenuItemResponse>>> getMyMenuItems(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) Boolean isAvailable,
+            @RequestParam(required = false) ListingStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name") String sortField,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(defaultValue = "") String baseUrl) {
+
+        Page<MenuItemResponse> menuPage = menuItemService.getAllByLogin(
+                name, maxPrice, minPrice, isAvailable, status,
+                page, size, sortField, sortDir);
+
+        return ResponseUtil.buildResponse(
+                HttpStatus.OK, "Menu items fetched",
+                menuPage.getContent(),
+                menuPage,
+                baseUrl,
+                null,
+                sortField,
+                sortDir
+        );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CommonResponse<MenuItemResponse>> updateMenuItem(
+            @PathVariable String id,
+            @RequestBody UpdateMenuItemRequest request) {
+
+        MenuItemResponse response = menuItemService.update(id, request);
+        return ResponseUtil.buildResponse(HttpStatus.OK, "Menu item updated", response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<CommonResponse<Void>> deleteMenuItem(@PathVariable String id) {
+        menuItemService.deleteById(id);
+        return ResponseUtil.buildResponse(HttpStatus.OK, "Menu item deleted", null);
+    }
+}

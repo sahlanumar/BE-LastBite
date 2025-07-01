@@ -1,14 +1,21 @@
 package com.enigma.lastbite.service;
 
+import com.enigma.lastbite.constant.ListingStatus;
 import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.UpdateSellerRequest;
+import com.enigma.lastbite.dto.response.MenuItemResponse;
 import com.enigma.lastbite.dto.response.SellerResponse;
+import com.enigma.lastbite.entity.SellerProfile;
 import org.springframework.data.domain.Page;
+
+import java.math.BigDecimal;
 
 public interface SellerService {
     SellerResponse getById(String id);
 
     SellerResponse getByUserId(String userId);
+
+    SellerProfile getSellerProfileByUserId(String userId);
 
     Page<SellerResponse> getAll(
             String storeName,
@@ -18,6 +25,10 @@ public interface SellerService {
             String sortField,
             String sortDir);
 
+
+
     SellerResponse update(String id, UpdateSellerRequest request);
+
+    SellerProfile findBySellerId(String id);
 
 }
