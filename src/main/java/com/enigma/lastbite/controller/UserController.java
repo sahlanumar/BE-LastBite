@@ -44,6 +44,12 @@ public class UserController {
         );
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<CommonResponse<UserResponse>> getMe() {
+        UserResponse response = userService.getUserByLogin();
+        return ResponseUtil.buildResponse(HttpStatus.OK, "User found", response);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponse<UserResponse>> getUserById(@PathVariable String id) {
         UserResponse response = userService.getUserById(id);

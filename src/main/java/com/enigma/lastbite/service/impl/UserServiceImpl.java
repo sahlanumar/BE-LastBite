@@ -83,6 +83,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponse getUserByLogin(){
+        String token = jwtUtils.getTokenFromHeader();
+        jwtUtils.validateJwtToken(token);
+        String username = jwtUtils.getUsernameFromJwtToken(token);
+        User user = findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return UserMapper.toUserResponse(user);
+    }
+
+    @Override
     public UserResponse updateUserById(String id, UpdateUserRequest updateUserRequest) {
         User user = findById(id);
 

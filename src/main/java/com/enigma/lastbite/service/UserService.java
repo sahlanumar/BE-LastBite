@@ -30,6 +30,8 @@ public interface UserService {
 
     UserResponse updateUser(UpdateUserRequest updateUserRequest);
 
+    UserResponse getUserByLogin();
+
     void deleteUserById(String id);
 
     UserResponse getUserById(String id);
