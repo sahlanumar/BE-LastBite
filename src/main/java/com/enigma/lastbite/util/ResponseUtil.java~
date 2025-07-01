@@ -20,32 +20,22 @@ public class ResponseUtil {
         return ResponseEntity.status(httpStatus).body(response);
     }
 
-    public static <T> ResponseEntity<CommonResponse<T>> buildResponse(
-            HttpStatus httpStatus,
-            String message,
-            T data,
-            Page<?> page,
-            HttpServletRequest request
-    ) {
-        String baseUrl = request.getRequestURL().toString();
-        String queryString = request.getQueryString() != null ? request.getQueryString() : "";
-        String queryWithoutPage = queryString.replaceAll("([&]?page=\\d+)", "").replaceAll("^&", "");
-        String connector = queryWithoutPage.isEmpty() ? "?" : "&";
-
+    public static <T> ResponseEntity<CommonResponse<T>> buildResponse(HttpStatus httpStatus, String message, T data, Page<?> page, String baseUrl) {
         int currentPage = page.getNumber();
         int size = page.getSize();
 
-        String next = page.hasNext() ?
-                baseUrl + "?" + queryWithoutPage + connector + "page=" + (currentPage + 1) + "&size=" + size : null;
-
-        String previous = page.hasPrevious() && currentPage > 0 ?
-                baseUrl + "?" + queryWithoutPage + connector + "page=" + (currentPage - 1) + "&size=" + size : null;
+        String next = page.hasNext() ? String.format("%s?page=%d&size=%d", baseUrl, currentPage + 1, size) : null;
+        String prev = page.hasPrevious() ? String.format("%s?page=%d&size=%d", baseUrl, currentPage - 1, size) : null;
 
         PagingResponse pagingResponse = PagingResponse.builder()
-                .next(next)
-                .previous(previous)
-                .totalPages(page.getTotalPages())
+                .currentPage(currentPage + 1)
+                .totalPage(page.getTotalPages())
+                .size(page.getSize())
                 .totalElements(page.getTotalElements())
+                .hasNext(page.hasNext())
+                .hasPrevious(page.hasPrevious())
+                .nextPage(next)
+                .previousPage(prev)
                 .build();
 
         CommonResponse<T> response = CommonResponse.<T>builder()

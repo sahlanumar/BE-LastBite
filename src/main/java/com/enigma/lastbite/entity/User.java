@@ -52,10 +52,6 @@ public class User implements UserDetails {
     @JoinColumn(name = "role", nullable = false)
     private Role role;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserStatus status = UserStatus.ACTIVE;
-
     @Column(name = "suspended_until")
     private LocalDateTime suspendedUntil;
 

@@ -21,10 +21,6 @@ public class UpdateUserRequest {
 
     private String phoneNumber;
 
-    // Field di bawah ini kemungkinan hanya dapat diubah oleh peran Admin.
-    // Logika otorisasi akan ditangani di service layer.
-    private UserStatus status;
-
     private LocalDateTime suspendedUntil;
 
 }

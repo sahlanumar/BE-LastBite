@@ -25,7 +25,6 @@ public class UserResponse {
     private String email;
     private String phoneNumber;
     private UserRole role;
-    private UserStatus status;
     private LocalDateTime suspendedUntil;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

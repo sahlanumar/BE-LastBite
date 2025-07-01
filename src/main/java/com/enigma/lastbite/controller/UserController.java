@@ -29,10 +29,19 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortField,
             @RequestParam(defaultValue = "desc") String sortDir,
-            @RequestParam(defaultValue = "") String baseUrl // optional: frontend/FE bisa kirim baseURL untuk next/prev
+            @RequestParam(defaultValue = "") String baseUrl
     ) {
         Page<UserResponse> userPage = userService.findAllUsers(filter, page, size, sortField, sortDir);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "Users fetched", userPage.getContent(), userPage, baseUrl);
+        return ResponseUtil.buildResponse(
+                HttpStatus.OK,
+                "Users fetched",
+                userPage.getContent(),
+                userPage,
+                baseUrl,
+                filter,
+                sortField,
+                sortDir
+        );
     }
 
     @GetMapping("/{id}")
