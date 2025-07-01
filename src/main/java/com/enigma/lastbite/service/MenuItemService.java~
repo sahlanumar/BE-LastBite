@@ -4,7 +4,6 @@ import com.enigma.lastbite.constant.ListingStatus;
 import com.enigma.lastbite.dto.request.CreateMenuItemRequest;
 import com.enigma.lastbite.dto.request.UpdateMenuItemRequest;
 import com.enigma.lastbite.dto.response.MenuItemResponse;
-import com.enigma.lastbite.entity.MenuItem;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
@@ -36,6 +35,4 @@ public interface MenuItemService {
     MenuItemResponse update(String id, UpdateMenuItemRequest request);
 
     void deleteById(String id);
-
-    MenuItem findById(String id);
 }

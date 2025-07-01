@@ -171,6 +171,11 @@ public class MenuItemServiceImpl implements MenuItemService {
         menuItemRepository.delete(menuItem);
     }
 
+    @Override
+    public MenuItem findById(String id) {
+        return findByIdOrThrowNotFound(id);
+    }
+
     private MenuItem findByIdOrThrowNotFound(String id) {
         return menuItemRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Menu item not found"));

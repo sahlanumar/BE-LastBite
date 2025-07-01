@@ -51,6 +51,24 @@
 			"response": []
 		},
 		{
+			"name": "Get Me",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/me",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"me"
+					]
+				},
+				"description": "Mengambil detail pengguna yang sedang login."
+			},
+			"response": []
+		},
+		{
 			"name": "Get User By ID",
 			"request": {
 				"method": "GET",

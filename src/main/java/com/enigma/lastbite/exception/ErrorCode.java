@@ -3,6 +3,9 @@ package com.enigma.lastbite.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
+    INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "Invalid quantity"),
+    CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "Cart item not found"),
+    CART_NOT_FOUND(HttpStatus.NOT_FOUND, "Cart not found"),
 
     TOKEN_NOT_VALID(HttpStatus.UNAUTHORIZED, "Refresh token tidak valid"),
     NOT_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "Token yang diberikan bukan refresh token"),
