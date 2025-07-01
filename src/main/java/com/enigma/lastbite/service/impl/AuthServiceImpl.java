@@ -1,6 +1,7 @@
 package com.enigma.lastbite.service.impl;
 
 import com.enigma.lastbite.constant.UserRole;
+import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.*;
 import com.enigma.lastbite.dto.response.JwtResponse;
 import com.enigma.lastbite.dto.response.RegisterResponse;
@@ -215,6 +216,7 @@ public class AuthServiceImpl implements AuthService {
         seller.setAddress(sellerRegisterRequest.getAddress());
         seller.setLatitude(sellerRegisterRequest.getLatitude());
         seller.setLongitude(sellerRegisterRequest.getLongitude());
+        seller.setStatus(UserStatus.INACTIVE);
         seller.setUser(savedUser);
         seller.setBalance(BigDecimal.ZERO);
         seller.setCreatedAt(LocalDateTime.now());

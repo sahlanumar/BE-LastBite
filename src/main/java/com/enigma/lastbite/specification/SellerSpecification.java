@@ -1,0 +1,32 @@
+package com.enigma.lastbite.specification;
+
+import com.enigma.lastbite.constant.UserStatus;
+import com.enigma.lastbite.entity.SellerProfile;
+import org.springframework.data.jpa.domain.Specification;
+
+public class SellerSpecification {
+
+    public static Specification<SellerProfile> storeNameLike(String name) {
+        return (root, query, criteriaBuilder) -> {
+            if (name == null || name.isBlank()) {
+                return criteriaBuilder.conjunction();
+            }
+            String pattern = "%" + name.trim().toLowerCase() + "%";
+            return criteriaBuilder.like(criteriaBuilder.lower(root.get("storeName")), pattern);
+        };
+    }
+
+    public static Specification<SellerProfile> hasStatus(UserStatus status) {
+        return (root, query, criteriaBuilder) -> {
+            if (status == null) {
+                return criteriaBuilder.conjunction();
+            }
+            return criteriaBuilder.equal(root.get("status"), status);
+        };
+    }
+
+    public static Specification<SellerProfile> build(String storeName, UserStatus status) {
+        return Specification.where(storeNameLike(storeName))
+                .and(hasStatus(status));
+    }
+}

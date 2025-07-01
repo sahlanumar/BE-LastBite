@@ -20,4 +20,5 @@ public interface SellerService {
 
     SellerResponse update(String id, UpdateSellerRequest request);
 
+    void deleteById(String id);
 }

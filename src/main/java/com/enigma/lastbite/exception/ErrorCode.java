@@ -12,6 +12,8 @@ public enum ErrorCode {
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not found"),
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "File upload failed"),
 
+    SELLER_NOT_FOUND(HttpStatus.NOT_FOUND, "Seller not found"),
+
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
     INVALID_USER_DATA(HttpStatus.BAD_REQUEST, "Invalid user data"),
     EMAIL_ALREADY_REGISTERED(HttpStatus.CONFLICT, "Email already registered"),
