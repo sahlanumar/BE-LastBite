@@ -140,9 +140,10 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                        .anyRequest().authenticated()
+                                .requestMatchers("/**").permitAll()
+//                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+//                        .requestMatchers("/api/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+//                        .anyRequest().authenticated()
                 );
 
 

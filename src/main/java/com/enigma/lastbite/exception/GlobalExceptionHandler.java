@@ -10,13 +10,15 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<CommonResponse<Object>> handleCustomException(CustomException ex) {
-        CommonResponse<Object> response = CommonResponse.<Object>builder().statusCode(ex.getHttpStatus().value()).message(ex.getMessage()).data(null).timestamp(null).build();
+        CommonResponse<Object> response = CommonResponse.<Object>builder().statusCode(ex.getHttpStatus().value()).message(ex.getMessage()).data(null).timestamp(LocalDateTime.now()).build();
         return new ResponseEntity<>(response, ex.getHttpStatus());
     }
 

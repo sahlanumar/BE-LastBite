@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"menuItemId\": \"your_menu_item_id\",\r\n    \"rating\": 5,\r\n    \"comment": \"Enak banget!\"\r\n}",
+					"raw": "{\r\n    \"menuItemId\": \"<your_menu_item_id>\",\r\n    \"rating\": 5,\r\n    \"comment\": \"Enak banget!\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -35,12 +35,12 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/your_review_id",
+					"raw": "{{base_url}}/{{reviewId}}",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
-						"your_review_id"
+						"{{reviewId}}"
 					]
 				},
 				"description": "Menghapus ulasan item menu."
@@ -53,12 +53,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/your_review_id",
+					"raw": "{{base_url}}/{{reviewId}}",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
-						"your_review_id"
+						"{{reviewId}}"
 					]
 				},
 				"description": "Mengambil ulasan item menu berdasarkan ID."
@@ -71,13 +71,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/menu/your_menu_item_id",
+					"raw": "{{base_url}}/menu/{{menuItemId}}",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"menu",
-						"your_menu_item_id"
+						"{{menuItemId}}"
 					]
 				},
 				"description": "Mengambil semua ulasan untuk item menu tertentu."
@@ -89,6 +89,16 @@
 		{
 			"key": "base_url",
 			"value": "http://localhost:8080/api/menu-item-reviews",
+			"type": "string"
+		},
+		{
+			"key": "reviewId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "menuItemId",
+			"value": "",
 			"type": "string"
 		}
 	]

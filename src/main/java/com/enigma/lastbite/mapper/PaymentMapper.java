@@ -1,0 +1,23 @@
+package com.enigma.lastbite.mapper;
+
+import com.enigma.lastbite.dto.response.PaymentResponse;
+import com.enigma.lastbite.entity.Payment;
+
+public class PaymentMapper {
+
+    public static PaymentResponse toResponse(Payment payment) {
+        if (payment == null) {
+            return null;
+        }
+
+        return PaymentResponse.builder()
+                .paymentId(payment.getId())
+                .orderId(payment.getOrder().getId())
+                .midtransTransactionId(payment.getMidtransTransactionId())
+                .paymentType(payment.getPaymentType())
+                .amount(payment.getAmount())
+                .transactionStatus(payment.getStatus().name())
+                .transactionTime(payment.getTransactionTime())
+                .build();
+    }
+}

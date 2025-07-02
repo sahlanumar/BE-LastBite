@@ -3,6 +3,17 @@ package com.enigma.lastbite.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
+
+    ORDER_NOT_PENDING_PAYMENT(HttpStatus.CONFLICT, "Cannot update status, order is not pending payment"),
+    ORDER_NOT_PAID(HttpStatus.CONFLICT, "Order must be PAID to be accepted"),
+    ORDER_NOT_PREPARING(HttpStatus.CONFLICT, "Order must be PREPARING to be marked as ready"),
+    ORDER_NOT_READY_FOR_PICKUP(HttpStatus.CONFLICT, "Order is not ready for pickup"),
+    INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "Invalid verification code"),
+    INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST, "Invalid order status"),
+    INVALID_MENU_ITEM(HttpStatus.BAD_REQUEST, "Invalid menu item"),
+
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Order not found"),
+
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "Review not found"),
     INVALID_RATING(HttpStatus.BAD_REQUEST, "Invalid rating"),
     DUPLICATE_REVIEW(HttpStatus.BAD_REQUEST, "Duplicate review"),
