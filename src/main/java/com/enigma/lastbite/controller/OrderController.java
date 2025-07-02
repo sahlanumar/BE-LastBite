@@ -1,5 +1,7 @@
 package com.enigma.lastbite.controller;
 
+import com.enigma.lastbite.constant.OrderStatus;
+import com.enigma.lastbite.dto.request.OrderFilterRequest;
 import com.enigma.lastbite.dto.request.OrderRequest;
 import com.enigma.lastbite.dto.request.VerifyOrderRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
@@ -8,10 +10,12 @@ import com.enigma.lastbite.service.OrderService;
 import com.enigma.lastbite.util.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,6 +25,29 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+
+    @GetMapping
+    public ResponseEntity<Page<OrderResponse>> getAllOrders(
+            @RequestParam(required = false) String customerId,
+            @RequestParam(required = false) String sellerId,
+            @RequestParam(required = false) OrderStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortField,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdTo
+    ) {
+        OrderFilterRequest filter = new OrderFilterRequest();
+        filter.setCustomerId(customerId);
+        filter.setSellerId(sellerId);
+        filter.setStatus(status);
+        filter.setCreatedFrom(createdFrom);
+        filter.setCreatedTo(createdTo);
+
+        Page<OrderResponse> orders = orderService.getAllOrders(filter, page, size, sortField, sortDir);
+        return ResponseEntity.ok(orders);
+    }
 
     /* ------------------------------------------------------------------ *
      * CUSTOMER + SELLER INDEPENDENT ENDPOINTS                            *

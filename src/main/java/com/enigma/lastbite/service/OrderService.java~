@@ -1,6 +1,5 @@
 package com.enigma.lastbite.service;
 
-import com.enigma.lastbite.dto.request.OrderFilterRequest;
 import com.enigma.lastbite.dto.request.OrderRequest;
 import com.enigma.lastbite.dto.request.VerifyOrderRequest;
 import com.enigma.lastbite.dto.response.OrderResponse;
@@ -9,8 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
-
-    Page<OrderResponse> getAllOrders(OrderFilterRequest filter, int page, int size, String sortField, String sortDir);
 
     OrderResponse createOrder(OrderRequest request);
 
