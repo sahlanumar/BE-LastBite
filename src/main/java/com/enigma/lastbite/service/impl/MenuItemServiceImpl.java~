@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.enigma.lastbite.mapper.MenuMapper.haversine;
 
 @Service
 @RequiredArgsConstructor
@@ -79,37 +80,42 @@ public class MenuItemServiceImpl implements MenuItemService {
             Boolean isAvailable, ListingStatus status, int page, int size,
             String sortField, String sortDir, Double userLat, Double userLon) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        boolean sortByDistance = "distance".equalsIgnoreCase(sortField) && userLat != null && userLon != null;
+
+        Pageable pageable = PageRequest.of(sortByDistance ? 0 : page, sortByDistance ? Integer.MAX_VALUE : size);
+
         Specification<MenuItem> spec = MenuItemSpecification.getSpecification(
                 name, sellerId, maxPrice, minPrice, isAvailable, status
         );
 
-        Page<MenuItem> menuItems = menuItemRepository.findAll(spec, Pageable.unpaged());
+        Page<MenuItem> menuItems = menuItemRepository.findAll(spec, pageable);
 
-        // Ubah ke response dan hitung jarak
         List<MenuItemResponse> responses = menuItems.getContent().stream()
-                .map(item -> MenuMapper.toMenuItemResponse(item, userLat, userLon))
-                .toList();
+                .map(menuItem -> {
+                    MenuItemResponse dto = MenuMapper.toMenuItemResponse(menuItem);
+                    if (sortByDistance) {
+                        double distance = haversine(
+                                userLat, userLon,
+                                menuItem.getSellerProfile().getLatitude().doubleValue(),
+                                menuItem.getSellerProfile().getLongitude().doubleValue()
+                        );
+                        dto.setDistanceKm(distance);
+                    }
+                    return dto;
+                })
+                .collect(Collectors.toList());
 
-        // Jika sort by distance, lakukan sorting manual
-        if ("distance".equalsIgnoreCase(sortField) && userLat != null && userLon != null) {
-            responses = responses.stream()
-                    .sorted((a, b) -> {
-                        if (a.getDistanceKm() == null) return 1;
-                        if (b.getDistanceKm() == null) return -1;
-                        return "asc".equalsIgnoreCase(sortDir)
-                                ? Double.compare(a.getDistanceKm(), b.getDistanceKm())
-                                : Double.compare(b.getDistanceKm(), a.getDistanceKm());
-                    })
-                    .toList();
+        if (sortByDistance) {
+            responses.sort((a, b) -> "asc".equalsIgnoreCase(sortDir)
+                    ? Double.compare(a.getDistanceKm(), b.getDistanceKm())
+                    : Double.compare(b.getDistanceKm(), a.getDistanceKm()));
+
+            int from = Math.min(page * size, responses.size());
+            int to = Math.min(from + size, responses.size());
+            responses = responses.subList(from, to);
         }
 
-        // Pagination manual karena sudah tidak pakai Pageable database
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), responses.size());
-        List<MenuItemResponse> pagedList = responses.subList(start, end);
-
-        return new PageImpl<>(pagedList, pageable, responses.size());
+        return new PageImpl<>(responses, PageRequest.of(page, size), menuItems.getTotalElements());
     }
 
 

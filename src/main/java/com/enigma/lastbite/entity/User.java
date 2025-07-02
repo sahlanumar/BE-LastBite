@@ -1,7 +1,6 @@
 package com.enigma.lastbite.entity;
 
-import com.enigma.lastbite.constant.UserRole;
-import com.enigma.lastbite.constant.UserStatus;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

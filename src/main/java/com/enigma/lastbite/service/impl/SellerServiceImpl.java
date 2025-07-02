@@ -26,7 +26,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class SellerServiceImpl implements SellerService {
-    SellerProfileRepository sellerProfileRepository;
+    private final SellerProfileRepository sellerProfileRepository;
 
     @Override
     public SellerResponse getById(String id) {

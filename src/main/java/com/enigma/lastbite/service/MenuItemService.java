@@ -27,7 +27,7 @@ public interface MenuItemService {
             int page,
             int size,
             String sortField,
-            String sortDir
+            String sortDir,Double userLat, Double userLon
     );
 
     Page<MenuItemResponse> getAllByLogin(

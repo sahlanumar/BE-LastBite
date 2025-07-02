@@ -29,4 +29,5 @@ public class MenuItemResponse {
     private BigDecimal averageRating;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Double distanceKm;
 }

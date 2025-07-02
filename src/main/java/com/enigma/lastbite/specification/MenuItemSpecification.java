@@ -2,6 +2,7 @@ package com.enigma.lastbite.specification;
 
 import com.enigma.lastbite.constant.ListingStatus;
 import com.enigma.lastbite.entity.MenuItem;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -46,4 +47,7 @@ public class MenuItemSpecification {
             return query.where(predicates.toArray(new Predicate[0])).getRestriction();
         };
     }
+
+
+
 }

@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -65,7 +64,7 @@ public class MenuItemController {
                 menuPage.getContent(),
                 menuPage,
                 baseUrl,
-                Collections.emptyMap(),
+                null,
                 sortField,
                 sortDir
         );
