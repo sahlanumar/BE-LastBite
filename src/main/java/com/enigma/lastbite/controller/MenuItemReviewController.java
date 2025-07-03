@@ -1,5 +1,6 @@
 package com.enigma.lastbite.controller;
 
+import com.enigma.lastbite.constant.ResponseMessage;
 import com.enigma.lastbite.dto.request.MenuItemReviewCreateRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.MenuItemReviewResponse;
@@ -26,7 +27,7 @@ public class MenuItemReviewController {
 
         CommonResponse<MenuItemReviewResponse> response = CommonResponse.<MenuItemReviewResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
-                .message("Successfully created review.")
+                .message(ResponseMessage.SUCCESS_SAVE_DATA)
                 .data(review)
                 .build();
 
@@ -39,7 +40,7 @@ public class MenuItemReviewController {
 
         CommonResponse<Void> response = CommonResponse.<Void>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Successfully deleted review.")
+                .message(ResponseMessage.SUCCESS_DELETE_DATA)
                 .build();
 
         return ResponseEntity.ok(response);
@@ -51,7 +52,7 @@ public class MenuItemReviewController {
 
         CommonResponse<MenuItemReviewResponse> response = CommonResponse.<MenuItemReviewResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Successfully fetched review.")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(review)
                 .build();
 
@@ -66,7 +67,7 @@ public class MenuItemReviewController {
 
         CommonResponse<List<MenuItemReviewResponse>> response = CommonResponse.<List<MenuItemReviewResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Successfully fetched reviews by menu item.")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(reviews)
                 .build();
 

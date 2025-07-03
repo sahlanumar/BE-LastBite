@@ -1,7 +1,7 @@
 package com.enigma.lastbite.controller;
 
 import com.enigma.lastbite.dto.request.PasswordChangeRequest;
-import com.enigma.lastbite.dto.request.UpdateUserRequest;
+import com.enigma.lastbite.dto.request.UserUpdateRequest;
 import com.enigma.lastbite.dto.request.UserFilterRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.UserResponse;
@@ -57,13 +57,13 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommonResponse<UserResponse>> updateUserById(@PathVariable String id, @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<CommonResponse<UserResponse>> updateUserById(@PathVariable String id, @RequestBody UserUpdateRequest request) {
         UserResponse response = userService.updateUserById(id, request);
         return ResponseUtil.buildResponse(HttpStatus.OK, "User updated", response);
     }
 
     @PutMapping("/me")
-    public ResponseEntity<CommonResponse<UserResponse>> updateUser(@RequestBody UpdateUserRequest request) {
+    public ResponseEntity<CommonResponse<UserResponse>> updateUser(@RequestBody UserUpdateRequest request) {
         UserResponse response = userService.updateUser(request);
         return ResponseUtil.buildResponse(HttpStatus.OK, "User updated", response);
     }

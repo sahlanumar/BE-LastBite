@@ -1,5 +1,6 @@
 package com.enigma.lastbite.controller;
 
+import com.enigma.lastbite.constant.ResponseMessage;
 import com.enigma.lastbite.dto.request.PasswordChangeRequest;
 import com.enigma.lastbite.dto.request.UserUpdateRequest;
 import com.enigma.lastbite.dto.request.UserFilterRequest;
@@ -34,7 +35,7 @@ public class UserController {
         Page<UserResponse> userPage = userService.findAllUsers(filter, page, size, sortField, sortDir);
         return ResponseUtil.buildResponse(
                 HttpStatus.OK,
-                "Users fetched",
+                ResponseMessage.SUCCESS_GET_DATA,
                 userPage.getContent(),
                 userPage,
                 baseUrl,
@@ -47,42 +48,42 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<CommonResponse<UserResponse>> getMe() {
         UserResponse response = userService.getUserByLogin();
-        return ResponseUtil.buildResponse(HttpStatus.OK, "User found", response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponse<UserResponse>> getUserById(@PathVariable String id) {
         UserResponse response = userService.getUserById(id);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "User found", response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, response);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CommonResponse<UserResponse>> updateUserById(@PathVariable String id, @RequestBody UserUpdateRequest request) {
         UserResponse response = userService.updateUserById(id, request);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "User updated", response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, response);
     }
 
     @PutMapping("/me")
     public ResponseEntity<CommonResponse<UserResponse>> updateUser(@RequestBody UserUpdateRequest request) {
         UserResponse response = userService.updateUser(request);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "User updated", response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, response);
     }
 
     @PutMapping("/{id}/password")
     public ResponseEntity<CommonResponse<UserResponse>> changePasswordById(@PathVariable String id, @RequestBody PasswordChangeRequest request) {
         UserResponse response = userService.updatePasswordById(id, request);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "Password updated", response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, response);
     }
 
     @PutMapping("/me/password")
     public ResponseEntity<CommonResponse<UserResponse>> changePassword(@RequestBody PasswordChangeRequest request) {
         UserResponse response = userService.updatePassword(request);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "Password updated", response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<UserResponse>> deleteUser(@PathVariable String id) {
         userService.deleteUserById(id);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "User deleted", null);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_DELETE_DATA, null);
     }
 }

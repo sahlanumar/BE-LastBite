@@ -1,5 +1,6 @@
 package com.enigma.lastbite.controller;
 
+import com.enigma.lastbite.constant.ResponseMessage;
 import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.SellerUpdateRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
@@ -41,7 +42,7 @@ public class SellerController {
 
         CommonResponse<List<SellerResponse>> response = CommonResponse.<List<SellerResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Successfully fetched sellers.")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(sellerPage.getContent())
                 .paging(pagingResponse)
                 .build();
@@ -53,7 +54,7 @@ public class SellerController {
         SellerResponse sellerResponse = sellerService.getById(id);
         CommonResponse<SellerResponse> response = CommonResponse.<SellerResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Successfully fetched seller.")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(sellerResponse)
                 .build();
         return ResponseEntity.ok(response);
@@ -64,7 +65,7 @@ public class SellerController {
         SellerResponse sellerResponse = sellerService.getByUserId(userId);
         CommonResponse<SellerResponse> response = CommonResponse.<SellerResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Successfully fetched seller by user id.")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(sellerResponse)
                 .build();
         return ResponseEntity.ok(response);
@@ -75,7 +76,7 @@ public class SellerController {
         SellerResponse sellerResponse = sellerService.update(id, request);
         CommonResponse<SellerResponse> response = CommonResponse.<SellerResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Successfully updated seller.")
+                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
                 .data(sellerResponse)
                 .build();
         return ResponseEntity.ok(response);

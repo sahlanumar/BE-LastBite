@@ -1,5 +1,6 @@
 package com.enigma.lastbite.controller;
 
+import com.enigma.lastbite.constant.ResponseMessage;
 import com.enigma.lastbite.dto.request.PaymentRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.PaymentResponse;
@@ -22,13 +23,13 @@ public class PaymentController {
     @PostMapping
     public ResponseEntity<CommonResponse<PaymentResponse>> createPayment(@RequestBody PaymentRequest request) {
         PaymentResponse response = paymentService.createPayment(request);
-        return ResponseUtil.buildResponse(HttpStatus.CREATED, "Payment initiated", response);
+        return ResponseUtil.buildResponse(HttpStatus.CREATED, ResponseMessage.SUCCESS_SAVE_DATA, response);
     }
 
     @PostMapping("/midtrans-notification")
     public ResponseEntity<CommonResponse<Void>> handleMidtransNotification(@RequestBody Map<String, Object> payload) {
         System.out.println("midtrans notification: " + payload);
         paymentService.handleMidtransNotification(payload);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "Midtrans notification handled", null);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, null);
     }
 }

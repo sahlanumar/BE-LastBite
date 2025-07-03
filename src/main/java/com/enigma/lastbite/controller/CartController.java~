@@ -1,6 +1,5 @@
 package com.enigma.lastbite.controller;
 
-import com.enigma.lastbite.constant.ResponseMessage;
 import com.enigma.lastbite.dto.request.AddItemToCartRequest;
 import com.enigma.lastbite.dto.response.CartResponse;
 import com.enigma.lastbite.dto.response.CommonResponse;
@@ -25,7 +24,7 @@ public class CartController {
 
         CommonResponse<CartResponse> response = CommonResponse.<CartResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
-                .message(ResponseMessage.SUCCESS_SAVE_DATA)
+                .message("Successfully added item to cart.")
                 .data(cart)
                 .build();
 
@@ -38,7 +37,7 @@ public class CartController {
 
         CommonResponse<CartResponse> response = CommonResponse.<CartResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message(ResponseMessage.SUCCESS_GET_DATA)
+                .message("Successfully fetched cart.")
                 .data(cart)
                 .build();
 
@@ -54,7 +53,7 @@ public class CartController {
 
         CommonResponse<CartResponse> response = CommonResponse.<CartResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
+                .message("Successfully updated item quantity.")
                 .data(cart)
                 .build();
 
@@ -69,7 +68,7 @@ public class CartController {
 
         CommonResponse<CartResponse> response = CommonResponse.<CartResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message(ResponseMessage.SUCCESS_DELETE_DATA)
+                .message("Successfully removed item from cart.")
                 .data(cart)
                 .build();
 
@@ -82,7 +81,7 @@ public class CartController {
 
         CommonResponse<Void> response = CommonResponse.<Void>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message(ResponseMessage.SUCCESS_DELETE_DATA)
+                .message("Successfully cleared cart.")
                 .build();
 
         return ResponseEntity.ok(response);

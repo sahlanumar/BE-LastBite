@@ -1,6 +1,7 @@
 package com.enigma.lastbite.controller;
 
 import com.enigma.lastbite.constant.OrderStatus;
+import com.enigma.lastbite.constant.ResponseMessage;
 import com.enigma.lastbite.dto.request.OrderFilterRequest;
 import com.enigma.lastbite.dto.request.OrderRequest;
 import com.enigma.lastbite.dto.request.VerifyOrderRequest;
@@ -58,13 +59,13 @@ public class OrderController {
             @RequestBody OrderRequest request) {
 
         OrderResponse response = orderService.createOrder(request);
-        return ResponseUtil.buildResponse(HttpStatus.CREATED, "Order created", response);
+        return ResponseUtil.buildResponse(HttpStatus.CREATED, ResponseMessage.SUCCESS_SAVE_DATA, response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponse<OrderResponse>> getOrderById(@PathVariable String id) {
         OrderResponse response = orderService.getOrderById(id);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "Order found", response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, response);
     }
 
     /* ------------------------------------------------------------------ *
@@ -90,7 +91,7 @@ public class OrderController {
 
         return ResponseUtil.buildResponse(
                 HttpStatus.OK,
-                "Orders fetched",
+                ResponseMessage.SUCCESS_GET_DATA,
                 orderPage.getContent(),
                 orderPage,
                 baseUrl,
@@ -123,7 +124,7 @@ public class OrderController {
 
         return ResponseUtil.buildResponse(
                 HttpStatus.OK,
-                "Orders fetched",
+                ResponseMessage.SUCCESS_GET_DATA,
                 orderPage.getContent(),
                 orderPage,
                 baseUrl,
@@ -136,7 +137,7 @@ public class OrderController {
     @PutMapping("/{orderId}/accept")
     public ResponseEntity<CommonResponse<OrderResponse>> acceptOrder(@PathVariable String orderId) {
         OrderResponse response = orderService.acceptOrder(orderId);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "Order accepted", response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, response);
     }
 
     @PutMapping("/{orderId}/ready")
@@ -144,18 +145,15 @@ public class OrderController {
             @PathVariable String orderId) {
 
         OrderResponse response = orderService.markAsReadyForPickup(orderId);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "Order marked as ready for pickup", response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, response);
     }
 
-    /* ------------------------------------------------------------------ *
-     * STATUS & VERIFICATION ENDPOINTS                                    *
-     * ------------------------------------------------------------------ */
-
-    @PutMapping("/{orderId}/paid")
-    public ResponseEntity<CommonResponse<Void>> updateStatusToPaid(@PathVariable String orderId) {
-        orderService.updateStatusToPaid(orderId);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "Order status updated to PAID", null);
+    @PutMapping("/{orderId}/cancel")
+    public ResponseEntity<CommonResponse<OrderResponse>> cancelOrder(@PathVariable String orderId) {
+        OrderResponse response = orderService.cancelOrder(orderId);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, response);
     }
+
 
     @PutMapping("/{orderId}/complete")
     public ResponseEntity<CommonResponse<OrderResponse>> verifyAndCompleteOrder(
@@ -163,6 +161,6 @@ public class OrderController {
             @RequestBody VerifyOrderRequest request) {
 
         OrderResponse response = orderService.verifyAndCompleteOrder(orderId, request);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "Order completed", response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, response);
     }
 }

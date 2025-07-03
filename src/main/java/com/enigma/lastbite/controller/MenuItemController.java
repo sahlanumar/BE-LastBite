@@ -1,5 +1,6 @@
 package com.enigma.lastbite.controller;
 
+import com.enigma.lastbite.constant.ResponseMessage;
 import com.enigma.lastbite.dto.request.MenuItemCreateRequest;
 import com.enigma.lastbite.dto.request.MenuItemUpdateRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
@@ -28,13 +29,13 @@ public class MenuItemController {
             @RequestBody MenuItemCreateRequest request) {
 
         MenuItemResponse response = menuItemService.create(request);
-        return ResponseUtil.buildResponse(HttpStatus.CREATED, "Menu item created", response);
+        return ResponseUtil.buildResponse(HttpStatus.CREATED, ResponseMessage.SUCCESS_SAVE_DATA, response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponse<MenuItemResponse>> getMenuItemById(@PathVariable String id) {
         MenuItemResponse response = menuItemService.getById(id);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "Menu item found", response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, response);
     }
 
     @GetMapping
@@ -59,7 +60,7 @@ public class MenuItemController {
 
         // Kirim objek 'request' sebagai filter agar link paginasi benar
         return ResponseUtil.buildResponse(
-                HttpStatus.OK, "Menu items fetched",
+                HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA,
                 menuPage.getContent(),
                 menuPage,
                 httpServletRequest.getRequestURI(), // URL dinamis dan robust
@@ -82,12 +83,12 @@ public class MenuItemController {
         Page<MenuItemResponse> menuPage = menuItemService.getAllByLogin(
                 request.getName(), request.getMaxPrice(), request.getMinPrice(),
                 request.getIsAvailable(), request.getStatus(),
-                request.getMinRating(), // Tambahkan ini
-                request.getMaxRating(), // Tambahkan ini
+                request.getMinRating(),
+                request.getMaxRating(),
                 page, size, sortField, sortDir);
 
         return ResponseUtil.buildResponse(
-                HttpStatus.OK, "Menu items fetched",
+                HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA,
                 menuPage.getContent(),
                 menuPage,
                 httpServletRequest.getRequestURI(),
@@ -103,12 +104,12 @@ public class MenuItemController {
             @RequestBody MenuItemUpdateRequest request) {
 
         MenuItemResponse response = menuItemService.update(id, request);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "Menu item updated", response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<Void>> deleteMenuItem(@PathVariable String id) {
         menuItemService.deleteById(id);
-        return ResponseUtil.buildResponse(HttpStatus.OK, "Menu item deleted", null);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_DELETE_DATA, null);
     }
 }
