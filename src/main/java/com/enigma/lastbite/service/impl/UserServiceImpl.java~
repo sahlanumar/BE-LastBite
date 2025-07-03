@@ -1,5 +1,6 @@
 package com.enigma.lastbite.service.impl;
 
+import com.enigma.lastbite.constant.UserRole;
 import com.enigma.lastbite.dto.request.ChangePasswordRequest;
 import com.enigma.lastbite.dto.request.UpdateUserRequest;
 import com.enigma.lastbite.dto.request.UserFilterRequest;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -53,7 +55,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(String id) {
-        return userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return user;
     }
 
     @Override
@@ -69,16 +72,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserResponse> findAllUsers(UserFilterRequest filter, int page, int size, String sortField, String sortDir) {
-        Sort sort = Sort.by("asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC,
-                sortField == null || sortField.isBlank() ? "createdAt" : sortField);
+    public Page<UserResponse> findAllUsers(
+            UserFilterRequest filter,
+            int page, int size,
+            String sortField, String sortDir) {
+
+        Sort sort = Sort.by(
+                "asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC,
+                sortField == null || sortField.isBlank() ? "createdAt" : sortField
+        );
         Pageable pageable = PageRequest.of(page, size, sort);
+
         Page<User> users = userRepository.findAll(UserSpecification.build(filter), pageable);
+
         return users.map(UserMapper::toUserResponse);
     }
 
     @Override
-    public UserResponse getUserByLogin() {
+    public UserResponse getUserByLogin(){
         String token = jwtUtils.getTokenFromHeader();
         jwtUtils.validateJwtToken(token);
         String username = jwtUtils.getUsernameFromJwtToken(token);
@@ -87,30 +98,61 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserResponse updateUserById(String id, UpdateUserRequest updateUserRequest) {
         User user = findById(id);
-        UserMapper.updateFromDto(user, updateUserRequest);
+
+        if(updateUserRequest.getFullName() != null) {
+            user.setFullName(updateUserRequest.getFullName());
+        }
+
+        if(updateUserRequest.getEmail() != null) {
+            user.setEmail(updateUserRequest.getEmail());
+        }
+
+        if(updateUserRequest.getPhoneNumber() != null) {
+            user.setPhoneNumber(updateUserRequest.getPhoneNumber());
+        }
+        if(updateUserRequest.getSuspendedUntil() != null) {
+            user.setSuspendedUntil(updateUserRequest.getSuspendedUntil());
+
+        }
+
         user.setUpdatedAt(LocalDateTime.now());
+
         userRepository.save(user);
+
         return UserMapper.toUserResponse(user);
     }
 
     @Override
-    @Transactional
     public UserResponse updateUser(UpdateUserRequest updateUserRequest) {
         String token = jwtUtils.getTokenFromHeader();
         jwtUtils.validateJwtToken(token);
         String username = jwtUtils.getUsernameFromJwtToken(token);
+
         User user = findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        UserMapper.updateFromDto(user, updateUserRequest);
+
+        if(updateUserRequest.getFullName() != null) {
+            user.setFullName(updateUserRequest.getFullName());
+        }
+
+        if(updateUserRequest.getEmail() != null) {
+            user.setEmail(updateUserRequest.getEmail());
+        }
+
+        if(updateUserRequest.getPhoneNumber() != null) {
+            user.setPhoneNumber(updateUserRequest.getPhoneNumber());
+        }
+
         user.setUpdatedAt(LocalDateTime.now());
+
         userRepository.save(user);
+
+
         return UserMapper.toUserResponse(user);
     }
 
     @Override
-    @Transactional
     public void deleteUserById(String id) {
         User user = findById(id);
         userRepository.delete(user);
@@ -123,35 +165,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserResponse updatePasswordById(String id, ChangePasswordRequest changePasswordRequest) {
         User user = findById(id);
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
-        if (!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmNewPassword())) {
+        if(!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmNewPassword())) {
             throw new CustomException(ErrorCode.PASSWORD_NOT_MATCH);
         }
-        user.setPasswordHash(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
-        userRepository.save(user);
+
+        user.setPasswordHash(changePasswordRequest.getNewPassword());
+
         return UserMapper.toUserResponse(user);
     }
 
     @Override
-    @Transactional
     public UserResponse updatePassword(ChangePasswordRequest changePasswordRequest) {
         String token = jwtUtils.getTokenFromHeader();
         jwtUtils.validateJwtToken(token);
         String username = jwtUtils.getUsernameFromJwtToken(token);
+
         User user = findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
-        if (!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmNewPassword())) {
+        if(!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmNewPassword())) {
             throw new CustomException(ErrorCode.PASSWORD_NOT_MATCH);
         }
-        user.setPasswordHash(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
-        userRepository.save(user);
+
+        user.setPasswordHash(changePasswordRequest.getNewPassword());
+
         return UserMapper.toUserResponse(user);
     }
 }

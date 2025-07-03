@@ -20,6 +20,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -52,22 +54,39 @@ public class SellerServiceImpl implements SellerService {
         );
 
         Pageable pageable = PageRequest.of(page, size, sort);
+
         Specification<SellerProfile> spec = SellerSpecification.build(storeName, status);
+
         Page<SellerProfile> sellerProfiles = sellerProfileRepository.findAll(spec, pageable);
+
         return sellerProfiles.map(SellerMapper::toSellerResponse);
     }
 
     @Override
-    @Transactional
     public SellerResponse update(String id, UpdateSellerRequest request) {
         SellerProfile sellerProfile = findBySellerId(id);
-
-        SellerMapper.updateFromDto(sellerProfile, request);
-
-        sellerProfileRepository.save(sellerProfile);
+        if(request.getStoreName() != null) {
+            sellerProfile.setStoreName(request.getStoreName());
+        }
+        if(request.getStoreDescription() != null) {
+            sellerProfile.setStoreDescription(request.getStoreDescription());
+        }
+        if(request.getAddress() != null) {
+            sellerProfile.setAddress(request.getAddress());
+        }
+        if(request.getLatitude() != null) {
+            sellerProfile.setLatitude(request.getLatitude());
+        }
+        if(request.getLongitude() != null) {
+            sellerProfile.setLongitude(request.getLongitude());
+        }
+        if(request.getStatus() != null) {
+            sellerProfile.setStatus(request.getStatus());
+        }
 
         return SellerMapper.toSellerResponse(sellerProfile);
     }
+
 
     public SellerProfile findBySellerId(String id) {
         return sellerProfileRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.SELLER_NOT_FOUND));
@@ -76,4 +95,6 @@ public class SellerServiceImpl implements SellerService {
     public SellerProfile save(SellerProfile sellerProfile) {
         return sellerProfileRepository.save(sellerProfile);
     }
+
+
 }
