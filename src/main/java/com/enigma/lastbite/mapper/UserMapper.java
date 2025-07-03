@@ -1,12 +1,12 @@
 package com.enigma.lastbite.mapper;
 
-import com.enigma.lastbite.dto.request.UpdateUserRequest;
+import com.enigma.lastbite.dto.request.UserUpdateRequest;
 import com.enigma.lastbite.dto.response.UserResponse;
 import com.enigma.lastbite.entity.User;
 
 public class UserMapper {
 
-    public static void updateFromDto(User user, UpdateUserRequest request) {
+    public static void updateFromDto(User user, UserUpdateRequest request) {
         if (request.getFullName() != null) {
             user.setFullName(request.getFullName());
         }

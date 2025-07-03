@@ -22,9 +22,6 @@ public class AuthMapper {
         user.setRole(role);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
-        user.setPhoneNumber(request.getPhoneNumber());
-        user.setLatitude(request.getLatitude());
-        user.setLongitude(request.getLongitude());
         return user;
     }
 
@@ -35,7 +32,6 @@ public class AuthMapper {
         user.setFullName(request.getFullName());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setRole(role);
-        user.setPhoneNumber(request.getPhoneNumber());
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         return user;
@@ -48,9 +44,6 @@ public class AuthMapper {
         user.setFullName(request.getFullName());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setRole(role);
-        user.setPhoneNumber(request.getPhoneNumber());
-        user.setLatitude(request.getLatitude());
-        user.setLongitude(request.getLongitude());
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         return user;

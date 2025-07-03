@@ -1,6 +1,6 @@
 package com.enigma.lastbite.service.impl;
 
-import com.enigma.lastbite.dto.request.CreateMenuItemReviewRequest;
+import com.enigma.lastbite.dto.request.MenuItemReviewCreateRequest;
 import com.enigma.lastbite.dto.response.MenuItemReviewResponse;
 import com.enigma.lastbite.entity.MenuItem;
 import com.enigma.lastbite.entity.MenuItemReview;
@@ -34,7 +34,7 @@ public class MenuItemReviewServiceImpl implements MenuItemReviewService {
     private final MenuItemService menuItemService;
 
     @Override
-    public MenuItemReviewResponse createReview(CreateMenuItemReviewRequest request) {
+    public MenuItemReviewResponse createReview(MenuItemReviewCreateRequest request) {
         String username = jwtUtils.getUsernameFromJwtToken(jwtUtils.getTokenFromHeader());
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));

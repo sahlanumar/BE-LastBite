@@ -1,7 +1,6 @@
 package com.enigma.lastbite.dto.request;
 
 
-import com.enigma.lastbite.constant.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdateUserRequest {
+public class UserUpdateRequest {
 
     private String fullName;
 

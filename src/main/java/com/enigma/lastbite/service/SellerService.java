@@ -1,14 +1,10 @@
 package com.enigma.lastbite.service;
 
-import com.enigma.lastbite.constant.ListingStatus;
 import com.enigma.lastbite.constant.UserStatus;
-import com.enigma.lastbite.dto.request.UpdateSellerRequest;
-import com.enigma.lastbite.dto.response.MenuItemResponse;
+import com.enigma.lastbite.dto.request.SellerUpdateRequest;
 import com.enigma.lastbite.dto.response.SellerResponse;
 import com.enigma.lastbite.entity.SellerProfile;
 import org.springframework.data.domain.Page;
-
-import java.math.BigDecimal;
 
 public interface SellerService {
     SellerResponse getById(String id);
@@ -27,7 +23,7 @@ public interface SellerService {
 
 
 
-    SellerResponse update(String id, UpdateSellerRequest request);
+    SellerResponse update(String id, SellerUpdateRequest request);
 
     SellerProfile findBySellerId(String id);
 

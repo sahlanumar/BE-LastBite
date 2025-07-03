@@ -1,13 +1,12 @@
 package com.enigma.lastbite.controller;
 
-import com.enigma.lastbite.constant.ListingStatus;
-import com.enigma.lastbite.dto.request.CreateMenuItemRequest;
-import com.enigma.lastbite.dto.request.UpdateMenuItemRequest;
+import com.enigma.lastbite.dto.request.MenuItemCreateRequest;
+import com.enigma.lastbite.dto.request.MenuItemUpdateRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.MenuItemResponse;
 import com.enigma.lastbite.service.MenuItemService;
 import com.enigma.lastbite.util.ResponseUtil;
-import com.enigma.lastbite.dto.request.SearchMenuItemRequest;
+import com.enigma.lastbite.dto.request.MenuItemSearchRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -28,7 +25,7 @@ public class MenuItemController {
 
     @PostMapping
     public ResponseEntity<CommonResponse<MenuItemResponse>> createMenuItem(
-            @RequestBody CreateMenuItemRequest request) {
+            @RequestBody MenuItemCreateRequest request) {
 
         MenuItemResponse response = menuItemService.create(request);
         return ResponseUtil.buildResponse(HttpStatus.CREATED, "Menu item created", response);
@@ -43,7 +40,7 @@ public class MenuItemController {
     @GetMapping
     public ResponseEntity<CommonResponse<List<MenuItemResponse>>> getAllMenuItems(
             // PERBAIKAN: Gunakan @ModelAttribute untuk menangkap semua parameter filter ke dalam satu objek
-            @ModelAttribute SearchMenuItemRequest request,
+            @ModelAttribute MenuItemSearchRequest request,
 
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -74,7 +71,7 @@ public class MenuItemController {
 
     @GetMapping("/me")
     public ResponseEntity<CommonResponse<List<MenuItemResponse>>> getMyMenuItems(
-            @ModelAttribute SearchMenuItemRequest request,
+            @ModelAttribute MenuItemSearchRequest request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String sortField,
@@ -103,7 +100,7 @@ public class MenuItemController {
     @PutMapping("/{id}")
     public ResponseEntity<CommonResponse<MenuItemResponse>> updateMenuItem(
             @PathVariable String id,
-            @RequestBody UpdateMenuItemRequest request) {
+            @RequestBody MenuItemUpdateRequest request) {
 
         MenuItemResponse response = menuItemService.update(id, request);
         return ResponseUtil.buildResponse(HttpStatus.OK, "Menu item updated", response);

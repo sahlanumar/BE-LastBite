@@ -1,14 +1,17 @@
 package com.enigma.lastbite.mapper;
 
-import com.enigma.lastbite.dto.request.CreateMenuItemRequest;
-import com.enigma.lastbite.dto.request.UpdateMenuItemRequest;
+import com.enigma.lastbite.dto.request.MenuItemCreateRequest;
+import com.enigma.lastbite.dto.request.MenuItemUpdateRequest;
 import com.enigma.lastbite.dto.response.MenuItemResponse;
 import com.enigma.lastbite.entity.MenuItem;
 import com.enigma.lastbite.entity.SellerProfile;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 public class MenuMapper {
 
-    public static MenuItem toMenuItemEntity(CreateMenuItemRequest request, SellerProfile sellerProfile) {
+    public static MenuItem toMenuItemEntity(MenuItemCreateRequest request, SellerProfile sellerProfile) {
         return MenuItem.builder()
                 .sellerProfile(sellerProfile)
                 .name(request.getName())
@@ -20,10 +23,14 @@ public class MenuMapper {
                 .displayStartTime(request.getDisplayStartTime())
                 .displayEndTime(request.getDisplayEndTime())
                 .status(request.getStatus())
+                .averageRating(BigDecimal.valueOf(0.0))
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+
                 .build();
     }
 
-    public static void updateFromDto(MenuItem menuItem, UpdateMenuItemRequest request) {
+    public static void updateFromDto(MenuItem menuItem, MenuItemUpdateRequest request) {
         if (request.getName() != null) {
             menuItem.setName(request.getName());
         }
@@ -51,6 +58,9 @@ public class MenuMapper {
     }
 
     public static MenuItemResponse toMenuItemResponse(MenuItem menuItem) {
+        Double distanceKm = null;
+
+
         return MenuItemResponse.builder()
                 .id(menuItem.getId())
                 .sellerProfileId(menuItem.getSellerProfile().getId())

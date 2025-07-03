@@ -10,7 +10,6 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -65,12 +64,6 @@ public class User implements UserDetails {
 
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
-
-    @Column(nullable = false, precision = 10, scale = 8)
-    private BigDecimal latitude;
-
-    @Column(nullable = false, precision = 11, scale = 8)
-    private BigDecimal longitude;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class ChangePasswordRequest {
+public class PasswordChangeRequest {
 
     @NotBlank(message = "Password lama tidak boleh kosong")
     private String oldPassword;

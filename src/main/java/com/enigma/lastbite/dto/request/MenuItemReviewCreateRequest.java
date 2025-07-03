@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateMenuItemReviewRequest {
+public class MenuItemReviewCreateRequest {
 
 
     @NotBlank(message = "Menu Item ID is required")

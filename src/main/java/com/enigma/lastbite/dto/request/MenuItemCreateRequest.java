@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateMenuItemRequest {
+public class MenuItemCreateRequest {
     private String sellerProfileId;
     private String name;
     private String description;

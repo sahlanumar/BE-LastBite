@@ -1,7 +1,7 @@
 package com.enigma.lastbite.service.impl;
 
-import com.enigma.lastbite.dto.request.ChangePasswordRequest;
-import com.enigma.lastbite.dto.request.UpdateUserRequest;
+import com.enigma.lastbite.dto.request.PasswordChangeRequest;
+import com.enigma.lastbite.dto.request.UserUpdateRequest;
 import com.enigma.lastbite.dto.request.UserFilterRequest;
 import com.enigma.lastbite.dto.response.UserResponse;
 import com.enigma.lastbite.entity.User;
@@ -88,9 +88,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse updateUserById(String id, UpdateUserRequest updateUserRequest) {
+    public UserResponse updateUserById(String id, UserUpdateRequest userUpdateRequest) {
         User user = findById(id);
-        UserMapper.updateFromDto(user, updateUserRequest);
+        UserMapper.updateFromDto(user, userUpdateRequest);
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
         return UserMapper.toUserResponse(user);
@@ -98,12 +98,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse updateUser(UpdateUserRequest updateUserRequest) {
+    public UserResponse updateUser(UserUpdateRequest userUpdateRequest) {
         String token = jwtUtils.getTokenFromHeader();
         jwtUtils.validateJwtToken(token);
         String username = jwtUtils.getUsernameFromJwtToken(token);
         User user = findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        UserMapper.updateFromDto(user, updateUserRequest);
+        UserMapper.updateFromDto(user, userUpdateRequest);
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
         return UserMapper.toUserResponse(user);
@@ -124,33 +124,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse updatePasswordById(String id, ChangePasswordRequest changePasswordRequest) {
+    public UserResponse updatePasswordById(String id, PasswordChangeRequest passwordChangeRequest) {
         User user = findById(id);
-        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(passwordChangeRequest.getOldPassword(), user.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
-        if (!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmNewPassword())) {
+        if (!passwordChangeRequest.getNewPassword().equals(passwordChangeRequest.getConfirmNewPassword())) {
             throw new CustomException(ErrorCode.PASSWORD_NOT_MATCH);
         }
-        user.setPasswordHash(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        user.setPasswordHash(passwordEncoder.encode(passwordChangeRequest.getNewPassword()));
         userRepository.save(user);
         return UserMapper.toUserResponse(user);
     }
 
     @Override
     @Transactional
-    public UserResponse updatePassword(ChangePasswordRequest changePasswordRequest) {
+    public UserResponse updatePassword(PasswordChangeRequest passwordChangeRequest) {
         String token = jwtUtils.getTokenFromHeader();
         jwtUtils.validateJwtToken(token);
         String username = jwtUtils.getUsernameFromJwtToken(token);
         User user = findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(passwordChangeRequest.getOldPassword(), user.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
-        if (!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmNewPassword())) {
+        if (!passwordChangeRequest.getNewPassword().equals(passwordChangeRequest.getConfirmNewPassword())) {
             throw new CustomException(ErrorCode.PASSWORD_NOT_MATCH);
         }
-        user.setPasswordHash(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        user.setPasswordHash(passwordEncoder.encode(passwordChangeRequest.getNewPassword()));
         userRepository.save(user);
         return UserMapper.toUserResponse(user);
     }

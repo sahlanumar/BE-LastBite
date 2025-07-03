@@ -1,8 +1,7 @@
 package com.enigma.lastbite.service;
 
-import com.enigma.lastbite.constant.UserRole;
-import com.enigma.lastbite.dto.request.ChangePasswordRequest;
-import com.enigma.lastbite.dto.request.UpdateUserRequest;
+import com.enigma.lastbite.dto.request.PasswordChangeRequest;
+import com.enigma.lastbite.dto.request.UserUpdateRequest;
 import com.enigma.lastbite.dto.request.UserFilterRequest;
 import com.enigma.lastbite.dto.response.UserResponse;
 import com.enigma.lastbite.entity.User;
@@ -28,9 +27,9 @@ public interface UserService {
             int page, int size,
             String sortField, String sortDir);
 
-    UserResponse updateUserById(String id, UpdateUserRequest updateUserRequest);
+    UserResponse updateUserById(String id, UserUpdateRequest userUpdateRequest);
 
-    UserResponse updateUser(UpdateUserRequest updateUserRequest);
+    UserResponse updateUser(UserUpdateRequest userUpdateRequest);
 
     UserResponse getUserByLogin();
 
@@ -38,7 +37,7 @@ public interface UserService {
 
     UserResponse getUserById(String id);
 
-    UserResponse updatePasswordById(String id, ChangePasswordRequest changePasswordRequest);
+    UserResponse updatePasswordById(String id, PasswordChangeRequest passwordChangeRequest);
 
-    UserResponse updatePassword(ChangePasswordRequest changePasswordRequest);
+    UserResponse updatePassword(PasswordChangeRequest passwordChangeRequest);
 }

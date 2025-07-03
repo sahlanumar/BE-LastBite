@@ -1,8 +1,8 @@
 package com.enigma.lastbite.service.impl;
 
 import com.enigma.lastbite.constant.ListingStatus;
-import com.enigma.lastbite.dto.request.CreateMenuItemRequest;
-import com.enigma.lastbite.dto.request.UpdateMenuItemRequest;
+import com.enigma.lastbite.dto.request.MenuItemCreateRequest;
+import com.enigma.lastbite.dto.request.MenuItemUpdateRequest;
 import com.enigma.lastbite.dto.response.MenuItemResponse;
 import com.enigma.lastbite.entity.MenuItem;
 import com.enigma.lastbite.entity.SellerProfile;
@@ -41,7 +41,7 @@ public class MenuItemServiceImpl implements MenuItemService {
 
     @Transactional
     @Override
-    public MenuItemResponse create(CreateMenuItemRequest request) {
+    public MenuItemResponse create(MenuItemCreateRequest request) {
         SellerProfile sellerProfile = sellerService.findBySellerId(request.getSellerProfileId());
         MenuItem menuItem = MenuMapper.toMenuItemEntity(request, sellerProfile);
         menuItemRepository.save(menuItem);
@@ -140,7 +140,7 @@ public class MenuItemServiceImpl implements MenuItemService {
 
     @Transactional
     @Override
-    public MenuItemResponse update(String id, UpdateMenuItemRequest request) {
+    public MenuItemResponse update(String id, MenuItemUpdateRequest request) {
         MenuItem menuItem = findByIdOrThrowNotFound(id);
 
         MenuMapper.updateFromDto(menuItem, request);

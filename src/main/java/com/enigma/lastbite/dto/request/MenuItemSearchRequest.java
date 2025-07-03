@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data // Lombok akan membuatkan getter, setter, dll.
-public class SearchMenuItemRequest {
+public class MenuItemSearchRequest {
     private String name;
     private String sellerId;
     private BigDecimal maxPrice;

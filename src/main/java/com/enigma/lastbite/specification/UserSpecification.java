@@ -21,9 +21,34 @@ public class UserSpecification {
     }
 
     public static Specification<User> hasStatus(UserStatus status) {
-        return (root, query, cb) ->
-                status == null ? cb.conjunction()
-                        : cb.equal(root.get("status"), status);
+        return (root, query, cb) -> {
+            if (status == null) {
+                return cb.conjunction(); // Jika tidak ada filter status, kembalikan semua
+            }
+
+            LocalDateTime now = LocalDateTime.now();
+
+            switch (status) {
+                case ACTIVE:
+                    // Pengguna aktif jika 'suspendedUntil' kosong (null) ATAU sudah lewat dari sekarang.
+                    return cb.or(
+                            cb.isNull(root.get("suspendedUntil")),
+                            cb.lessThanOrEqualTo(root.get("suspendedUntil"), now)
+                    );
+                case INACTIVE:
+                    // Pengguna tidak aktif (disuspend) jika 'suspendedUntil' ada DAN masih di masa depan.
+                    return cb.and(
+                            cb.isNotNull(root.get("suspendedUntil")),
+                            cb.greaterThan(root.get("suspendedUntil"), now)
+                    );
+                case CANCELLED:
+                    // Tidak ada logika untuk CANCELLED berdasarkan entity User saat ini.
+                    // Jadi kita tidak menerapkan filter apa pun untuk status ini.
+                    return cb.conjunction();
+                default:
+                    return cb.conjunction();
+            }
+        };
     }
 
     public static Specification<User> createdBetween(LocalDateTime from, LocalDateTime to) {

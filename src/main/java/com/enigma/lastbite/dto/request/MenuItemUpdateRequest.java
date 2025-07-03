@@ -1,6 +1,5 @@
 package com.enigma.lastbite.dto.request;
 
-import com.enigma.lastbite.constant.ListingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateMenuItemRequest {
+public class MenuItemUpdateRequest {
     private String name;
     private String description;
     private String imageUrl;

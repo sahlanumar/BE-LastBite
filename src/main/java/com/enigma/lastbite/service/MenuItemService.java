@@ -1,8 +1,8 @@
 package com.enigma.lastbite.service;
 
 import com.enigma.lastbite.constant.ListingStatus;
-import com.enigma.lastbite.dto.request.CreateMenuItemRequest;
-import com.enigma.lastbite.dto.request.UpdateMenuItemRequest;
+import com.enigma.lastbite.dto.request.MenuItemCreateRequest;
+import com.enigma.lastbite.dto.request.MenuItemUpdateRequest;
 import com.enigma.lastbite.dto.response.MenuItemResponse;
 import com.enigma.lastbite.entity.MenuItem;
 import org.springframework.data.domain.Page;
@@ -13,7 +13,7 @@ public interface MenuItemService {
 
     MenuItem save(MenuItem menuItem);
 
-    MenuItemResponse create(CreateMenuItemRequest request);
+    MenuItemResponse create(MenuItemCreateRequest request);
 
     MenuItemResponse getById(String id);
 
@@ -33,7 +33,7 @@ public interface MenuItemService {
             int page, int size,
             String sortField, String sortDir);
 
-    MenuItemResponse update(String id, UpdateMenuItemRequest request);
+    MenuItemResponse update(String id, MenuItemUpdateRequest request);
 
     void deleteById(String id);
 

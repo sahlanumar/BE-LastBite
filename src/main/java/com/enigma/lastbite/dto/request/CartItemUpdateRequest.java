@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateCartItemRequest {
+public class CartItemUpdateRequest {
     private Integer quantity;
 }

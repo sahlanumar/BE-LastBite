@@ -1,12 +1,12 @@
 package com.enigma.lastbite.mapper;
 
-import com.enigma.lastbite.dto.request.UpdateSellerRequest;
+import com.enigma.lastbite.dto.request.SellerUpdateRequest;
 import com.enigma.lastbite.dto.response.SellerResponse;
 import com.enigma.lastbite.entity.SellerProfile;
 
 public class SellerMapper {
 
-    public static void updateFromDto(SellerProfile sellerProfile, UpdateSellerRequest request) {
+    public static void updateFromDto(SellerProfile sellerProfile, SellerUpdateRequest request) {
         if (request.getStoreName() != null) {
             sellerProfile.setStoreName(request.getStoreName());
         }

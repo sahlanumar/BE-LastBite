@@ -1,7 +1,7 @@
 package com.enigma.lastbite.controller;
 
 import com.enigma.lastbite.constant.UserStatus;
-import com.enigma.lastbite.dto.request.UpdateSellerRequest;
+import com.enigma.lastbite.dto.request.SellerUpdateRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.PagingResponse;
 import com.enigma.lastbite.dto.response.SellerResponse;
@@ -71,7 +71,7 @@ public class SellerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommonResponse<SellerResponse>> updateSeller(@PathVariable String id, @RequestBody UpdateSellerRequest request) {
+    public ResponseEntity<CommonResponse<SellerResponse>> updateSeller(@PathVariable String id, @RequestBody SellerUpdateRequest request) {
         SellerResponse sellerResponse = sellerService.update(id, request);
         CommonResponse<SellerResponse> response = CommonResponse.<SellerResponse>builder()
                 .statusCode(HttpStatus.OK.value())

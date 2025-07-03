@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateSellerRequest {
+public class SellerUpdateRequest {
     private String storeName;
     private String storeDescription;
     private String address;

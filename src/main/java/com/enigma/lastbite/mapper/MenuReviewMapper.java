@@ -1,6 +1,6 @@
 package com.enigma.lastbite.mapper;
 
-import com.enigma.lastbite.dto.request.CreateMenuItemReviewRequest;
+import com.enigma.lastbite.dto.request.MenuItemReviewCreateRequest;
 import com.enigma.lastbite.dto.response.MenuItemReviewResponse;
 import com.enigma.lastbite.entity.MenuItem;
 import com.enigma.lastbite.entity.MenuItemReview;
@@ -8,7 +8,7 @@ import com.enigma.lastbite.entity.User;
 
 public class MenuReviewMapper {
 
-    public static MenuItemReview toMenuItemReviewEntity(CreateMenuItemReviewRequest request, User user, MenuItem menuItem) {
+    public static MenuItemReview toMenuItemReviewEntity(MenuItemReviewCreateRequest request, User user, MenuItem menuItem) {
         return MenuItemReview.builder()
                 .customer(user)
                 .menuItem(menuItem)

@@ -1,7 +1,7 @@
 package com.enigma.lastbite.service.impl;
 
 import com.enigma.lastbite.constant.UserStatus;
-import com.enigma.lastbite.dto.request.UpdateSellerRequest;
+import com.enigma.lastbite.dto.request.SellerUpdateRequest;
 import com.enigma.lastbite.dto.response.SellerResponse;
 import com.enigma.lastbite.entity.SellerProfile;
 import com.enigma.lastbite.exception.CustomException;
@@ -59,7 +59,7 @@ public class SellerServiceImpl implements SellerService {
 
     @Override
     @Transactional
-    public SellerResponse update(String id, UpdateSellerRequest request) {
+    public SellerResponse update(String id, SellerUpdateRequest request) {
         SellerProfile sellerProfile = findBySellerId(id);
 
         SellerMapper.updateFromDto(sellerProfile, request);

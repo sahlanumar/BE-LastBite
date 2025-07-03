@@ -1,6 +1,6 @@
 package com.enigma.lastbite.controller;
 
-import com.enigma.lastbite.dto.request.CreateMenuItemReviewRequest;
+import com.enigma.lastbite.dto.request.MenuItemReviewCreateRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.MenuItemReviewResponse;
 import com.enigma.lastbite.service.MenuItemReviewService;
@@ -20,7 +20,7 @@ public class MenuItemReviewController {
 
     @PostMapping
     public ResponseEntity<CommonResponse<MenuItemReviewResponse>> createReview(
-            @RequestBody CreateMenuItemReviewRequest request) {
+            @RequestBody MenuItemReviewCreateRequest request) {
 
         MenuItemReviewResponse review = menuItemReviewService.createReview(request);
 
