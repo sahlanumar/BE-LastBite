@@ -10,6 +10,9 @@ import org.springframework.data.domain.Page;
 import java.util.Optional;
 
 public interface UserService {
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
     User save(User user);
 
     Optional<User> findByEmail(String email);

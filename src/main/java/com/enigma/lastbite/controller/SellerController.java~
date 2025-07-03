@@ -7,13 +7,10 @@ import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.PagingResponse;
 import com.enigma.lastbite.dto.response.SellerResponse;
 import com.enigma.lastbite.service.SellerService;
-import com.enigma.lastbite.util.ResponseUtil;
-import com.enigma.lastbite.validation.ValidationGroups;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +21,7 @@ import java.util.List;
 public class SellerController {
 
     private final SellerService sellerService;
+
 
     @GetMapping
     public ResponseEntity<CommonResponse<List<SellerResponse>>> getAllSellers(
@@ -54,20 +52,35 @@ public class SellerController {
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponse<SellerResponse>> getSellerById(@PathVariable String id) {
         SellerResponse sellerResponse = sellerService.getById(id);
-        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, sellerResponse);
+        CommonResponse<SellerResponse> response = CommonResponse.<SellerResponse>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message(ResponseMessage.SUCCESS_GET_DATA)
+                .data(sellerResponse)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<CommonResponse<SellerResponse>> getSellerByUserId(@PathVariable String userId) {
         SellerResponse sellerResponse = sellerService.getByUserId(userId);
-        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, sellerResponse);
+        CommonResponse<SellerResponse> response = CommonResponse.<SellerResponse>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message(ResponseMessage.SUCCESS_GET_DATA)
+                .data(sellerResponse)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommonResponse<SellerResponse>> updateSeller(
-            @PathVariable String id,
-            @Validated(ValidationGroups.Update.class) @RequestBody SellerUpdateRequest request) {
+    public ResponseEntity<CommonResponse<SellerResponse>> updateSeller(@PathVariable String id, @RequestBody SellerUpdateRequest request) {
         SellerResponse sellerResponse = sellerService.update(id, request);
-        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, sellerResponse);
+        CommonResponse<SellerResponse> response = CommonResponse.<SellerResponse>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
+                .data(sellerResponse)
+                .build();
+        return ResponseEntity.ok(response);
     }
+
+
 }

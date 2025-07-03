@@ -5,12 +5,9 @@ import com.enigma.lastbite.dto.request.MenuItemReviewCreateRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.MenuItemReviewResponse;
 import com.enigma.lastbite.service.MenuItemReviewService;
-import com.enigma.lastbite.util.ResponseUtil;
-import com.enigma.lastbite.validation.ValidationGroups;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,22 +21,42 @@ public class MenuItemReviewController {
 
     @PostMapping
     public ResponseEntity<CommonResponse<MenuItemReviewResponse>> createReview(
-            @Validated(ValidationGroups.Create.class) @RequestBody MenuItemReviewCreateRequest request) {
+            @RequestBody MenuItemReviewCreateRequest request) {
 
         MenuItemReviewResponse review = menuItemReviewService.createReview(request);
-        return ResponseUtil.buildResponse(HttpStatus.CREATED, ResponseMessage.SUCCESS_SAVE_DATA, review);
+
+        CommonResponse<MenuItemReviewResponse> response = CommonResponse.<MenuItemReviewResponse>builder()
+                .statusCode(HttpStatus.CREATED.value())
+                .message(ResponseMessage.SUCCESS_SAVE_DATA)
+                .data(review)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<Void>> deleteReview(@PathVariable String id) {
         menuItemReviewService.deleteReview(id);
-        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_DELETE_DATA, null);
+
+        CommonResponse<Void> response = CommonResponse.<Void>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message(ResponseMessage.SUCCESS_DELETE_DATA)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponse<MenuItemReviewResponse>> getReviewById(@PathVariable String id) {
         MenuItemReviewResponse review = menuItemReviewService.getReviewById(id);
-        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, review);
+
+        CommonResponse<MenuItemReviewResponse> response = CommonResponse.<MenuItemReviewResponse>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message(ResponseMessage.SUCCESS_GET_DATA)
+                .data(review)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/menu/{menuItemId}")
@@ -47,6 +64,13 @@ public class MenuItemReviewController {
             @PathVariable String menuItemId) {
 
         List<MenuItemReviewResponse> reviews = menuItemReviewService.getReviewsByMenuItemId(menuItemId);
-        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, reviews);
+
+        CommonResponse<List<MenuItemReviewResponse>> response = CommonResponse.<List<MenuItemReviewResponse>>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message(ResponseMessage.SUCCESS_GET_DATA)
+                .data(reviews)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 }

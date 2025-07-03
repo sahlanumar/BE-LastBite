@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
 
+
     @Override
     @Transactional
     public User save(User user) {
@@ -66,6 +67,12 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByPhoneNumber(String phoneNumber) {
+        return userRepository.existsByPhoneNumber(phoneNumber);
     }
 
     @Override

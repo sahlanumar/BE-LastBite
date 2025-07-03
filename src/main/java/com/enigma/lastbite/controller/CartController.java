@@ -5,60 +5,44 @@ import com.enigma.lastbite.dto.request.AddItemToCartRequest;
 import com.enigma.lastbite.dto.response.CartResponse;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.service.CartService;
+import com.enigma.lastbite.util.ResponseUtil;
+import com.enigma.lastbite.validation.ValidationGroups;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/carts")
 @RequiredArgsConstructor
+@Validated // Anotasi ini diperlukan untuk mengaktifkan validasi pada parameter method
 public class CartController {
 
     private final CartService cartService;
 
     @PostMapping("/items")
     public ResponseEntity<CommonResponse<CartResponse>> addItem(
-            @RequestBody AddItemToCartRequest request) {
+            @Validated(ValidationGroups.Create.class) @RequestBody AddItemToCartRequest request) {
 
         CartResponse cart = cartService.addItem(request);
-
-        CommonResponse<CartResponse> response = CommonResponse.<CartResponse>builder()
-                .statusCode(HttpStatus.CREATED.value())
-                .message(ResponseMessage.SUCCESS_SAVE_DATA)
-                .data(cart)
-                .build();
-
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return ResponseUtil.buildResponse(HttpStatus.CREATED, ResponseMessage.SUCCESS_SAVE_DATA, cart);
     }
 
     @GetMapping
     public ResponseEntity<CommonResponse<CartResponse>> getCartByLogin() {
         CartResponse cart = cartService.getCartByLogin();
-
-        CommonResponse<CartResponse> response = CommonResponse.<CartResponse>builder()
-                .statusCode(HttpStatus.OK.value())
-                .message(ResponseMessage.SUCCESS_GET_DATA)
-                .data(cart)
-                .build();
-
-        return ResponseEntity.ok(response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, cart);
     }
 
     @PutMapping("/items/{cartItemId}")
     public ResponseEntity<CommonResponse<CartResponse>> updateItemQuantity(
             @PathVariable String cartItemId,
-            @RequestParam Integer quantity) {
+            @RequestParam @Min(value = 1, message = "Kuantitas minimal harus 1") Integer quantity) {
 
         CartResponse cart = cartService.updateItemQuantity(cartItemId, quantity);
-
-        CommonResponse<CartResponse> response = CommonResponse.<CartResponse>builder()
-                .statusCode(HttpStatus.OK.value())
-                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
-                .data(cart)
-                .build();
-
-        return ResponseEntity.ok(response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, cart);
     }
 
     @DeleteMapping("/items/{cartItemId}")
@@ -66,25 +50,12 @@ public class CartController {
             @PathVariable String cartItemId) {
 
         CartResponse cart = cartService.removeItem(cartItemId);
-
-        CommonResponse<CartResponse> response = CommonResponse.<CartResponse>builder()
-                .statusCode(HttpStatus.OK.value())
-                .message(ResponseMessage.SUCCESS_DELETE_DATA)
-                .data(cart)
-                .build();
-
-        return ResponseEntity.ok(response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_DELETE_DATA, cart);
     }
 
     @DeleteMapping
     public ResponseEntity<CommonResponse<Void>> clearCart() {
         cartService.clearCart();
-
-        CommonResponse<Void> response = CommonResponse.<Void>builder()
-                .statusCode(HttpStatus.OK.value())
-                .message(ResponseMessage.SUCCESS_DELETE_DATA)
-                .build();
-
-        return ResponseEntity.ok(response);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_DELETE_DATA, null);
     }
 }

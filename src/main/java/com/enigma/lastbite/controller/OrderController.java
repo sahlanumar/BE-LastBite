@@ -9,11 +9,13 @@ import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.OrderResponse;
 import com.enigma.lastbite.service.OrderService;
 import com.enigma.lastbite.util.ResponseUtil;
+import com.enigma.lastbite.validation.ValidationGroups;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -50,13 +52,9 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
-    /* ------------------------------------------------------------------ *
-     * CUSTOMER + SELLER INDEPENDENT ENDPOINTS                            *
-     * ------------------------------------------------------------------ */
-
     @PostMapping
     public ResponseEntity<CommonResponse<OrderResponse>> createOrder(
-            @RequestBody OrderRequest request) {
+            @Validated(ValidationGroups.Create.class) @RequestBody OrderRequest request) {
 
         OrderResponse response = orderService.createOrder(request);
         return ResponseUtil.buildResponse(HttpStatus.CREATED, ResponseMessage.SUCCESS_SAVE_DATA, response);
@@ -67,10 +65,6 @@ public class OrderController {
         OrderResponse response = orderService.getOrderById(id);
         return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, response);
     }
-
-    /* ------------------------------------------------------------------ *
-     * CUSTOMER‑ONLY ENDPOINTS                                            *
-     * ------------------------------------------------------------------ */
 
     @GetMapping("/customer/me")
     public ResponseEntity<CommonResponse<List<OrderResponse>>> getMyOrdersAsCustomer(
@@ -100,10 +94,6 @@ public class OrderController {
                 sortDir
         );
     }
-
-    /* ------------------------------------------------------------------ *
-     * SELLER‑ONLY ENDPOINTS                                              *
-     * ------------------------------------------------------------------ */
 
     @GetMapping("/seller/me")
     public ResponseEntity<CommonResponse<List<OrderResponse>>> getMyOrdersAsSeller(
@@ -154,11 +144,10 @@ public class OrderController {
         return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, response);
     }
 
-
     @PutMapping("/{orderId}/complete")
     public ResponseEntity<CommonResponse<OrderResponse>> verifyAndCompleteOrder(
             @PathVariable String orderId,
-            @RequestBody VerifyOrderRequest request) {
+            @Validated(ValidationGroups.Update.class) @RequestBody VerifyOrderRequest request) {
 
         OrderResponse response = orderService.verifyAndCompleteOrder(orderId, request);
         return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, response);

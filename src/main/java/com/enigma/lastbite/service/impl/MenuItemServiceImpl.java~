@@ -177,9 +177,9 @@ public class MenuItemServiceImpl implements MenuItemService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Menu item not found"));
     }
 
-//    @Scheduled(fixedRate = 60000)
-//    public void updateExpiredMenuItems() {
-//        log.info("Running task to update status of expired menu items...");
-//        menuItemRepository.updateStatusForExpiredItems(LocalDateTime.now());
-//    }
+    @Scheduled(fixedRate = 60000)
+    public void updateExpiredMenuItems() {
+        log.info("Running task to update status of expired menu items...");
+        menuItemRepository.updateStatusForExpiredItems(LocalDateTime.now());
+    }
 }

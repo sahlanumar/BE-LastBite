@@ -14,14 +14,14 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerRegisterRequest {
+public class AdminRegisterRequest {
 
     // Username dibutuhkan untuk login dan tidak boleh duplikat
     @NotBlank(message = "Username tidak boleh kosong", groups = ValidationGroups.Create.class)
     @Size(min = 3, max = 100, message = "Username harus antara 3 dan 100 karakter", groups = ValidationGroups.Create.class)
     private String username;
 
-    // Nama lengkap dibutuhkan untuk identifikasi pengguna
+    // Nama lengkap admin dibutuhkan untuk identifikasi
     @NotBlank(message = "Nama lengkap tidak boleh kosong", groups = ValidationGroups.Create.class)
     @Size(max = 255, message = "Nama lengkap maksimal 255 karakter", groups = ValidationGroups.Create.class)
     private String fullName;
@@ -36,12 +36,9 @@ public class CustomerRegisterRequest {
     @Size(min = 8, message = "Password minimal 8 karakter", groups = ValidationGroups.Create.class)
     private String password;
 
-    // Nomor telepon dibutuhkan untuk kontak dan verifikasi
-    @NotBlank(message = "Nomor telepon tidak boleh kosong", groups = ValidationGroups.Create.class)
-    @Size(min = 10, max = 20, message = "Nomor telepon harus antara 10 dan 20 digit", groups = ValidationGroups.Create.class)
+    // Nomor telepon bisa opsional untuk Admin
     private String phoneNumber;
 
-    // Latitude dibutuhkan untuk menentukan lokasi customer
     @NotNull(message = "Latitude tidak boleh kosong", groups = ValidationGroups.Create.class)
     private BigDecimal latitude;
 

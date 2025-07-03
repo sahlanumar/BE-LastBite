@@ -11,15 +11,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public class AuthMapper {
-    public static User toUser(CustomerRegisterRequest request, PasswordEncoder passwordEncoder, Role role) {
+    public static User toUser(CustomerRegisterRequest request, PasswordEncoder passwordEncoder, Set<Role> role) {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
         user.setFullName(request.getFullName());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setRole(role);
+        user.setRoles(role);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         user.setPhoneNumber(request.getPhoneNumber());
@@ -28,26 +29,29 @@ public class AuthMapper {
         return user;
     }
 
-    public static User toUser(AdminRegisterRequest request, PasswordEncoder passwordEncoder, Role role) {
+    public static User toUser(AdminRegisterRequest request, PasswordEncoder passwordEncoder, Set<Role> role) {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
         user.setFullName(request.getFullName());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setRole(role);
+        user.setRoles(role);
         user.setPhoneNumber(request.getPhoneNumber());
+        user.setLatitude(BigDecimal.valueOf(0.0));
+        user.setLongitude(BigDecimal.valueOf(0.0));
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         return user;
     }
 
-    public static User toUser(SellerRegisterRequest request, PasswordEncoder passwordEncoder, Role role) {
+    public static User toUser(SellerRegisterRequest request, PasswordEncoder passwordEncoder, Set<Role> role) {
         User user = new User();
+        System.out.println(role);
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
         user.setFullName(request.getFullName());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setRole(role);
+        user.setRoles(role);
         user.setPhoneNumber(request.getPhoneNumber());
         user.setLatitude(request.getLatitude());
         user.setLongitude(request.getLongitude());

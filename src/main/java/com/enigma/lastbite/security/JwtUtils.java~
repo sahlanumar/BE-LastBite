@@ -47,7 +47,7 @@ public class JwtUtils {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        System.out.println(" ini role" + roles);
+        System.out.println(roles);
 
         return JWT.create()
                 .withSubject(userPrincipal.getUsername())
