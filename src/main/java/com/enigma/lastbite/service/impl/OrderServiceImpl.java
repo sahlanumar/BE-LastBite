@@ -71,6 +71,10 @@ public class OrderServiceImpl implements OrderService {
         for (OrderItemRequest itemRequest : request.getOrderItems()) {
             MenuItem menuItem = menuItemService.findById(itemRequest.getMenuItemId());
 
+            if(menuItem.getQuantityAvailable() < itemRequest.getQuantity()) {
+                throw new CustomException(ErrorCode.OUT_OF_STOCK);
+            }
+
             if (sellerProfile == null) {
                 sellerProfile = menuItem.getSellerProfile();
             } else if (!Objects.equals(sellerProfile.getId(), menuItem.getSellerProfile().getId())) {
@@ -79,6 +83,10 @@ public class OrderServiceImpl implements OrderService {
 
             OrderItem orderItem = OrderMapper.toOrderItemEntity(itemRequest, menuItem);
             orderItems.add(orderItem);
+
+            menuItem.setQuantityAvailable(menuItem.getQuantityAvailable() - itemRequest.getQuantity());
+
+            menuItemService.save(menuItem);
 
             totalAmount = totalAmount.add(
                     menuItem.getDiscountedPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()))
@@ -134,6 +142,21 @@ public class OrderServiceImpl implements OrderService {
             throw new CustomException(ErrorCode.ORDER_NOT_PREPARING);
         }
         order.setOrderStatus(OrderStatus.READY_FOR_PICKUP);
+        order.setUpdatedAt(LocalDateTime.now());
+        return OrderMapper.toResponse(orderRepository.save(order));
+    }
+
+    @Override
+    public OrderResponse cancelOrder(String orderId) {
+        Order order = findOrderByIdOrThrow(orderId);
+
+        for (OrderItem orderItem : order.getOrderItems()) {
+            MenuItem menuItem = menuItemService.findById(orderItem.getMenuItem().getId());
+            menuItem.setQuantityAvailable(menuItem.getQuantityAvailable() + orderItem.getQuantityPurchased());
+            menuItemService.save(menuItem);
+        }
+
+        order.setOrderStatus(OrderStatus.CANCELLED);
         order.setUpdatedAt(LocalDateTime.now());
         return OrderMapper.toResponse(orderRepository.save(order));
     }

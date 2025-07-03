@@ -4,64 +4,71 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
 
-    ORDER_NOT_PENDING_PAYMENT(HttpStatus.CONFLICT, "Cannot update status, order is not pending payment"),
-    ORDER_NOT_PAID(HttpStatus.CONFLICT, "Order must be PAID to be accepted"),
-    ORDER_NOT_PREPARING(HttpStatus.CONFLICT, "Order must be PREPARING to be marked as ready"),
-    ORDER_NOT_READY_FOR_PICKUP(HttpStatus.CONFLICT, "Order is not ready for pickup"),
-    INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "Invalid verification code"),
-    INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST, "Invalid order status"),
-    INVALID_MENU_ITEM(HttpStatus.BAD_REQUEST, "Invalid menu item"),
+    // --- Pesan Terkait Pesanan (Order) ---
+    OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "Stok produk habis"),
+    ORDER_NOT_PENDING_PAYMENT(HttpStatus.CONFLICT, "Gagal memperbarui status, pesanan tidak menunggu pembayaran"),
+    ORDER_NOT_PAID(HttpStatus.CONFLICT, "Pesanan harus LUNAS untuk dapat diterima"),
+    ORDER_NOT_PREPARING(HttpStatus.CONFLICT, "Pesanan harus dalam status DIPERSIAPKAN untuk ditandai sebagai siap"),
+    ORDER_NOT_READY_FOR_PICKUP(HttpStatus.CONFLICT, "Pesanan belum siap untuk diambil"),
+    INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "Kode verifikasi tidak valid"),
+    INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST, "Status pesanan tidak valid"),
+    INVALID_MENU_ITEM(HttpStatus.BAD_REQUEST, "Item menu tidak valid"),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Pesanan tidak ditemukan"),
 
-    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Order not found"),
+    // --- Pesan Terkait Ulasan (Review) ---
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "Ulasan tidak ditemukan"),
+    INVALID_RATING(HttpStatus.BAD_REQUEST, "Rating tidak valid"),
+    DUPLICATE_REVIEW(HttpStatus.BAD_REQUEST, "Anda sudah memberikan ulasan untuk pesanan ini"),
 
-    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "Review not found"),
-    INVALID_RATING(HttpStatus.BAD_REQUEST, "Invalid rating"),
-    DUPLICATE_REVIEW(HttpStatus.BAD_REQUEST, "Duplicate review"),
+    // --- Pesan Terkait Keranjang (Cart) ---
+    INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "Jumlah tidak valid"),
+    CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "Item di keranjang tidak ditemukan"),
+    CART_NOT_FOUND(HttpStatus.NOT_FOUND, "Keranjang tidak ditemukan"),
 
-    INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "Invalid quantity"),
-    CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "Cart item not found"),
-    CART_NOT_FOUND(HttpStatus.NOT_FOUND, "Cart not found"),
-
+    // --- Pesan Terkait Token ---
     TOKEN_NOT_VALID(HttpStatus.UNAUTHORIZED, "Refresh token tidak valid"),
     NOT_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "Token yang diberikan bukan refresh token"),
 
-    MIDTRANS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Midtrans error"),
+    // --- Pesan Terkait Layanan Eksternal (Midtrans) & File ---
+    MIDTRANS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Terjadi kesalahan pada sistem pembayaran"),
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File tidak ditemukan"),
+    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Gagal mengunggah file"),
 
-    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "File not found"),
-    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "File upload failed"),
+    // --- Pesan Terkait Penjual (Seller) ---
+    SELLER_NOT_FOUND(HttpStatus.NOT_FOUND, "Penjual tidak ditemukan"),
 
-    SELLER_NOT_FOUND(HttpStatus.NOT_FOUND, "Seller not found"),
+    // --- Pesan Terkait Pengguna (User) ---
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "Pengguna tidak ditemukan"),
+    INVALID_USER_DATA(HttpStatus.BAD_REQUEST, "Data pengguna tidak valid"),
+    EMAIL_ALREADY_REGISTERED(HttpStatus.CONFLICT, "Email sudah terdaftar"),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "Kata sandi tidak valid"),
+    INVALID_ROLE(HttpStatus.BAD_REQUEST, "Peran tidak valid"),
+    INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "Peran pengguna tidak valid"),
+    PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST, "Konfirmasi kata sandi tidak cocok"),
 
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
-    INVALID_USER_DATA(HttpStatus.BAD_REQUEST, "Invalid user data"),
-    EMAIL_ALREADY_REGISTERED(HttpStatus.CONFLICT, "Email already registered"),
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "Invalid password"),
-    INVALID_ROLE(HttpStatus.BAD_REQUEST, "Invalid role"),
-    INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "Invalid user role"),
-    PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST, "Password not match"),
+    // --- Pesan Terkait Menu ---
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "Menu tidak ditemukan"),
+    INVALID_MENU_DATA(HttpStatus.BAD_REQUEST, "Data menu tidak valid"),
+    MENU_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "Menu sedang tidak tersedia"),
 
-    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "Menu not found"),
-    INVALID_MENU_DATA(HttpStatus.BAD_REQUEST, "Invalid menu data"),
-    MENU_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "Menu not available"),
+    // --- Pesan Terkait Pelanggan (Customer) ---
+    CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "Pelanggan tidak ditemukan"),
+    INVALID_CUSTOMER_DATA(HttpStatus.BAD_REQUEST, "Data pelanggan tidak valid"),
+    EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "Email sudah digunakan"),
+    USERNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "Username sudah digunakan"),
+    PHONENUMBER_ALREADY_EXISTS(HttpStatus.CONFLICT, "Nomor telepon sudah digunakan"),
 
-    //Customer related errors
-    CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "Customer not found"),
-    INVALID_CUSTOMER_DATA(HttpStatus.BAD_REQUEST, "Invalid customer data"),
-    EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "Email already exists"),
-    USERNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "Username already exists"),
-    PHONENUMBER_ALREADY_EXISTS(HttpStatus.CONFLICT, "Phone already exists"),
+    // --- Pesan Terkait Transaksi ---
+    TRANSACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Transaksi tidak ditemukan"),
+    INVALID_TRANSACTION_DATA(HttpStatus.BAD_REQUEST, "Data transaksi tidak valid"),
 
-    //Transaction related errors
-    TRANSACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Transaction not found"),
-    INVALID_TRANSACTION_DATA(HttpStatus.BAD_REQUEST, "Invalid transaction data"),
+    // --- Pesan Terkait Detail Transaksi ---
+    TRANSACTION_DETAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "Detail transaksi tidak ditemukan"),
+    INVALID_TRANSACTION_DETAIL_DATA(HttpStatus.BAD_REQUEST, "Data detail transaksi tidak valid"),
 
-    //TRANSACTION DETAIL related errors
-    TRANSACTION_DETAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "Transaction detail not found"),
-    INVALID_TRANSACTION_DETAIL_DATA(HttpStatus.BAD_REQUEST, "Invalid transaction detail data"),
-    
-    // Generic errors
-    BAD_REQUEST(HttpStatus.BAD_REQUEST, "Bad request"),
-    SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+    // --- Pesan Umum ---
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "Permintaan tidak valid"),
+    SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Terjadi kesalahan pada server");
 
     private final HttpStatus httpStatus;
     private final String message;

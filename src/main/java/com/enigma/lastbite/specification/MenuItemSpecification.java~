@@ -12,7 +12,7 @@ import java.util.List;
 public class MenuItemSpecification {
     public static Specification<MenuItem> getSpecification(
             String name, String sellerId, BigDecimal maxPrice,
-            BigDecimal minPrice, Boolean isAvailable, ListingStatus status,Double minRating, Double maxRating) {
+            BigDecimal minPrice, Boolean isAvailable, ListingStatus status) {
 
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();

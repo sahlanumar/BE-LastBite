@@ -20,6 +20,8 @@ public interface OrderService {
 
     OrderResponse markAsReadyForPickup(String orderId);
 
+    OrderResponse cancelOrder(String orderId);
+
     OrderResponse verifyAndCompleteOrder(String orderId, VerifyOrderRequest request);
 
     void updateStatusToPaid(String orderId);

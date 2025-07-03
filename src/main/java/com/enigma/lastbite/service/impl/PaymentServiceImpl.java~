@@ -5,7 +5,6 @@ import com.enigma.lastbite.dto.request.PaymentRequest;
 import com.enigma.lastbite.dto.response.PaymentResponse;
 import com.enigma.lastbite.entity.MenuItem;
 import com.enigma.lastbite.entity.Order;
-import com.enigma.lastbite.entity.OrderItem;
 import com.enigma.lastbite.entity.Payment;
 import com.enigma.lastbite.exception.CustomException;
 import com.enigma.lastbite.exception.ErrorCode;
@@ -88,20 +87,13 @@ public class PaymentServiceImpl implements PaymentService {
             }
         } else if ("expire".equalsIgnoreCase(transactionStatus)) {
             payment.setStatus(PaymentStatus.EXPIRED);
-            for (OrderItem orderItem : order.getOrderItems()) {
-                MenuItem menuItem = menuItemService.findById(orderItem.getMenuItem().getId());
-                menuItem.setQuantityAvailable(menuItem.getQuantityAvailable() + orderItem.getQuantityPurchased());
-                menuItemService.save(menuItem);
+            for (MenuItem menuItem : order.getOrderItems()) {
+
             }
 
             paymentRepository.save(payment);
         } else if ("deny".equalsIgnoreCase(transactionStatus) || "cancel".equalsIgnoreCase(transactionStatus)) {
             payment.setStatus(PaymentStatus.FAILED);
-            for (OrderItem orderItem : order.getOrderItems()) {
-                MenuItem menuItem = menuItemService.findById(orderItem.getMenuItem().getId());
-                menuItem.setQuantityAvailable(menuItem.getQuantityAvailable() + orderItem.getQuantityPurchased());
-                menuItemService.save(menuItem);
-            }
             paymentRepository.save(payment);
         }
     }

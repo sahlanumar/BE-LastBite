@@ -1,222 +1,208 @@
 {
-	"info": {
-		"_postman_id": "d2c3b1a1-8b7c-4d6a-9e5a-4c2b1a0b3e9f",
-		"name": "Lastbite-Orders",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Create Order",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"orderItems\": [\r\n        {\r\n            \"menuItemId\": \"<menu_item_id_1>\",\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"menuItemId\": \"<menu_item_id_2>\",\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{base_url}}",
-					"host": [
-						"{{base_url}}"
-					]
-				},
-				"description": "Endpoint untuk membuat pesanan baru."
-			},
-			"response": []
-		},
-		{
-			"name": "Get Order By ID",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/{{orderId}}",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"{{orderId}}"
-					]
-				},
-				"description": "Endpoint untuk mendapatkan detail pesanan berdasarkan ID."
-			},
-			"response": []
-		},
-		{
-			"name": "Get My Orders (Customer)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/customer/me?page=0&size=10&sortField=createdAt&sortDir=desc",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"customer",
-						"me"
-					],
-					"query": [
-						{
-							"key": "page",
-							"value": "0"
-						},
-						{
-							"key": "size",
-							"value": "10"
-						},
-						{
-							"key": "sortField",
-							"value": "createdAt"
-						},
-						{
-							"key": "sortDir",
-							"value": "desc"
-						}
-					]
-				},
-				"description": "Endpoint untuk customer melihat riwayat pesanannya."
-			},
-			"response": []
-		},
-		{
-			"name": "Get My Orders (Seller)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/seller/me?page=0&size=10&sortField=createdAt&sortDir=desc",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"seller",
-						"me"
-					],
-					"query": [
-						{
-							"key": "page",
-							"value": "0"
-						},
-						{
-							"key": "size",
-							"value": "10"
-						},
-						{
-							"key": "sortField",
-							"value": "createdAt"
-						},
-						{
-							"key": "sortDir",
-							"value": "desc"
-						}
-					]
-				},
-				"description": "Endpoint untuk seller melihat pesanan yang masuk."
-			},
-			"response": []
-		},
-		{
-			"name": "Accept Order",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/{{orderId}}/accept",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"{{orderId}}",
-						"accept"
-					]
-				},
-				"description": "Endpoint untuk seller menerima pesanan."
-			},
-			"response": []
-		},
-		{
-			"name": "Mark Order as Ready",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/{{orderId}}/ready",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"{{orderId}}",
-						"ready"
-					]
-				},
-				"description": "Endpoint untuk seller menandai pesanan siap diambil."
-			},
-			"response": []
-		},
-		{
-			"name": "Update Order Status to Paid",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/{{orderId}}/paid",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"{{orderId}}",
-						"paid"
-					]
-				},
-				"description": "Endpoint internal untuk mengubah status pesanan menjadi PAID setelah pembayaran berhasil."
-			},
-			"response": []
-		},
-		{
-			"name": "Verify and Complete Order",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"verificationCode\": \"<your_verification_code>\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{base_url}}/{{orderId}}/complete",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"{{orderId}}",
-						"complete"
-					]
-				},
-				"description": "Endpoint untuk customer menyelesaikan pesanan dengan kode verifikasi."
-			},
-			"response": []
-		}
-	],
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://localhost:8080/api/orders",
-			"type": "string"
-		},
-		{
-			"key": "orderId",
-			"value": "",
-			"type": "string"
-		}
-	]
+  "info": {
+    "_postman_id": "d5e6f7g8-h9i0-j1k2-l3m4-n5o6p7q8r9s0",
+    "name": "Lastbite-Orders",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Orders",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/orders?customerId=<customer_id>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders"
+          ],
+          "query": [
+            {
+              "key": "customerId",
+              "value": "<customer_id>"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Order",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"orderItems\": [\n        {\n            \"menuItemId\": \"<menu_item_id>\",\n            \"quantity\": 1\n        }\n    ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/orders",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Order By Id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/orders/<order_id>",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "<order_id>"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get My Orders As Customer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/orders/customer/me",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "customer",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get My Orders As Seller",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/orders/seller/me",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "seller",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Accept Order",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/orders/<order_id>/accept",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "<order_id>",
+            "accept"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Mark As Ready",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/orders/<order_id>/ready",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "<order_id>",
+            "ready"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Status To Paid",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/orders/<order_id>/paid",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "<order_id>",
+            "paid"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Verify And Complete Order",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"verificationCode\": \"<verification_code>\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/orders/<order_id>/complete",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "<order_id>",
+            "complete"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
 }

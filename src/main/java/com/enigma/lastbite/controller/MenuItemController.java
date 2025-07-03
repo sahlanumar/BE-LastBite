@@ -7,6 +7,8 @@ import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.MenuItemResponse;
 import com.enigma.lastbite.service.MenuItemService;
 import com.enigma.lastbite.util.ResponseUtil;
+import com.enigma.lastbite.dto.request.SearchMenuItemRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -40,32 +42,31 @@ public class MenuItemController {
 
     @GetMapping
     public ResponseEntity<CommonResponse<List<MenuItemResponse>>> getAllMenuItems(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String sellerId,
-            @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) Boolean isAvailable,
-            @RequestParam(required = false) ListingStatus status,
+            // PERBAIKAN: Gunakan @ModelAttribute untuk menangkap semua parameter filter ke dalam satu objek
+            @ModelAttribute SearchMenuItemRequest request,
+
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String sortField,
             @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(defaultValue = "") String baseUrl,
-            @RequestParam(required = false) Double lat,
-            @RequestParam(required = false) Double lon
+            HttpServletRequest httpServletRequest // Gunakan ini untuk mendapatkan URL
     ) {
+        // Panggil service dengan getter dari objek 'request'
         Page<MenuItemResponse> menuPage = menuItemService.getAll(
-                name, sellerId, maxPrice, minPrice, isAvailable, status,
+                request.getName(), request.getSellerId(), request.getMaxPrice(),
+                request.getMinPrice(), request.getIsAvailable(), request.getStatus(),
+                request.getMinRating(), request.getMaxRating(),
                 page, size, sortField, sortDir,
-                lat, lon
+                request.getLat(), request.getLon()
         );
 
+        // Kirim objek 'request' sebagai filter agar link paginasi benar
         return ResponseUtil.buildResponse(
                 HttpStatus.OK, "Menu items fetched",
                 menuPage.getContent(),
                 menuPage,
-                baseUrl,
-                Collections.emptyMap(),
+                httpServletRequest.getRequestURI(), // URL dinamis dan robust
+                request, // Ini akan memastikan link paginasi menyertakan semua filter
                 sortField,
                 sortDir
         );
@@ -73,27 +74,27 @@ public class MenuItemController {
 
     @GetMapping("/me")
     public ResponseEntity<CommonResponse<List<MenuItemResponse>>> getMyMenuItems(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) Boolean isAvailable,
-            @RequestParam(required = false) ListingStatus status,
+            @ModelAttribute SearchMenuItemRequest request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String sortField,
             @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(defaultValue = "") String baseUrl) {
+            HttpServletRequest httpServletRequest) {
 
+        // --- PERBAIKAN: Tambahkan minRating dan maxRating saat memanggil service ---
         Page<MenuItemResponse> menuPage = menuItemService.getAllByLogin(
-                name, maxPrice, minPrice, isAvailable, status,
+                request.getName(), request.getMaxPrice(), request.getMinPrice(),
+                request.getIsAvailable(), request.getStatus(),
+                request.getMinRating(), // Tambahkan ini
+                request.getMaxRating(), // Tambahkan ini
                 page, size, sortField, sortDir);
 
         return ResponseUtil.buildResponse(
                 HttpStatus.OK, "Menu items fetched",
                 menuPage.getContent(),
                 menuPage,
-                baseUrl,
-                null,
+                httpServletRequest.getRequestURI(),
+                request,
                 sortField,
                 sortDir
         );

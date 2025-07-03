@@ -70,7 +70,7 @@ public class MenuItemServiceImpl implements MenuItemService {
                 name, sellerId, maxPrice, minPrice, isAvailable, status,
                 minRating, maxRating
         );
-
+        
 
         // Bagian ini untuk sorting yang efisien di database (selain 'distance')
         if (!"distance".equalsIgnoreCase(sortField)) {

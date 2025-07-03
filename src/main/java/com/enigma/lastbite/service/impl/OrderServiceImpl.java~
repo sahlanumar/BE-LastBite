@@ -1,19 +1,14 @@
 package com.enigma.lastbite.service.impl;
 
 import com.enigma.lastbite.constant.OrderStatus;
-import com.enigma.lastbite.dto.request.OrderFilterRequest;
-import com.enigma.lastbite.dto.request.OrderRequest;
-import com.enigma.lastbite.dto.request.PaymentRequest;
-import com.enigma.lastbite.dto.request.VerifyOrderRequest;
+import com.enigma.lastbite.dto.request.*;
 import com.enigma.lastbite.dto.response.OrderResponse;
 import com.enigma.lastbite.dto.response.PaymentResponse;
 import com.enigma.lastbite.entity.*;
 import com.enigma.lastbite.exception.CustomException;
 import com.enigma.lastbite.exception.ErrorCode;
 import com.enigma.lastbite.mapper.OrderMapper;
-import com.enigma.lastbite.repository.MenuItemRepository;
 import com.enigma.lastbite.repository.OrderRepository;
-import com.enigma.lastbite.repository.UserRepository;
 import com.enigma.lastbite.security.JwtUtils;
 import com.enigma.lastbite.service.MenuItemService;
 import com.enigma.lastbite.service.OrderService;
@@ -21,15 +16,12 @@ import com.enigma.lastbite.service.PaymentService;
 import com.enigma.lastbite.service.UserService;
 import com.enigma.lastbite.specification.OrderSpecification;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -48,13 +40,12 @@ public class OrderServiceImpl implements OrderService {
     private final JwtUtils jwtUtils;
     private final PaymentService paymentService;
 
-
     public OrderServiceImpl(
             OrderRepository orderRepository,
             MenuItemService menuItemService,
             UserService userService,
             JwtUtils jwtUtils,
-            @Lazy PaymentService paymentService // ⬅️ Letakkan @Lazy di sini
+            @Lazy PaymentService paymentService
     ) {
         this.orderRepository = orderRepository;
         this.menuItemService = menuItemService;
@@ -77,8 +68,12 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal totalAmount = BigDecimal.ZERO;
         SellerProfile sellerProfile = null;
 
-        for (var itemRequest : request.getOrderItems()) {
+        for (OrderItemRequest itemRequest : request.getOrderItems()) {
             MenuItem menuItem = menuItemService.findById(itemRequest.getMenuItemId());
+
+            if(menuItem.getQuantityAvailable() < itemRequest.getQuantity()) {
+                throw new CustomException(ErrorCode.OUT_OF_STOCK);
+            }
 
             if (sellerProfile == null) {
                 sellerProfile = menuItem.getSellerProfile();
@@ -86,28 +81,20 @@ public class OrderServiceImpl implements OrderService {
                 throw new CustomException(ErrorCode.INVALID_MENU_ITEM);
             }
 
-            OrderItem orderItem = new OrderItem();
-            orderItem.setMenuItem(menuItem);
-            orderItem.setQuantityPurchased(itemRequest.getQuantity());
-            orderItem.setPricePerItem(menuItem.getDiscountedPrice());
+            OrderItem orderItem = OrderMapper.toOrderItemEntity(itemRequest, menuItem);
             orderItems.add(orderItem);
+
+            menuItem.setQuantityAvailable(menuItem.getQuantityAvailable() - itemRequest.getQuantity());
+
+            menuItemService.save(menuItem);
 
             totalAmount = totalAmount.add(
                     menuItem.getDiscountedPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()))
             );
         }
 
-        Order order = new Order();
-        order.setCustomer(customer);
-        order.setSellerProfile(sellerProfile);
-        order.setOrderItems(orderItems);
-        order.setTotalAmount(totalAmount);
-        order.setOrderStatus(OrderStatus.PENDING_PAYMENT);
-        order.setVerificationCode(generateVerificationCode());
-        order.setCreatedAt(LocalDateTime.now());
-        order.setUpdatedAt(LocalDateTime.now());
-
-        orderItems.forEach(item -> item.setOrder(order));
+        String verificationCode = generateVerificationCode();
+        Order order = OrderMapper.toOrderEntity(customer, sellerProfile, orderItems, totalAmount, verificationCode);
 
         Order savedOrder = orderRepository.saveAndFlush(order);
 
@@ -186,7 +173,6 @@ public class OrderServiceImpl implements OrderService {
 
         SellerProfile sellerProfile = order.getSellerProfile();
         sellerProfile.setBalance(sellerProfile.getBalance().add(order.getTotalAmount()));
-
 
         return OrderMapper.toResponse(orderRepository.save(order));
     }

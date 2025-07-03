@@ -27,10 +27,7 @@ public interface MenuItemService {
 
     Page<MenuItemResponse> getAllByLogin(
             String name, BigDecimal maxPrice, BigDecimal minPrice,
-            Boolean isAvailable, ListingStatus status,
-            // --- PERBAIKAN: Tambahkan parameter rating di signature ---
-            Double minRating, Double maxRating,
-            int page, int size,
+            Boolean isAvailable, ListingStatus status, int page, int size,
             String sortField, String sortDir);
 
     MenuItemResponse update(String id, UpdateMenuItemRequest request);

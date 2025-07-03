@@ -1,0 +1,85 @@
+package com.learning.step_by_step.filter;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+/**
+ * Filter untuk rate limiting pada endpoint autentikasi.
+ * Membatasi jumlah request yang dapat dilakukan dalam jangka waktu tertentu.
+ */
+@Component
+@Slf4j
+public class RateLimitFilter extends OncePerRequestFilter {
+
+    // Menyimpan counter request per IP address
+    private final Map<String, RequestCounter> requestCounters = new ConcurrentHashMap<>();
+    
+    // Batas maksimum request per menit
+    private static final int MAX_REQUESTS_PER_MINUTE = 10;
+    
+    // Kelas untuk menyimpan informasi counter dan timestamp
+    private static class RequestCounter {
+        AtomicInteger count = new AtomicInteger(0);
+        long resetTime = System.currentTimeMillis() + 60000; // reset setiap 1 menit
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                   FilterChain filterChain) throws ServletException, IOException {
+
+        // Hanya terapkan rate limiting untuk endpoint auth
+        if (request.getRequestURI().startsWith("/api/public/auth/")) {
+            // Dapatkan IP client
+            String ipAddress = getClientIP(request);
+
+            // Dapatkan atau buat counter untuk IP ini
+            RequestCounter counter = requestCounters.compute(ipAddress, (key, value) -> {
+                // Jika belum ada counter atau waktu reset sudah lewat, buat counter baru
+                if (value == null || System.currentTimeMillis() > value.resetTime) {
+                    return new RequestCounter();
+                }
+                return value;
+            });
+
+            // Coba konsumsi token
+            int requestCount = counter.count.incrementAndGet();
+            if (requestCount <= MAX_REQUESTS_PER_MINUTE) {
+                // Counter masih di bawah batas, lanjutkan request
+                filterChain.doFilter(request, response);
+            } else {
+                // Batas terlampaui, return 429 Too Many Requests
+                log.warn("Rate limit terlampaui untuk IP: {}", ipAddress);
+                response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+                response.setContentType("application/json");
+                response.getWriter().write(
+                    "{\"statusCode\":429," + 
+                    "\"message\":\"Terlalu banyak request. Silakan coba lagi nanti.\"," + 
+                    "\"timestamp\":\"" + java.time.LocalDateTime.now() + "\"}"
+                );
+            }
+        } else {
+            // Bukan endpoint auth, biarkan request lewat
+            filterChain.doFilter(request, response);
+        }
+    }
+
+    private String getClientIP(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            // Ambil IP pertama jika ada multiple proxies
+            return xForwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
+    }
+}

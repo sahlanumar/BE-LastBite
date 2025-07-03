@@ -1,67 +1,64 @@
 {
-	"info": {
-		"_postman_id": "e3d4a2b1-9c8d-5e7b-0f6a-5d3c2b1a4f0a",
-		"name": "Lastbite-Payments",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Create Payment",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"orderId\": \"<your_order_id>\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{base_url}}",
-					"host": [
-						"{{base_url}}"
-					]
-				},
-				"description": "Endpoint untuk memulai proses pembayaran untuk sebuah pesanan."
-			},
-			"response": []
-		},
-		{
-			"name": "Handle Midtrans Notification",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"transaction_time\": \"2025-07-02 10:00:00\",\r\n    \"transaction_status\": \"capture\",\r\n    \"transaction_id\": \"<midtrans_transaction_id>\",\r\n    \"status_message\": \"midtrans payment notification\",\r\n    \"status_code\": \"200\",\r\n    \"signature_key\": \"<midtrans_signature_key>\",\r\n    \"payment_type\": \"credit_card\",\r\n    \"order_id\": \"<your_order_id>\",\r\n    \"gross_amount\": \"150000.00\",\r\n    \"fraud_status\": \"accept\",\r\n    \"currency\": \"IDR\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{base_url}}/midtrans-notification",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"midtrans-notification"
-					]
-				},
-				"description": "Endpoint untuk menerima notifikasi status pembayaran dari Midtrans."
-			},
-			"response": []
-		}
-	],
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://localhost:8080/api/payments",
-			"type": "string"
-		}
-	]
+  "info": {
+    "_postman_id": "e6f7g8h9-i0j1-k2l3-m4n5-o6p7q8r9s0t1",
+    "name": "Lastbite-Payments",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Payment",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"orderId\": \"<order_id>\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/payments",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "payments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Handle Midtrans Notification",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"transaction_time\": \"2025-07-03 17:12:03\",\n    \"transaction_status\": \"capture\",\n    \"transaction_id\": \"a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6\",\n    \"status_message\": \"midtrans payment notification\",\n    \"status_code\": \"200\",\n    \"signature_key\": \"<signature_key>\",\n    \"payment_type\": \"credit_card\",\n    \"order_id\": \"<order_id>\",\n    \"merchant_id\": \"G123456789\",\n    \"gross_amount\": \"20000.00\",\n    \"fraud_status\": \"accept\",\n    \"currency\": \"IDR\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/payments/midtrans-notification",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "payments",
+            "midtrans-notification"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
 }
