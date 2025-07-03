@@ -1,6 +1,7 @@
 package com.enigma.lastbite.service.impl;
 
 import com.enigma.lastbite.constant.OrderStatus;
+import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.*;
 import com.enigma.lastbite.dto.response.OrderResponse;
 import com.enigma.lastbite.dto.response.PaymentResponse;
@@ -64,6 +65,7 @@ public class OrderServiceImpl implements OrderService {
         User customer = userService.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
         SellerProfile sellerProfile = null;
@@ -77,9 +79,11 @@ public class OrderServiceImpl implements OrderService {
 
             if (sellerProfile == null) {
                 sellerProfile = menuItem.getSellerProfile();
+
             } else if (!Objects.equals(sellerProfile.getId(), menuItem.getSellerProfile().getId())) {
                 throw new CustomException(ErrorCode.INVALID_MENU_ITEM);
             }
+
 
             OrderItem orderItem = OrderMapper.toOrderItemEntity(itemRequest, menuItem);
             orderItems.add(orderItem);

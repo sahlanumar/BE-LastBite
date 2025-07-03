@@ -1,6 +1,7 @@
 package com.enigma.lastbite.service.impl;
 
 import com.enigma.lastbite.constant.ListingStatus;
+import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.MenuItemCreateRequest;
 import com.enigma.lastbite.dto.request.MenuItemUpdateRequest;
 import com.enigma.lastbite.dto.response.MenuItemResponse;
@@ -43,6 +44,9 @@ public class MenuItemServiceImpl implements MenuItemService {
     @Override
     public MenuItemResponse create(MenuItemCreateRequest request) {
         SellerProfile sellerProfile = sellerService.findBySellerId(request.getSellerProfileId());
+        if(sellerProfile.getStatus() != UserStatus.ACTIVE) {
+            throw new CustomException(ErrorCode.SELLER_NOT_ACTIVE);
+        }
         MenuItem menuItem = MenuMapper.toMenuItemEntity(request, sellerProfile);
         menuItemRepository.save(menuItem);
         return MenuMapper.toMenuItemResponse(menuItem);
