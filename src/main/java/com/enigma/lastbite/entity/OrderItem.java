@@ -1,5 +1,6 @@
 package com.enigma.lastbite.entity;
 
+import com.enigma.lastbite.constant.TableNames;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "order_items")
+@Table(name = TableNames.ORDER_ITEM)
 @Builder
 public class OrderItem {
 

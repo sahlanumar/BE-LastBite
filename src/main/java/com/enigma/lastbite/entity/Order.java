@@ -1,6 +1,7 @@
 package com.enigma.lastbite.entity;
 
 import com.enigma.lastbite.constant.OrderStatus;
+import com.enigma.lastbite.constant.TableNames;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -18,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "orders")
+@Table(name = TableNames.ORDER)
 @Builder
 public class Order {
 

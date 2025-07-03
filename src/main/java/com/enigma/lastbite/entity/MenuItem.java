@@ -1,5 +1,6 @@
 package com.enigma.lastbite.entity;
 
+import com.enigma.lastbite.constant.TableNames;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -17,7 +18,7 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "menu_items")
+@Table(name = TableNames.MENU_ITEM)
 @Builder
 public class MenuItem {
 

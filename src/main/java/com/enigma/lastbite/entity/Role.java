@@ -1,6 +1,7 @@
 package com.enigma.lastbite.entity;
 
 
+import com.enigma.lastbite.constant.TableNames;
 import com.enigma.lastbite.constant.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "roles")
+@Table(name = TableNames.ROLE)
 @Data
 @Builder
 @NoArgsConstructor

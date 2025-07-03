@@ -6,21 +6,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "menu_item_reviews", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"customer_id", "menu_item_id"})
-})
-public class MenuItemReview {
+@Table(name = "carts")
+public class Cart {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -28,21 +28,18 @@ public class MenuItemReview {
     @Column(columnDefinition = "VARCHAR(36)")
     private String id;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
     private User customer;
 
-    @ManyToOne
-    @JoinColumn(name = "menu_item_id", nullable = false)
-    private MenuItem menuItem;
-
-    @Column(nullable = false)
-    private Integer rating;
-
-    @Column(columnDefinition = "TEXT")
-    private String comment;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartItem> items;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

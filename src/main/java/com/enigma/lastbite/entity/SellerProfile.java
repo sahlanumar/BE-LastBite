@@ -1,5 +1,6 @@
 package com.enigma.lastbite.entity;
 
+import com.enigma.lastbite.constant.TableNames;
 import com.enigma.lastbite.constant.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "seller_profiles")
+@Table(name = TableNames.SELLER_PROFILE)
 public class SellerProfile {
 
     @Id

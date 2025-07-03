@@ -1,6 +1,7 @@
 package com.enigma.lastbite.entity;
 
 
+import com.enigma.lastbite.constant.TableNames;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -24,7 +25,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "users")
+@Table(name = TableNames.USER)
 public class User implements UserDetails {
 
     @Id
