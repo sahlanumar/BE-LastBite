@@ -1,20 +1,20 @@
 package com.enigma.lastbite.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import org.hibernate.annotations.GenericGenerator;
-
-import java.math.BigDecimal;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "order_items")
-@Builder
-public class OrderItem {
+@Table(name = "cart_items")
+public class CartItem {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -23,16 +23,13 @@ public class OrderItem {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
+    @JoinColumn(name = "cart_id", nullable = false)
+    private Cart cart;
 
     @ManyToOne
     @JoinColumn(name = "menu_item_id", nullable = false)
     private MenuItem menuItem;
 
-    @Column(name = "quantity_purchased", nullable = false)
-    private Integer quantityPurchased;
-
-    @Column(name = "price_per_item", nullable = false, precision = 10, scale = 2)
-    private BigDecimal pricePerItem;
+    @Column(nullable = false)
+    private Integer quantity;
 }

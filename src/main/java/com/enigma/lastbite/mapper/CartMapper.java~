@@ -1,21 +1,11 @@
 package com.enigma.lastbite.mapper;
 
-import com.enigma.lastbite.dto.request.AddItemToCartRequest;
 import com.enigma.lastbite.dto.response.CartItemResponse;
 import com.enigma.lastbite.dto.response.CartResponse;
 import com.enigma.lastbite.entity.Cart;
 import com.enigma.lastbite.entity.CartItem;
-import com.enigma.lastbite.entity.MenuItem;
 
 public class CartMapper {
-    public static CartItem toCartItemEntity(AddItemToCartRequest request, MenuItem menuItem, Cart cart) {
-        return CartItem.builder()
-                .cart(cart)
-                .menuItem(menuItem)
-                .quantity(request.getQuantity())
-                .build();
-    }
-
     public static CartItemResponse toCartItemResponse(CartItem cartItem) {
         return CartItemResponse.builder()
                 .cartItemId(cartItem.getId())

@@ -1,0 +1,27 @@
+spring.application.name=lastbite
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.url=jdbc:postgresql://localhost:5432/LastBite
+spring.datasource.username=${DB_USERNAME:postgres}
+spring.datasource.password=Pgher1
+
+spring.jpa.properties.hibernate.show_sql=true
+spring.jpa.properties.hibernate.use_sql_comments=true
+spring.jpa.properties.hibernate.format_sql=true
+
+restaurant.jwt.secret-key=${JWT_SECRET:dev_secret}
+restaurant.jwt.expiration-in-second=${JWT_EXPIRATION:3600}
+restaurant.jwt.refresh-token-expiration-in-second=${REFRESH_TOKEN_EXPIRATION:604800}
+restaurant.jwt.issuer=LastBite App
+
+course.super-admin.secret-key=${SUPER_ADMIN_SECRET:super_admin_key}
+
+midtrans.server-key=SB-Mid-server-gm6QHj32SsxCYNWfX4456KOJ
+midtrans.client-key=SB-Mid-client-rNxP83EvuAPucGNh
+
+cloudinary.cloud_name=dhgvdfglk
+cloudinary.api_key=518382133931714
+cloudinary.api_secret=VpYCP3Jy78GhJxdaVjXekgQy2qw

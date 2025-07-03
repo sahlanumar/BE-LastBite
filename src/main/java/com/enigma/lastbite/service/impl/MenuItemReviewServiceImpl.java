@@ -49,11 +49,7 @@ public class MenuItemReviewServiceImpl implements MenuItemReviewService {
             throw new CustomException(ErrorCode.INVALID_RATING);
         }
 
-        MenuItemReview review = new MenuItemReview();
-        review.setCustomer(user);
-        review.setMenuItem(menuItem);
-        review.setRating(request.getRating());
-        review.setComment(request.getComment());
+        MenuItemReview review = MenuReviewMapper.toMenuItemReviewEntity(request, user, menuItem);
 
         menuItemReviewRepository.save(review);
 

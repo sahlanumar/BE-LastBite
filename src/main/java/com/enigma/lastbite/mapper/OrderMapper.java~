@@ -1,7 +1,6 @@
 package com.enigma.lastbite.mapper;
 
 import com.enigma.lastbite.constant.OrderStatus;
-import com.enigma.lastbite.dto.request.OrderItemRequest;
 import com.enigma.lastbite.dto.request.OrderRequest;
 import com.enigma.lastbite.dto.response.OrderItemResponse;
 import com.enigma.lastbite.dto.response.OrderResponse;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class OrderMapper {
 
-    public static OrderItem toOrderItemEntity(OrderItemRequest itemRequest, MenuItem menuItem) {
+    public static OrderItem toOrderItemEntity(OrderRequest.orderItems itemRequest, MenuItem menuItem) {
         return OrderItem.builder()
                 .menuItem(menuItem)
                 .quantityPurchased(itemRequest.getQuantity())

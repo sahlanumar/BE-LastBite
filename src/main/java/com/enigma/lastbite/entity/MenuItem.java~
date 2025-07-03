@@ -1,7 +1,10 @@
 package com.enigma.lastbite.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import com.enigma.lastbite.constant.ListingStatus;
@@ -18,7 +21,6 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "menu_items")
-@Builder
 public class MenuItem {
 
     @Id

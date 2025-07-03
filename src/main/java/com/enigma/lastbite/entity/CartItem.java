@@ -1,10 +1,7 @@
 package com.enigma.lastbite.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -14,6 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 @NoArgsConstructor
 @Entity
 @Table(name = "cart_items")
+@Builder
 public class CartItem {
 
     @Id

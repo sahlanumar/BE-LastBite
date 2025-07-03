@@ -7,7 +7,7 @@ import com.enigma.lastbite.entity.Order;
 import com.enigma.lastbite.entity.Payment;
 import com.enigma.lastbite.exception.CustomException;
 import com.enigma.lastbite.exception.ErrorCode;
-import com.enigma.lastbite.repository.OrderRepository;
+import com.enigma.lastbite.mapper.PaymentMapper;
 import com.enigma.lastbite.repository.PaymentRepository;
 import com.enigma.lastbite.service.OrderService;
 import com.enigma.lastbite.service.PaymentService;
@@ -17,12 +17,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -54,25 +52,10 @@ public class PaymentServiceImpl implements PaymentService {
             String redirectUrl = midtransSnapApi.createTransactionRedirectUrl(params);
             String transactionId = (String) transactionDetails.get("order_id");
 
-            Payment payment = new Payment();
-            payment.setOrder(order);
-            payment.setMidtransTransactionId(transactionId);
-            payment.setAmount(order.getTotalAmount());
-            payment.setStatus(PaymentStatus.PENDING);
-            payment.setTransactionTime(LocalDateTime.now());
-            payment.setCreatedAt(LocalDateTime.now());
-
+            Payment payment = PaymentMapper.toPaymentEntity(order, transactionId);
             paymentRepository.save(payment);
 
-            return PaymentResponse.builder()
-                    .paymentId(payment.getId())
-                    .midtransTransactionId(transactionId)
-                    .transactionTime(payment.getTransactionTime())
-                    .amount(payment.getAmount())
-                    .token(transactionToken)
-                    .redirectUrl(redirectUrl)
-                    .transactionStatus(payment.getStatus().name())
-                    .build();
+            return PaymentMapper.toResponse(payment, transactionToken, redirectUrl);
 
         } catch (MidtransError e) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Midtrans error: " + e.getMessage());

@@ -1,9 +1,55 @@
 package com.enigma.lastbite.mapper;
 
+import com.enigma.lastbite.dto.request.CreateMenuItemRequest;
+import com.enigma.lastbite.dto.request.UpdateMenuItemRequest;
 import com.enigma.lastbite.dto.response.MenuItemResponse;
 import com.enigma.lastbite.entity.MenuItem;
+import com.enigma.lastbite.entity.SellerProfile;
 
 public class MenuMapper {
+
+    public static MenuItem toMenuItemEntity(CreateMenuItemRequest request, SellerProfile sellerProfile) {
+        return MenuItem.builder()
+                .sellerProfile(sellerProfile)
+                .name(request.getName())
+                .description(request.getDescription())
+                .imageUrl(request.getImageUrl())
+                .originalPrice(request.getOriginalPrice())
+                .discountedPrice(request.getDiscountedPrice())
+                .quantityAvailable(request.getQuantityAvailable())
+                .displayStartTime(request.getDisplayStartTime())
+                .displayEndTime(request.getDisplayEndTime())
+                .status(request.getStatus())
+                .build();
+    }
+
+    public static void updateFromDto(MenuItem menuItem, UpdateMenuItemRequest request) {
+        if (request.getName() != null) {
+            menuItem.setName(request.getName());
+        }
+        if (request.getDescription() != null) {
+            menuItem.setDescription(request.getDescription());
+        }
+        if (request.getImageUrl() != null) {
+            menuItem.setImageUrl(request.getImageUrl());
+        }
+        if (request.getOriginalPrice() != null) {
+            menuItem.setOriginalPrice(request.getOriginalPrice());
+        }
+        if (request.getDiscountedPrice() != null) {
+            menuItem.setDiscountedPrice(request.getDiscountedPrice());
+        }
+        if (request.getQuantityAvailable() != null) {
+            menuItem.setQuantityAvailable(request.getQuantityAvailable());
+        }
+        if (request.getDisplayStartTime() != null) {
+            menuItem.setDisplayStartTime(request.getDisplayStartTime());
+        }
+        if (request.getDisplayEndTime() != null) {
+            menuItem.setDisplayEndTime(request.getDisplayEndTime());
+        }
+    }
+
     public static MenuItemResponse toMenuItemResponse(MenuItem menuItem) {
         return MenuItemResponse.builder()
                 .id(menuItem.getId())
@@ -23,12 +69,13 @@ public class MenuMapper {
                 .updatedAt(menuItem.getUpdatedAt())
                 .build();
     }
+
     public static MenuItemResponse toMenuItemResponse(MenuItem menuItem, Double userLat, Double userLon) {
         Double distanceKm = null;
         if (userLat != null && userLon != null) {
-            distanceKm = Double.valueOf(haversine(userLat, userLon,
+            distanceKm = haversine(userLat, userLon,
                     menuItem.getSellerProfile().getLatitude().doubleValue(),
-                    menuItem.getSellerProfile().getLongitude().doubleValue()));
+                    menuItem.getSellerProfile().getLongitude().doubleValue());
         }
 
         return MenuItemResponse.builder()

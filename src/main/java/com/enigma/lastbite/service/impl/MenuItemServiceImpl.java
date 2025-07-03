@@ -6,8 +6,6 @@ import com.enigma.lastbite.dto.request.UpdateMenuItemRequest;
 import com.enigma.lastbite.dto.response.MenuItemResponse;
 import com.enigma.lastbite.entity.MenuItem;
 import com.enigma.lastbite.entity.SellerProfile;
-
-
 import com.enigma.lastbite.entity.User;
 import com.enigma.lastbite.exception.CustomException;
 import com.enigma.lastbite.exception.ErrorCode;
@@ -33,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -48,19 +45,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     @Override
     public MenuItemResponse create(CreateMenuItemRequest request) {
         SellerProfile sellerProfile = sellerService.findBySellerId(request.getSellerProfileId());
-
-        MenuItem menuItem = new MenuItem();
-        menuItem.setSellerProfile(sellerProfile);
-        menuItem.setName(request.getName());
-        menuItem.setDescription(request.getDescription());
-        menuItem.setImageUrl(request.getImageUrl());
-        menuItem.setOriginalPrice(request.getOriginalPrice());
-        menuItem.setDiscountedPrice(request.getDiscountedPrice());
-        menuItem.setQuantityAvailable(request.getQuantityAvailable());
-        menuItem.setDisplayStartTime(request.getDisplayStartTime());
-        menuItem.setDisplayEndTime(request.getDisplayEndTime());
-        menuItem.setStatus(request.getStatus());
-
+        MenuItem menuItem = MenuMapper.toMenuItemEntity(request, sellerProfile);
         menuItemRepository.save(menuItem);
         return MenuMapper.toMenuItemResponse(menuItem);
     }
@@ -86,12 +71,10 @@ public class MenuItemServiceImpl implements MenuItemService {
 
         Page<MenuItem> menuItems = menuItemRepository.findAll(spec, Pageable.unpaged());
 
-        // Ubah ke response dan hitung jarak
         List<MenuItemResponse> responses = menuItems.getContent().stream()
                 .map(item -> MenuMapper.toMenuItemResponse(item, userLat, userLon))
                 .toList();
 
-        // Jika sort by distance, lakukan sorting manual
         if ("distance".equalsIgnoreCase(sortField) && userLat != null && userLon != null) {
             responses = responses.stream()
                     .sorted((a, b) -> {
@@ -104,14 +87,12 @@ public class MenuItemServiceImpl implements MenuItemService {
                     .toList();
         }
 
-        // Pagination manual karena sudah tidak pakai Pageable database
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), responses.size());
         List<MenuItemResponse> pagedList = responses.subList(start, end);
 
         return new PageImpl<>(pagedList, pageable, responses.size());
     }
-
 
     @Transactional(readOnly = true)
     @Override
@@ -144,43 +125,12 @@ public class MenuItemServiceImpl implements MenuItemService {
     public MenuItemResponse update(String id, UpdateMenuItemRequest request) {
         MenuItem menuItem = findByIdOrThrowNotFound(id);
 
-        if(request.getName()!=null){
-            menuItem.setName(request.getName());
-        }
-
-        if(request.getDescription()!=null){
-            menuItem.setDescription(request.getDescription());
-        }
-
-        if(request.getImageUrl()!=null){
-            menuItem.setImageUrl(request.getImageUrl());
-        }
-
-        if(request.getOriginalPrice()!=null){
-            menuItem.setOriginalPrice(request.getOriginalPrice());
-        }
-
-        if(request.getDiscountedPrice()!=null){
-            menuItem.setDiscountedPrice(request.getDiscountedPrice());
-        }
-
-        if(request.getQuantityAvailable()!=null){
-            menuItem.setQuantityAvailable(request.getQuantityAvailable());
-        }
-
-        if(request.getDisplayStartTime()!=null){
-            menuItem.setDisplayStartTime(request.getDisplayStartTime());
-        }
-
-        if(request.getDisplayEndTime()!=null){
-            menuItem.setDisplayEndTime(request.getDisplayEndTime());
-        }
+        MenuMapper.updateFromDto(menuItem, request);
 
         ListingStatus status = ListingStatus.NOT_AVAILABLE;
         if (menuItem.getQuantityAvailable() > 0 && menuItem.getDisplayEndTime().isAfter(LocalDateTime.now()) && menuItem.getDisplayStartTime().isBefore(LocalDateTime.now())) {
             status = ListingStatus.AVAILABLE;
         }
-
         menuItem.setStatus(status);
 
         menuItemRepository.save(menuItem);
@@ -210,7 +160,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     }
 
     @Transactional
-    @Scheduled(fixedRate = 60000) // Menjalankan metode ini setiap 60000 milidetik = 1 menit
+    @Scheduled(fixedRate = 60000)
     public void updateExpiredMenuItems() {
         List<MenuItem> expiredItems = menuItemRepository.findAllByDisplayEndTimeBeforeAndQuantityAvailableGreaterThan(LocalDateTime.now(), 0);
 
