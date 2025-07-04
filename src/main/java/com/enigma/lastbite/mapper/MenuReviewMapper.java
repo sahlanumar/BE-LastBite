@@ -8,7 +8,6 @@ import com.enigma.lastbite.entity.Order; // <-- Perubahan
 
 public class MenuReviewMapper {
 
-    // <-- DIUBAH: Sekarang menerima Order, bukan User
     public static MenuItemReview toMenuItemReviewEntity(MenuItemReviewCreateRequest request, Order order, MenuItem menuItem) {
         return MenuItemReview.builder()
                 .order(order)
@@ -18,16 +17,15 @@ public class MenuReviewMapper {
                 .build();
     }
 
-    // <-- DIUBAH: Mengisi field-field baru di response
     public static MenuItemReviewResponse toMenuItemReviewResponse(MenuItemReview menuItemReview) {
         return MenuItemReviewResponse.builder()
                 .id(menuItemReview.getId())
                 .rating(menuItemReview.getRating())
                 .comment(menuItemReview.getComment())
                 .createdAt(menuItemReview.getCreatedAt())
-                .orderId(menuItemReview.getOrder().getId()) // <-- Info tambahan
-                .menuItemId(menuItemReview.getMenuItem().getId()) // <-- Info tambahan
-                .customerName(menuItemReview.getOrder().getCustomer().getFullName()) // <-- Info tambahan
+                .orderId(menuItemReview.getOrder().getId())
+                .menuItemId(menuItemReview.getMenuItem().getId())
+                .customerName(menuItemReview.getOrder().getCustomer().getFullName())
                 .build();
     }
 }

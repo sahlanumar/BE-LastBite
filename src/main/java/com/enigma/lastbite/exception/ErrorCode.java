@@ -4,6 +4,10 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
 
+    STATUS_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "Status tidak diizinkan"),
+    DATA_NOT_FOUND(HttpStatus.NOT_FOUND, "Data tidak ditemukan"),
+    INSUFFICIENT_BALANCE(HttpStatus.BAD_REQUEST, "Saldo tidak mencukupi"),
+
     INVALID_SUPERADMIN_KEY(HttpStatus.BAD_REQUEST, "Kunci superadmin tidak valid"),
 
     USER_CANT_SUSPEND(HttpStatus.BAD_REQUEST, "Anda tidak dapat menonaktifkan akun Anda"),

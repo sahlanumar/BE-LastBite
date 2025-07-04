@@ -1,1097 +1,786 @@
 {
-  "info": {
-    "_postman_id": "a1b2c3d4-e5f6-4a9b-8c7d-6e5f4g3h2i1j",
-    "name": "Lastbite-All",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "Auth",
-      "item": [
-        {
-          "name": "Login",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"password\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/auth/login",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "auth",
-                "login"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Refresh Token",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"refreshToken\": \"your_refresh_token\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/auth/refresh-token",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "auth",
-                "refresh-token"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Register Customer",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"username\": \"customer\",\n    \"fullName\": \"Customer Name\",\n    \"email\": \"customer@example.com\",\n    \"password\": \"password\",\n    \"phoneNumber\": \"081234567890\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/auth/register-customer",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "auth",
-                "register-customer"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Register Seller",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"username\": \"seller\",\n    \"fullName\": \"Seller Name\",\n    \"email\": \"seller@example.com\",\n    \"password\": \"password\",\n    \"phoneNumber\": \"081234567891\",\n    \"storeName\": \"My Store\",\n    \"storeDescription\": \"This is my store\",\n    \"address\": \"123 Main St\",\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/auth/register-seller",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "auth",
-                "register-seller"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Register Admin",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"username\": \"admin\",\n    \"fullName\": \"Admin Name\",\n    \"email\": \"admin@example.com\",\n    \"password\": \"password\",\n    \"phoneNumber\": \"081234567892\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/auth/register-admin",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "auth",
-                "register-admin"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
+    "info": {
+        "_postman_id": "a1b2c3d4-e5f6-4a9b-8c7d-6e5f4g3h2i1j-fixed",
+        "name": "Lastbite-All",
+        "description": "A collection of all API endpoints for the Lastbite application, generated from the source code.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
-    {
-      "name": "Carts",
-      "item": [
+    "item": [
         {
-          "name": "Add Item to Cart",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"menuItemId\": \"<menu_item_id>\",\n    \"quantity\": 1\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/carts/items",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "carts",
-                "items"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Cart by Login",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/carts",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "carts"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update Item Quantity",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/carts/items/<cart_item_id>?quantity=2",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "carts",
-                "items",
-                "<cart_item_id>"
-              ],
-              "query": [
+            "name": "Auth",
+            "item": [
                 {
-                  "key": "quantity",
-                  "value": "2"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Remove Item from Cart",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/carts/items/<cart_item_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "carts",
-                "items",
-                "<cart_item_id>"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Clear Cart",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/carts",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "carts"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Menu Items",
-      "item": [
-        {
-          "name": "Create Menu Item",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"sellerProfileId\": \"<seller_profile_id>\",\n    \"name\": \"Nasi Goreng\",\n    \"description\": \"Nasi goreng spesial dengan telur dan ayam\",\n    \"imageUrl\": \"http://example.com/nasi-goreng.jpg\",\n    \"originalPrice\": 25000,\n    \"discountedPrice\": 20000,\n    \"quantityAvailable\": 10,\n    \"displayStartTime\": \"2025-07-03T10:00:00\",\n    \"displayEndTime\": \"2025-07-03T22:00:00\",\n    \"status\": \"AVAILABLE\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/menu-items",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "menu-items"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Menu Item By Id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/menu-items/<menu_item_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "menu-items",
-                "<menu_item_id>"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get All Menu Items",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/menu-items?name=Nasi&maxPrice=25000",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "menu-items"
-              ],
-              "query": [
-                {
-                  "key": "name",
-                  "value": "Nasi"
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"customer\",\n    \"email\": \"\",\n    \"password\": \"password\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/login",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "login"]
+                        }
+                    },
+                    "response": []
                 },
                 {
-                  "key": "maxPrice",
-                  "value": "25000"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get My Menu Items",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/menu-items/me",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "menu-items",
-                "me"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update Menu Item",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\": \"Nasi Goreng Updated\",\n    \"description\": \"Nasi goreng spesial dengan telur, ayam, dan udang\",\n    \"originalPrice\": 27000\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/menu-items/<menu_item_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "menu-items",
-                "<menu_item_id>"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Menu Item",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/menu-items/<menu_item_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "menu-items",
-                "<menu_item_id>"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Menu Item Reviews",
-      "item": [
-        {
-          "name": "Create Menu Item Review",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"menuItemId\": \"<menu_item_id>\",\n    \"rating\": 5,\n    \"comment\": \"Enak banget!\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/menu-item-reviews",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "menu-item-reviews"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Menu Item Review",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/menu-item-reviews/<review_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "menu-item-reviews",
-                "<review_id>"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Menu Item Review By Id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/menu-item-reviews/<review_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "menu-item-reviews",
-                "<review_id>"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Reviews By Menu Item Id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/menu-item-reviews/menu/<menu_item_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "menu-item-reviews",
-                "menu",
-                "<menu_item_id>"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Orders",
-      "item": [
-        {
-          "name": "Get All Orders",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/orders?customerId=<customer_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders"
-              ],
-              "query": [
+                    "name": "Refresh Token",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"refreshToken\": \"<your_refresh_token>\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/refresh-token",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "refresh-token"]
+                        }
+                    },
+                    "response": []
+                },
                 {
-                  "key": "customerId",
-                  "value": "<customer_id>"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Create Order",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"orderItems\": [\n        {\n            \"menuItemId\": \"<menu_item_id>\",\n            \"quantity\": 1\n        }\n    ]\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Order By Id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/orders/<order_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "<order_id>"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get My Orders As Customer",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/orders/customer/me",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "customer",
-                "me"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get My Orders As Seller",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/orders/seller/me",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "seller",
-                "me"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Accept Order",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/orders/<order_id>/accept",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "<order_id>",
-                "accept"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Mark As Ready",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/orders/<order_id>/ready",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "<order_id>",
-                "ready"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update Status To Paid",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/orders/<order_id>/paid",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "<order_id>",
-                "paid"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Verify And Complete Order",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"verificationCode\": \"<verification_code>\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/<order_id>/complete",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "<order_id>",
-                "complete"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Payments",
-      "item": [
-        {
-          "name": "Create Payment",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"orderId\": \"<order_id>\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/payments",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "payments"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Handle Midtrans Notification",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"transaction_time\": \"2025-07-03 17:12:03\",\n    \"transaction_status\": \"capture\",\n    \"transaction_id\": \"a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6\",\n    \"status_message\": \"midtrans payment notification\",\n    \"status_code\": \"200\",\n    \"signature_key\": \"<signature_key>\",\n    \"payment_type\": \"credit_card\",\n    \"order_id\": \"<order_id>\",\n    \"merchant_id\": \"G123456789\",\n    \"gross_amount\": \"20000.00\",\n    \"fraud_status\": \"accept\",\n    \"currency\": \"IDR\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/payments/midtrans-notification",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "payments",
-                "midtrans-notification"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Sellers",
-      "item": [
-        {
-          "name": "Get All Sellers",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/sellers?storeName=Toko",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "sellers"
-              ],
-              "query": [
+                    "name": "Register Customer",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"newcustomer\",\n    \"fullName\": \"New Customer\",\n    \"email\": \"newcustomer@example.com\",\n    \"password\": \"password123\",\n    \"phoneNumber\": \"081234567899\",\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"profileImageUrl\": \"\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/register-customer",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "register-customer"]
+                        }
+                    },
+                    "response": []
+                },
                 {
-                  "key": "storeName",
-                  "value": "Toko"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Seller By Id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/sellers/<seller_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "sellers",
-                "<seller_id>"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Seller By User Id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/sellers/user/<user_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "sellers",
-                "user",
-                "<user_id>"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update Seller",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"storeName\": \"Toko Kelontong Maju Jaya\",\n    \"storeDescription\": \"Menjual berbagai macam kebutuhan sehari-hari\",\n    \"address\": \"Jl. Raya Bogor Km. 20\",\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"status\": \"ACTIVE\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/sellers/<seller_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "sellers",
-                "<seller_id>"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Users",
-      "item": [
-        {
-          "name": "Get All Users",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/users?search=test",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "users"
-              ],
-              "query": [
+                    "name": "Register Seller",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"newseller\",\n    \"fullName\": \"New Seller\",\n    \"email\": \"newseller@example.com\",\n    \"password\": \"password123\",\n    \"phoneNumber\": \"089876543211\",\n    \"storeName\": \"New Awesome Store\",\n    \"storeDescription\": \"We sell awesome things!\",\n    \"address\": \"456 Another St\",\n    \"latitude\": -6.2188,\n    \"longitude\": 106.8556,\n    \"profileImageUrl\": \"\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/register-seller",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "register-seller"]
+                        }
+                    },
+                    "response": []
+                },
                 {
-                  "key": "search",
-                  "value": "test"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Me",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/users/me",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "users",
-                "me"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get User By Id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/users/<user_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "users",
-                "<user_id>"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update User By Id",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"fullName\": \"User Full Name Updated\",\n    \"email\": \"user.updated@example.com\",\n    \"phoneNumber\": \"081234567899\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/users/<user_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "users",
-                "<user_id>"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update User",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"fullName\": \"My Full Name Updated\",\n    \"email\": \"me.updated@example.com\",\n    \"phoneNumber\": \"081234567898\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/users/me",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "users",
-                "me"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Change Password By Id",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"oldPassword\": \"password\",\n    \"newPassword\": \"newpassword\",\n    \"confirmNewPassword\": \"newpassword\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/users/<user_id>/password",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "users",
-                "<user_id>",
-                "password"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Change Password",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"oldPassword\": \"password\",\n    \"newPassword\": \"newpassword\",\n    \"confirmNewPassword\": \"newpassword\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/users/me/password",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "users",
-                "me",
-                "password"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete User",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/users/<user_id>",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "users",
-                "<user_id>"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Upload",
-      "item": [
-        {
-          "name": "Upload Image",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
+                    "name": "Register Admin",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"newadmin\",\n    \"fullName\": \"New Admin\",\n    \"email\": \"newadmin@example.com\",\n    \"password\": \"password123\",\n    \"phoneNumber\": \"081112223344\",\n    \"profileImageUrl\": \"\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/register-admin",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "register-admin"]
+                        }
+                    },
+                    "response": []
+                },
                 {
-                  "key": "file",
-                  "type": "file",
-                  "src": []
+                    "name": "Register Super Admin",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"superadmin\",\n    \"fullName\": \"Super Admin\",\n    \"email\": \"superadmin@example.com\",\n    \"password\": \"supersecretpassword\",\n    \"phoneNumber\": \"080000000000\",\n    \"profileImageUrl\": \"\",\n    \"secretKeySuperAdmin\": \"<your_super_admin_secret_key>\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/register-super-admin",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "register-super-admin"]
+                        }
+                    },
+                    "response": []
                 }
-              ]
-            },
-            "url": {
-              "raw": "{{base_url}}/api/upload",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "api",
-                "upload"
-              ]
-            }
-          },
-          "response": []
+            ]
+        },
+        {
+            "name": "Carts",
+            "item": [
+                {
+                    "name": "Add Item to Cart",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"menuItemId\": \"<menu_item_id>\",\n    \"quantity\": 1\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/carts/items",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "carts", "items"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get My Cart",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/carts",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "carts"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Item Quantity in Cart",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/carts/items/<cart_item_id>?quantity=2",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "carts", "items", "<cart_item_id>"],
+                            "query": [{ "key": "quantity", "value": "2" }]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Remove Item from Cart",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/carts/items/<cart_item_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "carts", "items", "<cart_item_id>"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Clear Cart",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/carts",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "carts"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Menu Items",
+            "item": [
+                {
+                    "name": "Create Menu Item",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"sellerProfileId\": \"<seller_profile_id>\",\n    \"name\": \"Nasi Goreng Enak\",\n    \"description\": \"Nasi goreng spesial dengan telur dan ayam suwir.\",\n    \"imageUrl\": \"http://example.com/nasi-goreng.jpg\",\n    \"originalPrice\": 25000,\n    \"discountedPrice\": 22000,\n    \"quantityAvailable\": 50,\n    \"displayStartTime\": \"2025-07-04T10:00:00\",\n    \"displayEndTime\": \"2025-07-04T22:00:00\",\n    \"status\": \"AVAILABLE\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/menu-items",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "menu-items"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Menu Item By Id",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/menu-items/<menu_item_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "menu-items", "<menu_item_id>"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Menu Items (Search)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/menu-items?name=Nasi&maxPrice=30000&minRating=4&isAvailable=true&lat=-6.2088&lon=106.8456&page=0&size=10&sortField=distance&sortDir=asc",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "menu-items"],
+                            "query": [
+                                {"key": "name", "value": "Nasi"},
+                                {"key": "maxPrice", "value": "30000"},
+                                {"key": "minRating", "value": "4"},
+                                {"key": "isAvailable", "value": "true"},
+                                {"key": "lat", "value": "-6.2088"},
+                                {"key": "lon", "value": "106.8456"},
+                                {"key": "page", "value": "0"},
+                                {"key": "size", "value": "10"},
+                                {"key": "sortField", "value": "distance"},
+                                {"key": "sortDir", "value": "asc"}
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get My Menu Items (Seller)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/menu-items/me?status=AVAILABLE",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "menu-items", "me"],
+                            "query": [{"key": "status", "value": "AVAILABLE"}]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Menu Item",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Nasi Goreng Super Spesial\",\n    \"description\": \"Nasi goreng spesial dengan telur, ayam, udang, dan bakso.\",\n    \"originalPrice\": 28000,\n    \"discountedPrice\": 25000\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/menu-items/<menu_item_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "menu-items", "<menu_item_id>"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Menu Item",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/menu-items/<menu_item_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "menu-items", "<menu_item_id>"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Menu Item Reviews",
+            "item": [
+                {
+                    "name": "Create Menu Item Review",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"orderId\": \"<completed_order_id>\",\n    \"menuItemId\": \"<menu_item_id_from_order>\",\n    \"rating\": 5,\n    \"comment\": \"Sangat lezat, porsi banyak!\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/menu-item-reviews",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "menu-item-reviews"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Items to Review",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/menu-item-reviews/to-review",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "menu-item-reviews", "to-review"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Menu Item Review",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/menu-item-reviews/<review_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "menu-item-reviews", "<review_id>"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Menu Item Review By Id",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/menu-item-reviews/<review_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "menu-item-reviews", "<review_id>"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Reviews By Menu Item Id",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/menu-item-reviews/menu/<menu_item_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "menu-item-reviews", "menu", "<menu_item_id>"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Orders",
+            "item": [
+                {
+                    "name": "Get All Orders (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders?status=PAID&page=0&size=10",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "orders"],
+                            "query": [
+                                {"key": "status", "value": "PAID"},
+                                {"key": "page", "value": "0"},
+                                {"key": "size", "value": "10"}
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Order",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"orderItems\": [\n        {\n            \"menuItemId\": \"<menu_item_id_1>\",\n            \"quantity\": 2\n        },\n        {\n            \"menuItemId\": \"<menu_item_id_2>\",\n            \"quantity\": 1\n        }\n    ]\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/orders",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "orders"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Order By Id",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders/<order_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "orders", "<order_id>"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get My Orders (Customer)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders/customer/me",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "orders", "customer", "me"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get My Orders (Seller)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders/seller/me",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "orders", "seller", "me"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Accept Order (Seller)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders/<order_id>/accept",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "orders", "<order_id>", "accept"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Mark Order as Ready (Seller)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders/<order_id>/ready",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "orders", "<order_id>", "ready"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Cancel Order",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders/<order_id>/cancel",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "orders", "<order_id>", "cancel"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Verify and Complete Order (Seller)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"verificationCode\": \"<verification_code_from_customer>\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/orders/<order_id>/complete",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "orders", "<order_id>", "complete"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Payments",
+            "item": [
+                {
+                    "name": "Create Payment",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"orderId\": \"<order_id>\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/payments",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "payments"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Handle Midtrans Notification",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"transaction_time\": \"2025-07-04 17:12:03\",\n    \"transaction_status\": \"settlement\",\n    \"transaction_id\": \"a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6\",\n    \"status_message\": \"midtrans payment notification\",\n    \"status_code\": \"200\",\n    \"signature_key\": \"<signature_key>\",\n    \"payment_type\": \"credit_card\",\n    \"order_id\": \"<order_id>\",\n    \"merchant_id\": \"G123456789\",\n    \"gross_amount\": \"22000.00\",\n    \"fraud_status\": \"accept\",\n    \"currency\": \"IDR\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/payments/midtrans-notification",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "payments", "midtrans-notification"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Sellers",
+            "item": [
+                {
+                    "name": "Get All Sellers",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/sellers?storeName=Toko&status=ACTIVE",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "sellers"],
+                            "query": [
+                                {"key": "storeName", "value": "Toko"},
+                                {"key": "status", "value": "ACTIVE"}
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Seller By Id",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/sellers/<seller_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "sellers", "<seller_id>"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Seller By User Id (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/sellers/user/<user_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "sellers", "user", "<user_id>"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Seller",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"storeName\": \"Toko Kelontong Maju Jaya\",\n    \"storeDescription\": \"Menjual berbagai macam kebutuhan sehari-hari dengan harga terjangkau.\",\n    \"address\": \"Jl. Raya Bogor Km. 20, Jakarta Timur\",\n    \"status\": \"ACTIVE\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/sellers/<seller_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "sellers", "<seller_id>"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Upload",
+            "item": [
+                {
+                    "name": "Upload Image",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [{ "key": "file", "type": "file", "src": [] }]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/upload",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "upload"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Users",
+            "item": [
+                {
+                    "name": "Get All Users (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/users?search=customer&role=ROLE_CUSTOMER",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "users"],
+                            "query": [
+                                {"key": "search", "value": "customer"},
+                                {"key": "role", "value": "ROLE_CUSTOMER"}
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get My Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/users/me",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "users", "me"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get User By Id (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/users/<user_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "users", "<user_id>"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update User By Id (Admin)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"fullName\": \"User Full Name Updated by Admin\",\n    \"email\": \"user.updated.admin@example.com\",\n    \"phoneNumber\": \"081234567800\",\n    \"suspendedUntil\": \"2025-12-31T23:59:59\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/users/<user_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "users", "<user_id>"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update My Profile",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"fullName\": \"My Full Name Updated\",\n    \"phoneNumber\": \"081234567898\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/users/me",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "users", "me"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Change Password By Id (Admin)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"oldPassword\": \"<user_current_password>\",\n    \"newPassword\": \"newpassword123\",\n    \"confirmNewPassword\": \"newpassword123\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/users/<user_id>/password",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "users", "<user_id>", "password"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Change My Password",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"oldPassword\": \"password\",\n    \"newPassword\": \"newpassword456\",\n    \"confirmNewPassword\": \"newpassword456\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/users/me/password",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "users", "me", "password"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete User (Admin)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/users/<user_id>",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "users", "<user_id>"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8080",
+            "type": "string"
+        }
+    ]
 }

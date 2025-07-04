@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class SwaggerUiLogger implements ApplicationListener<ApplicationReadyEvent> {
 
     @Value("${springdoc.swagger-ui.path:/swagger-ui.html}")
-    private String swaggerPath;
+    private String swaggerPath; // reflects custom path if you override it
 
     @Value("${server.servlet.context-path:}")
     private String contextPath;

@@ -74,7 +74,7 @@ public class SecurityConfig {
                         // AUTHENTICATION (PUBLIK & ADMIN)
                         // =============================================================================
                         .requestMatchers("/api/auth/login", "/api/auth/refresh-token", "/api/auth/register-customer", "/api/auth/register-seller").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/register-admin").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register-admin").hasAnyRole("SUPER_ADMIN")
 
                         // =============================================================================
                         // CART (CUSTOMER ONLY)

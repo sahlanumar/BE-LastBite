@@ -4,6 +4,7 @@ import com.enigma.lastbite.dto.request.PasswordChangeRequest;
 import com.enigma.lastbite.dto.request.UserUpdateRequest;
 import com.enigma.lastbite.dto.request.UserFilterRequest;
 import com.enigma.lastbite.dto.response.UserResponse;
+import com.enigma.lastbite.entity.SellerProfile;
 import com.enigma.lastbite.entity.User;
 import org.springframework.data.domain.Page;
 

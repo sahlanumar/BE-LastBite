@@ -4,12 +4,14 @@ import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.SellerUpdateRequest;
 import com.enigma.lastbite.dto.response.SellerResponse;
 import com.enigma.lastbite.entity.SellerProfile;
+import com.enigma.lastbite.entity.User;
 import com.enigma.lastbite.exception.CustomException;
 import com.enigma.lastbite.exception.ErrorCode;
 import com.enigma.lastbite.mapper.SellerMapper;
 import com.enigma.lastbite.repository.SellerProfileRepository;
 import com.enigma.lastbite.service.MenuItemService;
 import com.enigma.lastbite.service.SellerService;
+import com.enigma.lastbite.service.UserService;
 import com.enigma.lastbite.specification.SellerSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +28,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class SellerServiceImpl implements SellerService {
     private final SellerProfileRepository sellerProfileRepository;
+    private final UserService userService;
     private final MenuItemService menuItemService;
 
-    public SellerServiceImpl(SellerProfileRepository sellerProfileRepository,@Lazy MenuItemService menuItemService) {
+    public SellerServiceImpl(SellerProfileRepository sellerProfileRepository,@Lazy MenuItemService menuItemService,@Lazy UserService userService) {
+        this.userService = userService;
         this.sellerProfileRepository = sellerProfileRepository;
         this.menuItemService = menuItemService;
     }
@@ -77,6 +81,10 @@ public class SellerServiceImpl implements SellerService {
     }
 
     public SellerProfile findBySellerId(String id) {
+        if(!sellerProfileRepository.existsById(id)) {
+            User user = userService.findById(id);
+            return sellerProfileRepository.findByUserId(user.getId()).orElseThrow(() -> new CustomException(ErrorCode.SELLER_NOT_FOUND));
+        }
         return sellerProfileRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.SELLER_NOT_FOUND));
     }
 
