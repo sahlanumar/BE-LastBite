@@ -8,10 +8,12 @@ import com.enigma.lastbite.exception.CustomException;
 import com.enigma.lastbite.exception.ErrorCode;
 import com.enigma.lastbite.mapper.SellerMapper;
 import com.enigma.lastbite.repository.SellerProfileRepository;
+import com.enigma.lastbite.service.MenuItemService;
 import com.enigma.lastbite.service.SellerService;
 import com.enigma.lastbite.specification.SellerSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +23,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class SellerServiceImpl implements SellerService {
     private final SellerProfileRepository sellerProfileRepository;
+    private final MenuItemService menuItemService;
+
+    public SellerServiceImpl(SellerProfileRepository sellerProfileRepository,@Lazy MenuItemService menuItemService) {
+        this.sellerProfileRepository = sellerProfileRepository;
+        this.menuItemService = menuItemService;
+    }
 
     @Override
     public SellerResponse getById(String id) {
@@ -73,6 +80,7 @@ public class SellerServiceImpl implements SellerService {
         return sellerProfileRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.SELLER_NOT_FOUND));
     }
 
+    @Override
     public SellerProfile save(SellerProfile sellerProfile) {
         return sellerProfileRepository.save(sellerProfile);
     }

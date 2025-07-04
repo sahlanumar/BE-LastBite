@@ -39,7 +39,6 @@ public class SellerMapper {
                 .latitude(sellerProfile.getLatitude())
                 .longitude(sellerProfile.getLongitude())
                 .status(sellerProfile.getStatus())
-                .averageRating(sellerProfile.getAverageRatingMenu())
                 .balance(sellerProfile.getBalance())
                 .createdAt(sellerProfile.getCreatedAt())
                 .updatedAt(sellerProfile.getUpdatedAt())

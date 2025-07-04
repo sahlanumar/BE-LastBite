@@ -24,6 +24,7 @@ public class SellerResponse {
     private BigDecimal latitude;
     private BigDecimal longitude;
     private UserStatus status;
+    private BigDecimal averageRating;
     private BigDecimal balance;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

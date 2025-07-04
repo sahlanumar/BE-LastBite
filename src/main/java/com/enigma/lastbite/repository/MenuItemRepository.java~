@@ -22,6 +22,6 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, String>, Jpa
     void updateStatusForExpiredItems(LocalDateTime now);
 
     @Query("SELECT AVG(m.averageRating) FROM MenuItem m WHERE m.sellerProfile.id = :sellerId AND m.averageRating > 0")
-    Double findAverageRatingBySellerProfileId(String sellerId);
+    Double findAverageRatingBySellerProfileId(@Param("sellerId") String sellerId);
 
 }

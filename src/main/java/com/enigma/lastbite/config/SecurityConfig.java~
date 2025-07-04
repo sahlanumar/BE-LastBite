@@ -118,7 +118,7 @@ public class SecurityConfig {
                         // SELLERS (PUBLIC & ADMIN/SELLER)
                         // =============================================================================
                         .requestMatchers(HttpMethod.GET, "/api/sellers/user/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/sellers", "/api/sellers/**").hasAnyRole("ADMIN", "SELLER")
+                        .requestMatchers(HttpMethod.GET, "/api/sellers", "/api/sellers/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/sellers/**").hasAnyRole("ADMIN", "SELLER")
 
                         // =============================================================================

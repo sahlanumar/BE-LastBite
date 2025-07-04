@@ -29,7 +29,7 @@ public class UserMapper {
                 .fullName(user.getFullName())
                 .updatedAt(user.getUpdatedAt())
                 .phoneNumber(user.getPhoneNumber())
-                .role(user.getRoles().toString())
+                .role(String.valueOf(user.getRoles().stream().map(role -> role.getName().name()).toList()))
                 .suspendedUntil(user.getSuspendedUntil())
                 .createdAt(user.getCreatedAt())
                 .build();

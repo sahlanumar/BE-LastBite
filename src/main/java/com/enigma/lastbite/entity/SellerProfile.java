@@ -53,6 +53,9 @@ public class SellerProfile {
     @Column(nullable = false)
     private UserStatus status = UserStatus.INACTIVE;
 
+    @Column(name = "average_rating", precision = 3, scale = 2)
+    private BigDecimal averageRatingMenu = BigDecimal.ZERO;
+
     @Column(name = "balance", precision = 15, scale = 2)
     private BigDecimal balance = BigDecimal.ZERO;
 

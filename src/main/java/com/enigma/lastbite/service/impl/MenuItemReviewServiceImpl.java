@@ -4,6 +4,7 @@ import com.enigma.lastbite.dto.request.MenuItemReviewCreateRequest;
 import com.enigma.lastbite.dto.response.MenuItemReviewResponse;
 import com.enigma.lastbite.entity.MenuItem;
 import com.enigma.lastbite.entity.MenuItemReview;
+import com.enigma.lastbite.entity.SellerProfile;
 import com.enigma.lastbite.entity.User;
 import com.enigma.lastbite.exception.CustomException;
 import com.enigma.lastbite.exception.ErrorCode;
@@ -12,9 +13,11 @@ import com.enigma.lastbite.repository.MenuItemReviewRepository;
 import com.enigma.lastbite.security.JwtUtils;
 import com.enigma.lastbite.service.MenuItemReviewService;
 import com.enigma.lastbite.service.MenuItemService;
+import com.enigma.lastbite.service.SellerService;
 import com.enigma.lastbite.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,8 @@ public class MenuItemReviewServiceImpl implements MenuItemReviewService {
     private final MenuItemReviewRepository menuItemReviewRepository;
     private final JwtUtils jwtUtils;
     private final UserService userService;
+    @Lazy
+    private final SellerService sellerService;
     private final MenuItemService menuItemService;
 
     @Override
@@ -54,6 +59,8 @@ public class MenuItemReviewServiceImpl implements MenuItemReviewService {
         menuItemReviewRepository.save(review);
 
         updateMenuItemAverageRating(menuItem.getId());
+
+        menuItemService.save(menuItem);
 
         return MenuReviewMapper.toMenuItemReviewResponse(review);
     }
@@ -99,5 +106,9 @@ public class MenuItemReviewServiceImpl implements MenuItemReviewService {
         MenuItem menuItem = menuItemService.findById(menuItemId);
         menuItem.setAverageRating(average);
         menuItemService.save(menuItem);
+
+        SellerProfile sellerProfile = sellerService.findBySellerId(menuItem.getSellerProfile().getId());
+        sellerProfile.setAverageRatingMenu(BigDecimal.valueOf(menuItemService.averageRatingBySellerProfileId(menuItem.getSellerProfile().getId())));
+        sellerService.save(sellerProfile);
     }
 }

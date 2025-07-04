@@ -1,4 +1,0 @@
-package com.enigma.lastbite.dto.response;
-
-public class SellerResponse {
-}

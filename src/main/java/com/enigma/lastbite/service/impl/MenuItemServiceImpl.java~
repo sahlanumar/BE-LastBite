@@ -40,7 +40,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     private final SellerService sellerService;
     private final UserService userService;
 
-    public MenuItemServiceImpl(MenuItemRepository menuItemRepository,@Lazy SellerService sellerService, UserService userService) {
+    public MenuItemServiceImpl(MenuItemRepository menuItemRepository, SellerService sellerService,@Lazy UserService userService) {
         this.menuItemRepository = menuItemRepository;
         this.sellerService = sellerService;
         this.userService = userService;

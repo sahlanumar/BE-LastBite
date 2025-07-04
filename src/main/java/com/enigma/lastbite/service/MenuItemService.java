@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 
 public interface MenuItemService {
 
+    Double averageRatingBySellerProfileId(String sellerId);
+
     MenuItem save(MenuItem menuItem);
 
     MenuItemResponse create(MenuItemCreateRequest request);

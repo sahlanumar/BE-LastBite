@@ -27,4 +27,6 @@ public interface SellerService {
 
     SellerProfile findBySellerId(String id);
 
+    SellerProfile save(SellerProfile sellerProfile);
+
 }
