@@ -1,4 +1,72 @@
 package com.enigma.lastbite.mapper;
 
-public class WithdrawalMapper {
+import com.enigma.lastbite.constant.WithdrawalStatus;
+import com.enigma.lastbite.dto.request.WithdrawalCreateRequest;
+import com.enigma.lastbite.dto.response.WithdrawalResponse;
+import com.enigma.lastbite.entity.SellerProfile;
+import com.enigma.lastbite.entity.User;
+import com.enigma.lastbite.entity.WithdrawalRequest;
+
+import java.time.OffsetDateTime;
+
+/**
+ * Utility class untuk memetakan data antara DTO Withdrawal dan Entitas Withdrawal.
+ * Disesuaikan dengan struktur DTO yang spesifik.
+ */
+public final class WithdrawalMapper {
+
+    // Private constructor agar kelas ini tidak bisa diinstansiasi.
+    private WithdrawalMapper() {
+    }
+
+    /**
+     * Memetakan WithdrawalCreateRequest DTO dan SellerProfile menjadi entitas WithdrawalRequest baru.
+     * Metode ini mengasumsikan bahwa detail bank (nama bank, no. rekening, dll.)
+     * sudah tersimpan di dalam entitas SellerProfile dan akan disalin ke request penarikan
+     * sebagai "snapshot" pada saat permintaan dibuat.
+     *
+     * @param req    DTO yang berisi jumlah dana yang akan ditarik.
+     * @param seller Entitas SellerProfile yang mengajukan permintaan.
+     * @return Entitas WithdrawalRequest baru yang siap untuk disimpan.
+     */
+    public static WithdrawalRequest toEntity(WithdrawalCreateRequest req, SellerProfile seller) {
+        return WithdrawalRequest.builder()
+                .seller(seller)
+                .amount(req.getAmount())
+                // Mengambil detail bank dari profil seller (asumsi field ini ada)
+                .bankName(seller.getBankName())
+                .accountHolderName(seller.getAccountHolderName())
+                .accountNumber(seller.getAccountNumber())
+                .status(WithdrawalStatus.PENDING)
+                .requestDate(OffsetDateTime.now())
+                .build();
+    }
+
+    /**
+     * Memetakan entitas WithdrawalRequest menjadi WithdrawalResponse DTO.
+     * Digunakan untuk menyajikan data ke client.
+     *
+     * @param entity Entitas WithdrawalRequest dari database.
+     * @return DTO WithdrawalResponse.
+     */
+    public static WithdrawalResponse toResponse(WithdrawalRequest entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        // Menangani jika relasi seller atau processedBy (admin) null
+        String sellerId = (entity.getSeller() != null) ? entity.getSeller().getId() : null;
+        String processedByUsername = (entity.getProcessedBy() != null) ? entity.getProcessedBy().getUsername() : null;
+
+        return WithdrawalResponse.builder()
+                .id(entity.getId())
+                .sellerId(sellerId)
+                .amount(entity.getAmount())
+                .status(entity.getStatus())
+                .requestDate(entity.getRequestDate())
+                .processedDate(entity.getProcessedDate())
+                .processedBy(processedByUsername)
+                .proofOfPaymentUrl(entity.getProofOfPaymentUrl())
+                .build();
+    }
 }

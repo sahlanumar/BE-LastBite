@@ -3,10 +3,7 @@ package com.enigma.lastbite.entity;
 import com.enigma.lastbite.constant.TableNames;
 import com.enigma.lastbite.constant.WithdrawalStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -20,6 +17,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = TableNames.WITHDRAWAL)
+@Builder
 public class WithdrawalRequest {
 
     @Id

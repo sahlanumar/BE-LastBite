@@ -1,6 +1,7 @@
 package com.enigma.lastbite.service.impl;
 
 import com.enigma.lastbite.constant.UserRole;
+import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.*;
 import com.enigma.lastbite.dto.response.JwtResponse;
 import com.enigma.lastbite.dto.response.RegisterResponse;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtResponse login(LoginRequest loginRequest) {
         if (!StringUtils.hasText(loginRequest.getPassword())) {
-            throw new BadCredentialsException("Password tidak boleh kosong.");
+            throw new CustomException(ErrorCode.PASSWORD_REQUIRED);
         }
         String principal;
         if (StringUtils.hasText(loginRequest.getUsername())) {
@@ -63,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
         } else if (StringUtils.hasText(loginRequest.getEmail())) {
             principal = loginRequest.getEmail();
         } else {
-            throw new BadCredentialsException("Username atau email harus diisi.");
+            throw new CustomException(ErrorCode.USERNAME_OR_EMAIL_REQUIRED);
         }
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(principal, loginRequest.getPassword())
@@ -71,17 +73,30 @@ public class AuthServiceImpl implements AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         User user = userService.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("User tidak ditemukan setelah autentikasi"));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
         String accessToken = jwtUtils.generateJwtToken(authentication);
         String refreshToken = jwtUtils.generateRefreshToken(userDetails.getUsername());
+        SellerProfile sellerProfile = sellerProfileRepository.findByUserId(user.getId()).orElse(null);
+        UserStatus status = null;
+        if (sellerProfile != null) {
+            status = sellerProfile.getStatus();
+        }else {
+            if(user.getSuspendedUntil() != null|| user.getSuspendedUntil().isBefore(LocalDateTime.now())) {
+                status = UserStatus.ACTIVE;
+            }else {
+                status = UserStatus.INACTIVE;
+            }
+        }
         return JwtResponse.builder()
                 .token(accessToken)
                 .refreshToken(refreshToken)
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .fullName(user.getFullName())
+                .status(status)
                 .roles(roles)
                 .build();
     }

@@ -7,32 +7,55 @@ import com.enigma.lastbite.entity.SellerProfile;
 import com.enigma.lastbite.entity.User;
 import com.enigma.lastbite.entity.WithdrawalRequest;
 
-public class WithdrawalMapper {
+/**
+ * Utility class untuk memetakan data antara DTO Withdrawal dan Entitas Withdrawal.
+ * Versi ini sudah disesuaikan dengan semua kelas yang telah disediakan.
+ */
+public final class WithdrawalMapper {
 
-    /* ----- Seller membuat request ----- */
-    public static WithdrawalRequest toEntity(
-            WithdrawalCreateRequest req,
-            SellerProfile seller
-    ) {
-        WithdrawalRequest entity = new WithdrawalRequest();
-        entity.setSeller(seller);
-        entity.setAmount(req.getAmount());
-        entity.setStatus(WithdrawalStatus.PENDING);
-        return entity;
+    private WithdrawalMapper() {
     }
 
-    /* ----- Entity → Response DTO ----- */
+    /**
+     * Memetakan WithdrawalCreateRequest DTO dan SellerProfile menjadi entitas WithdrawalRequest baru.
+     * requestDate akan diisi otomatis oleh Hibernate berkat @CreationTimestamp.
+     *
+     * @param req    DTO yang berisi jumlah dana yang akan ditarik.
+     * @param seller Entitas SellerProfile yang mengajukan permintaan.
+     * @return Entitas WithdrawalRequest baru yang siap untuk disimpan.
+     */
+    public static WithdrawalRequest toEntity(WithdrawalCreateRequest req, SellerProfile seller) {
+        return WithdrawalRequest.builder()
+                .seller(seller)
+                .amount(req.getAmount())
+                .status(WithdrawalStatus.PENDING)
+                // requestDate tidak perlu di-set di sini, akan ditangani oleh @CreationTimestamp
+                .build();
+    }
+
+    /**
+     * Memetakan entitas WithdrawalRequest menjadi WithdrawalResponse DTO.
+     *
+     * @param entity Entitas WithdrawalRequest dari database.
+     * @return DTO WithdrawalResponse.
+     */
     public static WithdrawalResponse toResponse(WithdrawalRequest entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        // Menangani jika relasi seller atau processedBy (admin) null untuk mencegah error
+        String sellerId = (entity.getSeller() != null) ? entity.getSeller().getId() : null;
+        String processedByUsername = (entity.getProcessedBy() != null) ? entity.getProcessedBy().getUsername() : null;
+
         return WithdrawalResponse.builder()
                 .id(entity.getId())
-                .sellerId(entity.getSeller().getId())
+                .sellerId(sellerId)
                 .amount(entity.getAmount())
                 .status(entity.getStatus())
                 .requestDate(entity.getRequestDate())
                 .processedDate(entity.getProcessedDate())
-                .processedBy(
-                        entity.getProcessedBy() != null ? entity.getProcessedBy().getUsername() : null
-                )
+                .processedBy(processedByUsername)
                 .proofOfPaymentUrl(entity.getProofOfPaymentUrl())
                 .build();
     }

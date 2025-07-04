@@ -12,7 +12,6 @@ import com.enigma.lastbite.entity.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,8 +27,6 @@ public class AuthMapper {
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .profileImageUrl(request.getProfileImageUrl())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .roles(roles)
                 .build();
     }
@@ -42,8 +39,6 @@ public class AuthMapper {
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .phoneNumber(request.getPhoneNumber())
                 .profileImageUrl(request.getProfileImageUrl())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .latitude(BigDecimal.ZERO)
                 .longitude(BigDecimal.ZERO)
                 .roles(roles)
@@ -60,8 +55,6 @@ public class AuthMapper {
                 .profileImageUrl(request.getProfileImageUrl())
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .roles(roles)
                 .build();
     }
@@ -76,8 +69,6 @@ public class AuthMapper {
                 .longitude(request.getLongitude())
                 .balance(BigDecimal.ZERO)
                 .averageRatingMenu(BigDecimal.ZERO)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .status(UserStatus.INACTIVE)
                 .build();
     }
@@ -89,8 +80,6 @@ public class AuthMapper {
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .phoneNumber(request.getPhoneNumber())
                 .profileImageUrl(request.getProfileImageUrl())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .latitude(BigDecimal.ZERO)
                 .longitude(BigDecimal.ZERO)
                 .roles(roles)
