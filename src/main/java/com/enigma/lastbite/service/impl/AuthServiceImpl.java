@@ -15,6 +15,7 @@ import com.enigma.lastbite.repository.SellerProfileRepository;
 import com.enigma.lastbite.security.JwtUtils;
 import com.enigma.lastbite.service.AuthService;
 import com.enigma.lastbite.service.RoleService;
+import com.enigma.lastbite.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,19 +43,17 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserDetailsService userDetailsService;
-    private final UserServiceImpl userService;
+    private final UserService userService;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final SellerProfileRepository sellerProfileRepository;
 
+    @Override
     public JwtResponse login(LoginRequest loginRequest) {
-        // 1. Validasi input agar tidak kosong atau hanya spasi
         if (!StringUtils.hasText(loginRequest.getPassword())) {
             throw new BadCredentialsException("Password tidak boleh kosong.");
         }
-
-        String principal; // Bisa berupa username atau email
-
+        String principal;
         if (StringUtils.hasText(loginRequest.getUsername())) {
             principal = loginRequest.getUsername();
         } else if (StringUtils.hasText(loginRequest.getEmail())) {
@@ -62,35 +61,18 @@ public class AuthServiceImpl implements AuthService {
         } else {
             throw new BadCredentialsException("Username atau email harus diisi.");
         }
-
-        // 2. Lakukan proses autentikasi menggunakan Spring Security
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(principal, loginRequest.getPassword())
         );
-
-        // 3. Simpan informasi autentikasi ke dalam SecurityContextHolder
-        // Ini penting agar state login pengguna dikenali di request selanjutnya.
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        // 4. Dapatkan detail pengguna dari objek Authentication
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        // 5. Dapatkan informasi tambahan dari entitas User
-        // Ini adalah praktik yang baik untuk mendapatkan data custom (spt: id, email, nama lengkap)
-        // Pastikan UserDetails Anda diimplementasikan oleh entitas User Anda.
         User user = userService.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User tidak ditemukan setelah autentikasi"));
-
-        // 6. Ekstrak roles/authorities
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-
-        // 7. Generate Access Token dan Refresh Token
         String accessToken = jwtUtils.generateJwtToken(authentication);
         String refreshToken = jwtUtils.generateRefreshToken(userDetails.getUsername());
-
-        // 8. Bangun objek respons yang lengkap
         return JwtResponse.builder()
                 .token(accessToken)
                 .refreshToken(refreshToken)
@@ -103,23 +85,18 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenRefreshResponse refreshToken(TokenRefreshRequest request) {
         String requestRefreshToken = request.getRefreshToken();
-
         if (!jwtUtils.validateJwtToken(requestRefreshToken)) {
             throw new CustomException(ErrorCode.TOKEN_NOT_VALID);
         }
-
         if (!jwtUtils.isRefreshToken(requestRefreshToken)) {
             throw new CustomException(ErrorCode.NOT_REFRESH_TOKEN);
         }
-
         String username = jwtUtils.getUsernameFromJwtToken(requestRefreshToken);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-
         String newToken = jwtUtils.generateJwtToken(username, roles);
-
         return TokenRefreshResponse.builder()
                 .accessToken(newToken)
                 .refreshToken(requestRefreshToken)
@@ -144,14 +121,8 @@ public class AuthServiceImpl implements AuthService {
         roles.add(customerRole);
         User user = AuthMapper.toUser(customerRegisterRequest, passwordEncoder, roles);
         User savedUser = userService.save(user);
-        System.out.println(savedUser.getRoles());
-        return RegisterResponse.builder()
-                .id(savedUser.getId())
-                .username(savedUser.getUsername())
-                .email(savedUser.getEmail())
-                .fullName(savedUser.getFullName())
-                .role(savedUser.getRoles().toString())
-                .build();
+
+        return AuthMapper.toRegisterResponse(savedUser); // <-- DIUBAH
     }
 
     @Override
@@ -166,20 +137,13 @@ public class AuthServiceImpl implements AuthService {
         if (userService.existsByPhoneNumber(adminRegisterRequest.getPhoneNumber())) {
             throw new CustomException(ErrorCode.PHONENUMBER_ALREADY_EXISTS);
         }
-
         Set<Role> roles = new HashSet<>();
         Role adminRole = roleService.getOrCreate(UserRole.ROLE_ADMIN);
         roles.add(adminRole);
         User user = AuthMapper.toUser(adminRegisterRequest, passwordEncoder, roles);
         User savedUser = userService.save(user);
 
-        return RegisterResponse.builder()
-                .id(savedUser.getId())
-                .username(savedUser.getUsername())
-                .email(savedUser.getEmail())
-                .fullName(savedUser.getFullName())
-                .role(savedUser.getRoles().toString())
-                .build();
+        return AuthMapper.toRegisterResponse(savedUser); // <-- DIUBAH
     }
 
     @Override
@@ -194,23 +158,14 @@ public class AuthServiceImpl implements AuthService {
         if (userService.existsByPhoneNumber(sellerRegisterRequest.getPhoneNumber())) {
             throw new CustomException(ErrorCode.PHONENUMBER_ALREADY_EXISTS);
         }
-
         Set<Role> roles = new HashSet<>();
         Role sellerRole = roleService.getOrCreate(UserRole.ROLE_SELLER);
         roles.add(sellerRole);
         User user = AuthMapper.toUser(sellerRegisterRequest, passwordEncoder, roles);
-
         User savedUser = userService.save(user);
-
         SellerProfile seller = AuthMapper.toSellerProfile(sellerRegisterRequest, savedUser);
         sellerProfileRepository.save(seller);
 
-        return RegisterResponse.builder()
-                .id(savedUser.getId())
-                .username(savedUser.getUsername())
-                .email(savedUser.getEmail())
-                .fullName(savedUser.getFullName())
-                .role(savedUser.getRoles().toString())
-                .build();
+        return AuthMapper.toRegisterResponse(savedUser); // <-- DIUBAH
     }
 }

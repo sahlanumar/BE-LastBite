@@ -137,7 +137,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
         }
         if (userService.existsByPhoneNumber(customerRegisterRequest.getPhoneNumber())) {
-
+            throw new CustomException(ErrorCode.PHONENUMBER_ALREADY_EXISTS);
         }
         Set<Role> roles = new HashSet<>();
         Role customerRole = roleService.getOrCreate(UserRole.ROLE_CUSTOMER);
@@ -163,6 +163,9 @@ public class AuthServiceImpl implements AuthService {
         if (userService.existsByUsername(adminRegisterRequest.getUsername())) {
             throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
         }
+        if (userService.existsByPhoneNumber(adminRegisterRequest.getPhoneNumber())) {
+            throw new CustomException(ErrorCode.PHONENUMBER_ALREADY_EXISTS);
+        }
 
         Set<Role> roles = new HashSet<>();
         Role adminRole = roleService.getOrCreate(UserRole.ROLE_ADMIN);
@@ -187,6 +190,9 @@ public class AuthServiceImpl implements AuthService {
         }
         if (userService.existsByUsername(sellerRegisterRequest.getUsername())) {
             throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
+        }
+        if (userService.existsByPhoneNumber(sellerRegisterRequest.getPhoneNumber())) {
+            throw new CustomException(ErrorCode.PHONENUMBER_ALREADY_EXISTS);
         }
 
         Set<Role> roles = new HashSet<>();

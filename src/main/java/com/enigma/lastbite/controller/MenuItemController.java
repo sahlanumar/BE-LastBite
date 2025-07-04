@@ -28,15 +28,11 @@ public class MenuItemController {
 
     private final MenuItemService menuItemService;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 1. Tambahkan consumes
+    @PostMapping
     public ResponseEntity<CommonResponse<MenuItemResponse>> createMenuItem(
-            // 2. Ganti @RequestBody menjadi @RequestPart
-            @RequestPart("data") @Validated(ValidationGroups.Create.class) MenuItemCreateRequest request,
-            // 3. Tambahkan @RequestPart untuk file gambar
-            @RequestPart("image") MultipartFile imageFile
-    ) {
-        // 4. Panggil service dengan parameter baru (request dan imageFile)
-        MenuItemResponse response = menuItemService.create(request, imageFile);
+            @Validated(ValidationGroups.Create.class) @RequestBody MenuItemCreateRequest request) {
+
+        MenuItemResponse response = menuItemService.create(request);
         return ResponseUtil.buildResponse(HttpStatus.CREATED, ResponseMessage.SUCCESS_SAVE_DATA, response);
     }
 

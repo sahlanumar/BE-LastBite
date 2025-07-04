@@ -74,6 +74,9 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
 
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
+
     @Column(nullable = false, precision = 10, scale = 8)
     private BigDecimal latitude;
 

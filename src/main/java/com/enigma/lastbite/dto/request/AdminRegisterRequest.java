@@ -39,5 +39,5 @@ public class AdminRegisterRequest {
     // Nomor telepon bisa opsional untuk Admin
     private String phoneNumber;
 
-
+    private String profileImageUrl;
 }

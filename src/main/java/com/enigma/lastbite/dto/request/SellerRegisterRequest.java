@@ -62,4 +62,6 @@ public class SellerRegisterRequest {
     // Longitude dibutuhkan untuk menentukan lokasi toko di peta
     @NotNull(message = "Longitude tidak boleh kosong", groups = ValidationGroups.Create.class)
     private BigDecimal longitude;
+
+    private String profileImageUrl;
 }

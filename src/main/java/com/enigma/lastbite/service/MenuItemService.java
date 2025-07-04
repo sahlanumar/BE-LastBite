@@ -17,7 +17,7 @@ public interface MenuItemService {
 
     MenuItem save(MenuItem menuItem);
 
-    MenuItemResponse create(MenuItemCreateRequest request, MultipartFile imageFile) ;
+    MenuItemResponse create(MenuItemCreateRequest request) ;
 
     MenuItemResponse getById(String id);
 

@@ -64,15 +64,33 @@ public class MenuItemServiceImpl implements MenuItemService {
 
     @Transactional
     @Override
-    public MenuItemResponse create(MenuItemCreateRequest request) {
+    public MenuItemResponse create(MenuItemCreateRequest request, MultipartFile imageFile) {
+        // Validasi Seller dan statusnya
         SellerProfile sellerProfile = sellerService.findBySellerId(request.getSellerProfileId());
         if(sellerProfile.getStatus() != UserStatus.ACTIVE) {
             throw new CustomException(ErrorCode.SELLER_NOT_ACTIVE);
         }
-        // MenuMapper akan mengambil imageUrl langsung dari DTO request
-        MenuItem menuItem = MenuMapper.toMenuItemEntity(request, sellerProfile);
-        menuItemRepository.save(menuItem);
-        return MenuMapper.toMenuItemResponse(menuItem);
+
+        // 1. Upload gambar ke Cloudinary
+        try {
+            UploadImageResponse uploadResponse = cloudinaryService.uploadFile(imageFile);
+            String imageUrl = uploadResponse.getUrl(); // Asumsi DTO Anda punya getter getUrl()
+
+            // 2. Buat entitas MenuItem dari request
+            MenuItem menuItem = MenuMapper.toMenuItemEntity(request, sellerProfile);
+
+            // 3. Set URL gambar dari hasil upload Cloudinary
+            menuItem.setImageUrl(imageUrl);
+
+            // 4. Simpan entitas ke database
+            menuItemRepository.save(menuItem);
+            return MenuMapper.toMenuItemResponse(menuItem);
+
+        } catch (IOException e) {
+            // Jika upload gagal, lempar exception
+            log.error("Gagal mengunggah file ke Cloudinary: {}", e.getMessage());
+            throw new CustomException(ErrorCode.IMAGE_UPLOAD_FAILED);
+        }
     }
 
     @Transactional(readOnly = true)

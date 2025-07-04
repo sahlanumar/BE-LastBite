@@ -48,4 +48,6 @@ public class CustomerRegisterRequest {
     // Longitude dibutuhkan untuk menentukan lokasi customer
     @NotNull(message = "Longitude tidak boleh kosong", groups = ValidationGroups.Create.class)
     private BigDecimal longitude;
+
+    private String profileImageUrl;
 }
