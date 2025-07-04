@@ -1,5 +1,6 @@
 package com.enigma.lastbite.mapper;
 
+import com.enigma.lastbite.constant.UserRole;
 import com.enigma.lastbite.dto.request.UserUpdateRequest;
 import com.enigma.lastbite.dto.response.UserResponse;
 import com.enigma.lastbite.entity.User;
@@ -17,7 +18,16 @@ public class UserMapper {
             user.setPhoneNumber(request.getPhoneNumber());
         }
         if (request.getSuspendedUntil() != null) {
+            if (user.getRoles().contains(UserRole.ROLE_ADMIN)) {
+                throw new RuntimeException("Admin cannot be suspended");
+            }
             user.setSuspendedUntil(request.getSuspendedUntil());
+        }
+        if (request.getLatitude() != null) {
+            user.setLatitude(request.getLatitude());
+        }
+        if (request.getLongitude() != null) {
+            user.setLongitude(request.getLongitude());
         }
     }
 
@@ -29,6 +39,8 @@ public class UserMapper {
                 .fullName(user.getFullName())
                 .updatedAt(user.getUpdatedAt())
                 .phoneNumber(user.getPhoneNumber())
+                .latitude(user.getLatitude())
+                .longitude(user.getLongitude())
                 .role(String.valueOf(user.getRoles().stream().map(role -> role.getName().name()).toList()))
                 .suspendedUntil(user.getSuspendedUntil())
                 .createdAt(user.getCreatedAt())

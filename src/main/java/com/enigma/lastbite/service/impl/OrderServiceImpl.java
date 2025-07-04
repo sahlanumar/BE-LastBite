@@ -9,6 +9,7 @@ import com.enigma.lastbite.entity.*;
 import com.enigma.lastbite.exception.CustomException;
 import com.enigma.lastbite.exception.ErrorCode;
 import com.enigma.lastbite.mapper.OrderMapper;
+import com.enigma.lastbite.repository.MenuItemReviewRepository;
 import com.enigma.lastbite.repository.OrderRepository;
 import com.enigma.lastbite.security.JwtUtils;
 import com.enigma.lastbite.service.MenuItemService;
@@ -27,9 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -224,6 +223,19 @@ public class OrderServiceImpl implements OrderService {
         Page<Order> orders = orderRepository.findAllBySellerProfile_User_Id(user.getId(), pageable);
         return orders.map(OrderMapper::toResponse);
     }
+
+    @Override
+    public List<Order> findAllCompletedOrdersByCustomerId(String customerId) {
+        return orderRepository.findAllByCustomer_IdAndOrderStatus(customerId, OrderStatus.COMPLETED);
+    }
+
+
+    @Override
+    public List<Order> findListOrderByCustomerIdAndMenuItemId(String customerId, String menuItemId) {
+        return orderRepository.findCompletedOrdersByCustomerAndMenuItem(customerId, menuItemId);
+    }
+
+
 
     @Override
     public Order findOrderByIdOrThrow(String id) {

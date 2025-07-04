@@ -6,8 +6,10 @@ import com.enigma.lastbite.dto.request.MenuItemUpdateRequest;
 import com.enigma.lastbite.dto.response.MenuItemResponse;
 import com.enigma.lastbite.entity.MenuItem;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface MenuItemService {
 
@@ -15,7 +17,7 @@ public interface MenuItemService {
 
     MenuItem save(MenuItem menuItem);
 
-    MenuItemResponse create(MenuItemCreateRequest request);
+    MenuItemResponse create(MenuItemCreateRequest request, MultipartFile imageFile) ;
 
     MenuItemResponse getById(String id);
 

@@ -15,16 +15,9 @@ import java.time.LocalTime;
 public class UserSpecification {
 
     public static Specification<User> hasRole(UserRole role) {
-        return (root, query, cb) -> {
-            if (role == null) {
-                return cb.conjunction(); // Jika filter role tidak diberikan, jangan filter apa-apa.
-            }
-            // Lakukan join dengan koleksi 'roles'. Ini akan menghasilkan join ke tabel relasi.
-            Join<User, Role> rolesJoin = root.join("roles");
-            // Buat kondisi (predicate) dimana 'name' dari entitas Role yang di-join
-            // sama dengan nilai enum UserRole yang diberikan.
-            return cb.equal(rolesJoin.get("name"), role);
-        };
+        return (root, query, cb) ->
+                role == null ? cb.conjunction()
+                        : cb.equal(root.join("role").get("name"), role);
     }
 
     public static Specification<User> hasStatus(UserStatus status) {

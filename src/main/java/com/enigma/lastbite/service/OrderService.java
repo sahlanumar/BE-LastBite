@@ -1,14 +1,22 @@
 package com.enigma.lastbite.service;
 
+import com.enigma.lastbite.constant.OrderStatus;
 import com.enigma.lastbite.dto.request.OrderFilterRequest;
 import com.enigma.lastbite.dto.request.OrderRequest;
 import com.enigma.lastbite.dto.request.VerifyOrderRequest;
 import com.enigma.lastbite.dto.response.OrderResponse;
+import com.enigma.lastbite.entity.MenuItem;
 import com.enigma.lastbite.entity.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface OrderService {
+
+    List<Order> findAllCompletedOrdersByCustomerId(String customerId); // Menambahkan metode ini di OrderService/Repository: findAllCompletedOrdersByCustomerId
+
+    List<Order> findListOrderByCustomerIdAndMenuItemId(String customerId, String menuItemId);
 
     Page<OrderResponse> getAllOrders(OrderFilterRequest filter, int page, int size, String sortField, String sortDir);
 

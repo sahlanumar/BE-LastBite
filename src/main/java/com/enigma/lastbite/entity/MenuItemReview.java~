@@ -4,17 +4,19 @@ import com.enigma.lastbite.constant.TableNames;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+
 import org.hibernate.annotations.GenericGenerator;
+
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-// <-- DIUBAH: unique constraint sekarang berdasarkan order dan menu item
 @Table(name = TableNames.MENU_ITEM_REVIEW, uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"order_id", "menu_item_id"})
+        @UniqueConstraint(columnNames = {"customer_id", "menu_item_id"})
 })
 @Builder
 public class MenuItemReview {
@@ -25,15 +27,9 @@ public class MenuItemReview {
     @Column(columnDefinition = "VARCHAR(36)")
     private String id;
 
-    // <-- DIHAPUS: Relasi langsung ke User tidak diperlukan lagi
-    // @ManyToOne
-    // @JoinColumn(name = "customer_id", nullable = false)
-    // private User customer;
-
-    // <-- DITAMBAHKAN: Relasi ke Order, yang memiliki informasi customer
     @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
+    @JoinColumn(name = "customer_id", nullable = false)
+    private User customer;
 
     @ManyToOne
     @JoinColumn(name = "menu_item_id", nullable = false)

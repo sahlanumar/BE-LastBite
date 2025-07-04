@@ -115,5 +115,5 @@ public class MenuItemController {
         menuItemService.deleteById(id);
         return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_DELETE_DATA, null);
     }
-
+    
 }

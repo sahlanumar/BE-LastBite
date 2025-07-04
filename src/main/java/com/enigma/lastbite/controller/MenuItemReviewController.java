@@ -4,9 +4,9 @@ import com.enigma.lastbite.constant.ResponseMessage;
 import com.enigma.lastbite.dto.request.MenuItemReviewCreateRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.MenuItemReviewResponse;
+import com.enigma.lastbite.dto.response.UnreviewedItemResponse;
 import com.enigma.lastbite.service.MenuItemReviewService;
 import com.enigma.lastbite.util.ResponseUtil;
-import com.enigma.lastbite.validation.ValidationGroups;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +24,16 @@ public class MenuItemReviewController {
 
     @PostMapping
     public ResponseEntity<CommonResponse<MenuItemReviewResponse>> createReview(
-            @Validated(ValidationGroups.Create.class) @RequestBody MenuItemReviewCreateRequest request) {
+            @Validated @RequestBody MenuItemReviewCreateRequest request) {
 
         MenuItemReviewResponse review = menuItemReviewService.createReview(request);
         return ResponseUtil.buildResponse(HttpStatus.CREATED, ResponseMessage.SUCCESS_SAVE_DATA, review);
+    }
+
+    @GetMapping("/to-review")
+    public ResponseEntity<CommonResponse<List<UnreviewedItemResponse>>> getItemsToReview() {
+        List<UnreviewedItemResponse> unreviewedItems = menuItemReviewService.getUnreviewedItemsForCustomer();
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, unreviewedItems);
     }
 
     @DeleteMapping("/{id}")

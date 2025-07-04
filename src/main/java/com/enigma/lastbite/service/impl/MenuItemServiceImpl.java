@@ -1,21 +1,21 @@
 package com.enigma.lastbite.service.impl;
 
 import com.enigma.lastbite.constant.ListingStatus;
+import com.enigma.lastbite.constant.OrderStatus;
 import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.MenuItemCreateRequest;
 import com.enigma.lastbite.dto.request.MenuItemUpdateRequest;
 import com.enigma.lastbite.dto.response.MenuItemResponse;
-import com.enigma.lastbite.entity.MenuItem;
-import com.enigma.lastbite.entity.SellerProfile;
-import com.enigma.lastbite.entity.User;
+import com.enigma.lastbite.dto.response.UploadImageResponse;
+import com.enigma.lastbite.entity.*;
 import com.enigma.lastbite.exception.CustomException;
 import com.enigma.lastbite.exception.ErrorCode;
 import com.enigma.lastbite.mapper.MenuMapper;
 import com.enigma.lastbite.repository.MenuItemRepository;
-import com.enigma.lastbite.service.MenuItemService;
-import com.enigma.lastbite.service.SellerService;
-import com.enigma.lastbite.service.UserService;
+import com.enigma.lastbite.security.JwtUtils;
+import com.enigma.lastbite.service.*;
 import com.enigma.lastbite.specification.MenuItemSpecification;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -26,11 +26,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -39,23 +44,53 @@ public class MenuItemServiceImpl implements MenuItemService {
     private final MenuItemRepository menuItemRepository;
     private final SellerService sellerService;
     private final UserService userService;
+    private final JwtUtils jwtUtils;
+    private final MenuItemReviewService menuItemReviewService;
+    private final OrderService orderService;
+    private final CloudinaryService cloudinaryService;
 
-    public MenuItemServiceImpl(MenuItemRepository menuItemRepository,@Lazy SellerService sellerService, UserService userService) {
+    public MenuItemServiceImpl(MenuItemRepository menuItemRepository,SellerService sellerService, JwtUtils jwtUtils, UserService userService, @Lazy MenuItemReviewService menuItemReviewService, @Lazy OrderService orderService, CloudinaryService cloudinaryService) {
         this.menuItemRepository = menuItemRepository;
         this.sellerService = sellerService;
+        this.jwtUtils = jwtUtils;
         this.userService = userService;
+        this.menuItemReviewService = menuItemReviewService;
+        this.orderService = orderService;
+        this.cloudinaryService = cloudinaryService;
     }
+
+
+
 
     @Transactional
     @Override
-    public MenuItemResponse create(MenuItemCreateRequest request) {
+    public MenuItemResponse create(MenuItemCreateRequest request, MultipartFile imageFile) {
+        // Validasi Seller dan statusnya
         SellerProfile sellerProfile = sellerService.findBySellerId(request.getSellerProfileId());
         if(sellerProfile.getStatus() != UserStatus.ACTIVE) {
             throw new CustomException(ErrorCode.SELLER_NOT_ACTIVE);
         }
-        MenuItem menuItem = MenuMapper.toMenuItemEntity(request, sellerProfile);
-        menuItemRepository.save(menuItem);
-        return MenuMapper.toMenuItemResponse(menuItem);
+
+        // 1. Upload gambar ke Cloudinary
+        try {
+            UploadImageResponse uploadResponse = cloudinaryService.uploadFile(imageFile);
+            String imageUrl = uploadResponse.getUrl(); // Asumsi DTO Anda punya getter getUrl()
+
+            // 2. Buat entitas MenuItem dari request
+            MenuItem menuItem = MenuMapper.toMenuItemEntity(request, sellerProfile);
+
+            // 3. Set URL gambar dari hasil upload Cloudinary
+            menuItem.setImageUrl(imageUrl);
+
+            // 4. Simpan entitas ke database
+            menuItemRepository.save(menuItem);
+            return MenuMapper.toMenuItemResponse(menuItem);
+
+        } catch (IOException e) {
+            // Jika upload gagal, lempar exception
+            log.error("Gagal mengunggah file ke Cloudinary: {}", e.getMessage());
+            throw new CustomException(ErrorCode.IMAGE_UPLOAD_FAILED);
+        }
     }
 
     @Transactional(readOnly = true)

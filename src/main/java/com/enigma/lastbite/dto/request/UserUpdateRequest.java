@@ -3,12 +3,14 @@ package com.enigma.lastbite.dto.request;
 import com.enigma.lastbite.validation.ValidationGroups;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -33,8 +35,12 @@ public class UserUpdateRequest {
     @Size(min = 10, max = 20, message = "Nomor telepon harus antara 10 dan 20 digit", groups = ValidationGroups.Update.class)
     private String phoneNumber;
 
-    // Tanggal sampai kapan akun pengguna disuspens. Jika diisi, harus tanggal di masa depan.
-    @Future(message = "Tanggal suspensi harus di masa depan", groups = ValidationGroups.Update.class)
+    // Koordinat latitude baru. Opsional.
+    private BigDecimal latitude;
+
+    // Koordinat longitude baru. Opsional.
+    private BigDecimal longitude;
+
     private LocalDateTime suspendedUntil;
 
 }

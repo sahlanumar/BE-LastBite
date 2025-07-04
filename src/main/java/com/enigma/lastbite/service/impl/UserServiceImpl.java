@@ -110,6 +110,9 @@ public class UserServiceImpl implements UserService {
         jwtUtils.validateJwtToken(token);
         String username = jwtUtils.getUsernameFromJwtToken(token);
         User user = findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        if(userUpdateRequest.getSuspendedUntil() != null) {
+            throw new CustomException(ErrorCode.USER_CANT_SUSPEND);
+        }
         UserMapper.updateFromDto(user, userUpdateRequest);
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);

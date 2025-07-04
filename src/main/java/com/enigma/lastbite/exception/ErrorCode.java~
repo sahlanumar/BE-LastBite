@@ -4,6 +4,10 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
 
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Anda tidak memiliki izin untuk melakukan operasi ini"),
+
+    IMAGE_UPLOAD_FAILED(HttpStatus.BAD_REQUEST, "Gagal mengunggah gambar"),
+
     // --- Pesan Terkait Pesanan (Order) ---
     OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "Stok produk habis"),
     ORDER_NOT_PENDING_PAYMENT(HttpStatus.CONFLICT, "Gagal memperbarui status, pesanan tidak menunggu pembayaran"),
@@ -14,8 +18,11 @@ public enum ErrorCode {
     INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST, "Status pesanan tidak valid"),
     INVALID_MENU_ITEM(HttpStatus.BAD_REQUEST, "Item menu tidak valid"),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "Pesanan tidak ditemukan"),
+    SELLER_NOT_ACTIVE(HttpStatus.BAD_REQUEST, "Penjual tidak aktif"),
+    ORDER_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "Pesanan belum selesai"),
 
     // --- Pesan Terkait Ulasan (Review) ---
+    UNAUTHORIZED_REVIEW(HttpStatus.UNAUTHORIZED, "Anda tidak memiliki izin untuk melakukan operasi ini"),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "Ulasan tidak ditemukan"),
     INVALID_RATING(HttpStatus.BAD_REQUEST, "Rating tidak valid"),
     DUPLICATE_REVIEW(HttpStatus.BAD_REQUEST, "Anda sudah memberikan ulasan untuk pesanan ini"),
@@ -50,6 +57,7 @@ public enum ErrorCode {
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "Menu tidak ditemukan"),
     INVALID_MENU_DATA(HttpStatus.BAD_REQUEST, "Data menu tidak valid"),
     MENU_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "Menu sedang tidak tersedia"),
+    MENU_ITEM_NOT_IN_ORDER(HttpStatus.BAD_REQUEST, "Item menu tidak ada dalam pesanan"),
 
     // --- Pesan Terkait Pelanggan (Customer) ---
     CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "Pelanggan tidak ditemukan"),
