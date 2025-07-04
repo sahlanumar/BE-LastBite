@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
 
+    INVALID_SUPERADMIN_KEY(HttpStatus.BAD_REQUEST, "Kunci superadmin tidak valid"),
+
     USER_CANT_SUSPEND(HttpStatus.BAD_REQUEST, "Anda tidak dapat menonaktifkan akun Anda"),
 
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Anda tidak memiliki izin untuk melakukan operasi ini"),

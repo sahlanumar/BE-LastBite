@@ -62,10 +62,4 @@ public class AuthController {
         RegisterResponse res = authService.registerAdmin(req);
         return ResponseUtil.buildResponse(HttpStatus.CREATED, ResponseMessage.SUCCESS_REGISTER, res);
     }
-
-    @PostMapping("/register-super-admin")
-    public ResponseEntity<CommonResponse<RegisterResponse>> registerSuperAdmin(@Validated @RequestBody SuperAdminRegisterRequest request) {
-        RegisterResponse response = authService.registerSuperAdmin(request);
-        return ResponseUtil.buildResponse(HttpStatus.CREATED, "Super Admin registered successfully", response);
-    }
 }

@@ -18,6 +18,7 @@ import com.enigma.lastbite.service.RoleService;
 import com.enigma.lastbite.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,6 +48,9 @@ public class AuthServiceImpl implements AuthService {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final SellerProfileRepository sellerProfileRepository;
+
+    @Value("${course.super-admin.secret-key}")
+    private String actualSecretKey;
 
     @Override
     public JwtResponse login(LoginRequest loginRequest) {
@@ -122,7 +126,7 @@ public class AuthServiceImpl implements AuthService {
         User user = AuthMapper.toUser(customerRegisterRequest, passwordEncoder, roles);
         User savedUser = userService.save(user);
 
-        return AuthMapper.toRegisterResponse(savedUser); // <-- DIUBAH
+        return AuthMapper.toRegisterResponse(savedUser);
     }
 
     @Override
@@ -143,7 +147,7 @@ public class AuthServiceImpl implements AuthService {
         User user = AuthMapper.toUser(adminRegisterRequest, passwordEncoder, roles);
         User savedUser = userService.save(user);
 
-        return AuthMapper.toRegisterResponse(savedUser); // <-- DIUBAH
+        return AuthMapper.toRegisterResponse(savedUser);
     }
 
     @Override
@@ -166,6 +170,33 @@ public class AuthServiceImpl implements AuthService {
         SellerProfile seller = AuthMapper.toSellerProfile(sellerRegisterRequest, savedUser);
         sellerProfileRepository.save(seller);
 
-        return AuthMapper.toRegisterResponse(savedUser); // <-- DIUBAH
+        return AuthMapper.toRegisterResponse(savedUser);
+    }
+
+    @Override
+    @Transactional
+    public RegisterResponse registerSuperAdmin(SuperAdminRegisterRequest request) {
+        if (!actualSecretKey.equals(request.getSecretKeySuperAdmin())) {
+            throw new CustomException(ErrorCode.INVALID_SUPERADMIN_KEY);
+        }
+
+        if (userService.existsByEmail(request.getEmail())) {
+            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+        if (userService.existsByUsername(request.getUsername())) {
+            throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
+        }
+        if (userService.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new CustomException(ErrorCode.PHONENUMBER_ALREADY_EXISTS);
+        }
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(roleService.getOrCreate(UserRole.ROLE_ADMIN));
+        roles.add(roleService.getOrCreate(UserRole.ROLE_SUPER_ADMIN));
+
+        User user = AuthMapper.toUser(request, passwordEncoder, roles);
+        User savedUser = userService.save(user);
+
+        return AuthMapper.toRegisterResponse(savedUser);
     }
 }
