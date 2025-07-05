@@ -1,5 +1,6 @@
 package com.enigma.lastbite.service.impl;
 
+import com.enigma.lastbite.constant.UserRole;
 import com.enigma.lastbite.dto.request.PasswordChangeRequest;
 import com.enigma.lastbite.dto.request.UserUpdateRequest;
 import com.enigma.lastbite.dto.request.UserFilterRequest;
@@ -164,5 +165,10 @@ public class UserServiceImpl implements UserService {
         user.setPasswordHash(passwordEncoder.encode(passwordChangeRequest.getNewPassword()));
         userRepository.save(user);
         return UserMapper.toUserResponse(user);
+    }
+
+    @Override
+    public long countByRole(UserRole role) {
+        return userRepository.countByRole(role);
     }
 }

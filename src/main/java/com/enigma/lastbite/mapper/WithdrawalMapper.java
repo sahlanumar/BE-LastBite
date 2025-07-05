@@ -10,7 +10,7 @@ import com.enigma.lastbite.entity.WithdrawalRequest;
  * Utility class untuk memetakan data antara DTO Withdrawal dan Entitas Withdrawal.
  * Versi ini sudah disesuaikan dengan semua kelas yang telah disediakan.
  */
-public final class WithdrawalMapper {
+public class WithdrawalMapper {
     
     /**
      * Memetakan WithdrawalCreateRequest DTO dan SellerProfile menjadi entitas WithdrawalRequest baru.

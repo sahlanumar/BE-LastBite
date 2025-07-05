@@ -6,6 +6,7 @@ import com.enigma.lastbite.dto.request.OrderRequest;
 import com.enigma.lastbite.dto.response.OrderItemResponse;
 import com.enigma.lastbite.dto.response.OrderResponse;
 import com.enigma.lastbite.dto.response.PaymentResponse;
+import com.enigma.lastbite.dto.response.ReportResponse;
 import com.enigma.lastbite.entity.*;
 
 import java.math.BigDecimal;
@@ -81,6 +82,20 @@ public class OrderMapper {
                 .menuItemName(item.getMenuItem().getName())
                 .quantity(item.getQuantityPurchased())
                 .pricePerItem(item.getPricePerItem())
+                .build();
+    }
+
+    public static ReportResponse toResponse(
+            long totalCustomer,
+            long totalSeller,
+            long totalSuccessTx,
+            BigDecimal totalSuccessAmount
+    ) {
+        return ReportResponse.builder()
+                .totalCustomer(totalCustomer)
+                .totalSeller(totalSeller)
+                .totalSuccessTx(totalSuccessTx)
+                .totalSuccessAmount(totalSuccessAmount)
                 .build();
     }
 }

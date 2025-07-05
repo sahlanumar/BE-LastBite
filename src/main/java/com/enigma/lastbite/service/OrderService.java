@@ -3,8 +3,10 @@ package com.enigma.lastbite.service;
 import com.enigma.lastbite.constant.OrderStatus;
 import com.enigma.lastbite.dto.request.OrderFilterRequest;
 import com.enigma.lastbite.dto.request.OrderRequest;
+import com.enigma.lastbite.dto.request.ReportFilterRequest;
 import com.enigma.lastbite.dto.request.VerifyOrderRequest;
 import com.enigma.lastbite.dto.response.OrderResponse;
+import com.enigma.lastbite.dto.response.ReportResponse;
 import com.enigma.lastbite.entity.MenuItem;
 import com.enigma.lastbite.entity.Order;
 import org.springframework.data.domain.Page;
@@ -39,4 +41,6 @@ public interface OrderService {
     Page<OrderResponse> getAllOrdersForSeller(Pageable pageable);
 
     Order findOrderByIdOrThrow(String id);
+
+    ReportResponse getReport(ReportFilterRequest filter);
 }

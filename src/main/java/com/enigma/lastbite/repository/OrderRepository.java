@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -31,5 +33,30 @@ public interface OrderRepository extends JpaRepository<Order, String>, JpaSpecif
     List<Order> findCompletedOrdersByCustomerAndMenuItem(
             @Param("customerId") String customerId,
             @Param("menuItemId") String menuItemId
+    );
+
+    @Query("""
+        SELECT COUNT(o) FROM Order o
+        WHERE o.orderStatus = :status
+          AND (:start IS NULL OR o.createdAt >= :start)
+          AND (:end   IS NULL OR o.createdAt <= :end)
+    """)
+    long countByStatusAndCreatedAtBetween(
+            @Param("status") OrderStatus status,
+            @Param("start") LocalDateTime start,
+            @Param("end")   LocalDateTime end
+    );
+
+    @Query("""
+        SELECT COALESCE(SUM(o.totalAmount), 0)
+        FROM Order o
+        WHERE o.orderStatus = :status
+          AND (:start IS NULL OR o.createdAt >= :start)
+          AND (:end   IS NULL OR o.createdAt <= :end)
+    """)
+    BigDecimal sumTotalAmountByStatusAndCreatedAtBetween(
+            @Param("status") OrderStatus status,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
     );
 }

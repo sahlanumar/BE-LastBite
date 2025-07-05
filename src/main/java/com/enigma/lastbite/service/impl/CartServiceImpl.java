@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +48,7 @@ public class CartServiceImpl implements CartService {
             newCart.setCustomer(user);
             newCart.setCreatedAt(LocalDateTime.now());
             newCart.setUpdatedAt(LocalDateTime.now());
+            newCart.setItems(new ArrayList<>());
             return cartRepository.save(newCart);
         });
 
@@ -56,7 +59,9 @@ public class CartServiceImpl implements CartService {
         cartItemRepository.save(cartItem);
 
         cart.setUpdatedAt(LocalDateTime.now());
+        cart.getItems().add(cartItem);
         Cart updatedCart = cartRepository.save(cart);
+
 
         return CartMapper.toCartResponse(updatedCart);
     }

@@ -155,7 +155,7 @@ public class OrderController {
         return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, response);
     }
 
-    @GetMapping("/report")
+    @GetMapping
     public ResponseEntity<CommonResponse<ReportResponse>> getReport(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,

@@ -1,5 +1,6 @@
 package com.enigma.lastbite.service;
 
+import com.enigma.lastbite.constant.UserRole;
 import com.enigma.lastbite.dto.request.PasswordChangeRequest;
 import com.enigma.lastbite.dto.request.UserUpdateRequest;
 import com.enigma.lastbite.dto.request.UserFilterRequest;
@@ -44,4 +45,6 @@ public interface UserService {
     UserResponse updatePasswordById(String id, PasswordChangeRequest passwordChangeRequest);
 
     UserResponse updatePassword(PasswordChangeRequest passwordChangeRequest);
+
+    long countByRole(UserRole role);
 }

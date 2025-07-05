@@ -1,7 +1,6 @@
 package com.enigma.lastbite.service.impl;
 
 import com.enigma.lastbite.constant.OrderStatus;
-import com.enigma.lastbite.constant.UserRole;
 import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.*;
 import com.enigma.lastbite.dto.response.OrderResponse;
@@ -248,8 +247,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public ReportResponse getReport(ReportFilterRequest filter) {
 
-        long customerCount = userService.countByRole(UserRole.ROLE_CUSTOMER);
-        long sellerCount   = userService.countByRole(UserRole.ROLE_SELLER);
+        long customerCount = userRepository.countByRole(UserRole.ROLE_CUSTOMER);
+        long sellerCount   = userRepository.countByRole(UserRole.ROLE_SELLER);
 
         long successTx = orderRepository.countByStatusAndCreatedAtBetween(
                 OrderStatus.COMPLETED,
@@ -264,6 +263,6 @@ public class OrderServiceImpl implements OrderService {
                         filter.getEnd()
                 );
 
-        return OrderMapper.toResponse(customerCount, sellerCount, successTx, successAmount);
+        return ReportMapper.toResponse(customerCount, sellerCount, successTx, successAmount);
     }
 }
