@@ -43,4 +43,6 @@ public class UserUpdateRequest {
 
     private LocalDateTime suspendedUntil;
 
+    private String profileImageUrl;
+
 }

@@ -29,9 +29,6 @@ public class UserMapper {
         if (request.getLongitude() != null) {
             user.setLongitude(request.getLongitude());
         }
-        if(request.getProfileImageUrl() != null) {
-            user.setProfileImageUrl(request.getProfileImageUrl());
-        }
     }
 
     public static UserResponse toUserResponse(User user) {
