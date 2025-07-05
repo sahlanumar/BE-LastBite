@@ -84,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
         if (sellerProfile != null) {
             status = sellerProfile.getStatus();
         }else {
-            if(user.getSuspendedUntil() != null|| user.getSuspendedUntil().isBefore(LocalDateTime.now())) {
+            if(user.getSuspendedUntil() == null|| user.getSuspendedUntil().isBefore(LocalDateTime.now())) {
                 status = UserStatus.ACTIVE;
             }else {
                 status = UserStatus.INACTIVE;

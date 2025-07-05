@@ -25,6 +25,9 @@ public class SellerMapper {
         if (request.getStatus() != null) {
             sellerProfile.setStatus(request.getStatus());
         }
+        if (request.getStoreImageUrl() != null) {
+            sellerProfile.setStoreImageUrl(request.getStoreImageUrl());
+        }
     }
 
     public static SellerResponse toSellerResponse(SellerProfile sellerProfile) {
@@ -41,6 +44,9 @@ public class SellerMapper {
                 .status(sellerProfile.getStatus())
                 .averageRating(sellerProfile.getAverageRatingMenu())
                 .balance(sellerProfile.getBalance())
+                .phoneNumber(sellerProfile.getUser().getPhoneNumber())
+                .storeImageUrl(sellerProfile.getStoreImageUrl())
+                .profileImageUrl(sellerProfile.getUser().getProfileImageUrl())
                 .createdAt(sellerProfile.getCreatedAt())
                 .updatedAt(sellerProfile.getUpdatedAt())
                 .build();

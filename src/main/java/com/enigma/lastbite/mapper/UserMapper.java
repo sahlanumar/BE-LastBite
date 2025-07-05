@@ -41,6 +41,7 @@ public class UserMapper {
                 .phoneNumber(user.getPhoneNumber())
                 .latitude(user.getLatitude())
                 .longitude(user.getLongitude())
+                .profileImageUrl(user.getProfileImageUrl())
                 .role(String.valueOf(user.getRoles().stream().map(role -> role.getName().name()).toList()))
                 .suspendedUntil(user.getSuspendedUntil())
                 .createdAt(user.getCreatedAt())

@@ -64,4 +64,6 @@ public class SellerRegisterRequest {
     private BigDecimal longitude;
 
     private String profileImageUrl;
+
+    private String storeImageUrl;
 }

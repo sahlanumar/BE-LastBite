@@ -4,7 +4,6 @@ import com.enigma.lastbite.constant.WithdrawalStatus;
 import com.enigma.lastbite.dto.request.WithdrawalCreateRequest;
 import com.enigma.lastbite.dto.response.WithdrawalResponse;
 import com.enigma.lastbite.entity.SellerProfile;
-import com.enigma.lastbite.entity.User;
 import com.enigma.lastbite.entity.WithdrawalRequest;
 
 /**
@@ -12,10 +11,7 @@ import com.enigma.lastbite.entity.WithdrawalRequest;
  * Versi ini sudah disesuaikan dengan semua kelas yang telah disediakan.
  */
 public final class WithdrawalMapper {
-
-    private WithdrawalMapper() {
-    }
-
+    
     /**
      * Memetakan WithdrawalCreateRequest DTO dan SellerProfile menjadi entitas WithdrawalRequest baru.
      * requestDate akan diisi otomatis oleh Hibernate berkat @CreationTimestamp.

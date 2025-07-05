@@ -62,7 +62,4 @@ public class SellerProfile {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    @Column(name = "store_image_url")
-    private String storeImageUrl;
 }

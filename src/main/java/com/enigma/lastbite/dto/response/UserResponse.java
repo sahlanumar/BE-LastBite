@@ -28,6 +28,7 @@ public class UserResponse {
     private String role;
     private BigDecimal latitude;
     private BigDecimal longitude;
+    private String profileImageUrl;
     private LocalDateTime suspendedUntil;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

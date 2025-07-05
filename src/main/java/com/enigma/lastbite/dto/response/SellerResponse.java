@@ -26,6 +26,9 @@ public class SellerResponse {
     private UserStatus status;
     private BigDecimal averageRating;
     private BigDecimal balance;
+    private String profileImageUrl;
+    private String phoneNumber;
+    private String storeImageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
