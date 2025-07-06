@@ -16,6 +16,7 @@ public class WithdrawalResponse {
     private WithdrawalStatus status;
     private OffsetDateTime requestDate;
     private OffsetDateTime processedDate;
-    private String processedBy;          // username/adminId
+    private String processedBy;
     private String proofOfPaymentUrl;
+    private BigDecimal balance;
 }

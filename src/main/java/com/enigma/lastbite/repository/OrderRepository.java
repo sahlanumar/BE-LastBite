@@ -24,37 +24,88 @@ public interface OrderRepository extends JpaRepository<Order, String>, JpaSpecif
     Page<Order> findAllBySellerProfile_User_Id(String userId, Pageable pageable);
 
     @Query("""
-    SELECT o FROM Order o
-    JOIN o.orderItems oi
-    WHERE o.customer.id = :customerId
-      AND oi.menuItem.id = :menuItemId
-      AND o.orderStatus = 'COMPLETED'
-""")
+        SELECT o FROM Order o
+        JOIN o.orderItems oi
+        WHERE o.customer.id = :customerId
+          AND oi.menuItem.id = :menuItemId
+          AND o.orderStatus = 'COMPLETED'
+    """)
     List<Order> findCompletedOrdersByCustomerAndMenuItem(
             @Param("customerId") String customerId,
             @Param("menuItemId") String menuItemId
     );
 
+    // =================== Tambahan untuk menghindari error PostgreSQL ===================
+
     @Query("""
         SELECT COUNT(o) FROM Order o
         WHERE o.orderStatus = :status
-          AND (:start IS NULL OR o.createdAt >= :start)
-          AND (:end   IS NULL OR o.createdAt <= :end)
     """)
-    long countByStatusAndCreatedAtBetween(
+    long countByStatus(@Param("status") OrderStatus status);
+
+    @Query("""
+        SELECT COUNT(o) FROM Order o
+        WHERE o.orderStatus = :status AND o.createdAt >= :start
+    """)
+    long countByStatusAndStart(
+            @Param("status") OrderStatus status,
+            @Param("start") LocalDateTime start
+    );
+
+    @Query("""
+        SELECT COUNT(o) FROM Order o
+        WHERE o.orderStatus = :status AND o.createdAt <= :end
+    """)
+    long countByStatusAndEnd(
+            @Param("status") OrderStatus status,
+            @Param("end") LocalDateTime end
+    );
+
+    @Query("""
+        SELECT COUNT(o) FROM Order o
+        WHERE o.orderStatus = :status AND o.createdAt BETWEEN :start AND :end
+    """)
+    long countByStatusBetween(
             @Param("status") OrderStatus status,
             @Param("start") LocalDateTime start,
-            @Param("end")   LocalDateTime end
+            @Param("end") LocalDateTime end
     );
+
+    // ==============================================
 
     @Query("""
         SELECT COALESCE(SUM(o.totalAmount), 0)
         FROM Order o
         WHERE o.orderStatus = :status
-          AND (:start IS NULL OR o.createdAt >= :start)
-          AND (:end   IS NULL OR o.createdAt <= :end)
     """)
-    BigDecimal sumTotalAmountByStatusAndCreatedAtBetween(
+    BigDecimal sumTotalAmountByStatus(@Param("status") OrderStatus status);
+
+    @Query("""
+        SELECT COALESCE(SUM(o.totalAmount), 0)
+        FROM Order o
+        WHERE o.orderStatus = :status AND o.createdAt >= :start
+    """)
+    BigDecimal sumTotalAmountByStatusAndStart(
+            @Param("status") OrderStatus status,
+            @Param("start") LocalDateTime start
+    );
+
+    @Query("""
+        SELECT COALESCE(SUM(o.totalAmount), 0)
+        FROM Order o
+        WHERE o.orderStatus = :status AND o.createdAt <= :end
+    """)
+    BigDecimal sumTotalAmountByStatusAndEnd(
+            @Param("status") OrderStatus status,
+            @Param("end") LocalDateTime end
+    );
+
+    @Query("""
+        SELECT COALESCE(SUM(o.totalAmount), 0)
+        FROM Order o
+        WHERE o.orderStatus = :status AND o.createdAt BETWEEN :start AND :end
+    """)
+    BigDecimal sumTotalAmountByStatusBetween(
             @Param("status") OrderStatus status,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end

@@ -53,6 +53,7 @@ public class WithdrawalMapper {
                 .processedDate(entity.getProcessedDate())
                 .processedBy(processedByUsername)
                 .proofOfPaymentUrl(entity.getProofOfPaymentUrl())
+                .balance(entity.getSeller().getBalance())
                 .build();
     }
 }

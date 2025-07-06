@@ -247,23 +247,30 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ReportResponse getReport(ReportFilterRequest filter) {
-
         long customerCount = userService.countByRole(UserRole.ROLE_CUSTOMER);
-        long sellerCount   = userService.countByRole(UserRole.ROLE_SELLER);
+        long sellerCount = userService.countByRole(UserRole.ROLE_SELLER);
 
-        long successTx = orderRepository.countByStatusAndCreatedAtBetween(
-                OrderStatus.COMPLETED,
-                filter.getStart(),
-                filter.getEnd()
-        );
+        LocalDateTime start = filter.getStart();
+        LocalDateTime end = filter.getEnd();
 
-        var successAmount = orderRepository
-                .sumTotalAmountByStatusAndCreatedAtBetween(
-                        OrderStatus.COMPLETED,
-                        filter.getStart(),
-                        filter.getEnd()
-                );
+        long successTx;
+        BigDecimal successAmount;
+
+        if (start != null && end != null) {
+            successTx = orderRepository.countByStatusBetween(OrderStatus.COMPLETED, start, end);
+            successAmount = orderRepository.sumTotalAmountByStatusBetween(OrderStatus.COMPLETED, start, end);
+        } else if (start != null) {
+            successTx = orderRepository.countByStatusAndStart(OrderStatus.COMPLETED, start);
+            successAmount = orderRepository.sumTotalAmountByStatusAndStart(OrderStatus.COMPLETED, start);
+        } else if (end != null) {
+            successTx = orderRepository.countByStatusAndEnd(OrderStatus.COMPLETED, end);
+            successAmount = orderRepository.sumTotalAmountByStatusAndEnd(OrderStatus.COMPLETED, end);
+        } else {
+            successTx = orderRepository.countByStatus(OrderStatus.COMPLETED);
+            successAmount = orderRepository.sumTotalAmountByStatus(OrderStatus.COMPLETED);
+        }
 
         return OrderMapper.toResponse(customerCount, sellerCount, successTx, successAmount);
     }
+
 }

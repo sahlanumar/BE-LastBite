@@ -39,7 +39,7 @@ public class WithdrawalController {
 
     /* -------- Seller: lihat riwayat penarikan ---------- */
     @GetMapping("/mine")
-    public ResponseEntity<CommonResponse<List<WithdrawalResponse>>> getMyWithdrawals(
+    public ResponseEntity<CommonResponse<?>> getMyWithdrawals(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortField,

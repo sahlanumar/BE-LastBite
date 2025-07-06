@@ -1,0 +1,170 @@
+{
+	"info": {
+		"_postman_id": "f3e4a5a6-7b8c-4d1e-8f9a-1b2c3d4e5f6a",
+		"name": "Lastbite-Withdrawals-Fixed",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Seller: Request Withdrawal",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{
+    "amount": 100000
+}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/withdrawals",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"withdrawals"
+					]
+				},
+				"description": "Seller requests a withdrawal of a certain amount from their balance."
+			},
+			"response": []
+		},
+		{
+			"name": "Seller: Get My Withdrawals",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/withdrawals/mine?page=0&size=10&sortField=createdAt&sortDir=desc",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"withdrawals",
+						"mine"
+					],
+					"query": [
+						{ "key": "page", "value": "0" },
+						{ "key": "size", "value": "10" },
+						{ "key": "sortField", "value": "createdAt" },
+						{ "key": "sortDir", "value": "desc" }
+					]
+				},
+				"description": "Seller views their own withdrawal history."
+			},
+			"response": []
+		},
+		{
+			"name": "Admin: Get All Withdrawals",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/withdrawals?status=PENDING&page=0&size=10&sortField=createdAt&sortDir=desc",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"withdrawals"
+					],
+					"query": [
+						{ "key": "status", "value": "PENDING", "description": "Filter by status: PENDING, APPROVED, REJECTED" },
+						{ "key": "page", "value": "0" },
+						{ "key": "size", "value": "10" },
+						{ "key": "sortField", "value": "createdAt" },
+						{ "key": "sortDir", "value": "desc" }
+					]
+				},
+				"description": "Admin gets a list of all withdrawal requests, with optional filtering and pagination."
+			},
+			"response": []
+		},
+		{
+			"name": "Admin: Get Withdrawal By ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/withdrawals/your_withdrawal_id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"withdrawals",
+						"your_withdrawal_id"
+					]
+				},
+				"description": "Admin gets the details of a specific withdrawal request by its ID."
+			},
+			"response": []
+		},
+		{
+			"name": "Admin: Approve Withdrawal",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{
+    "proofOfPaymentUrl": "https://example.com/proof.jpg"
+}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/withdrawals/your_withdrawal_id/approve",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"withdrawals",
+						"your_withdrawal_id",
+						"approve"
+					]
+				},
+				"description": "Admin approves a withdrawal request and provides a proof of payment URL."
+			},
+			"response": []
+		},
+		{
+			"name": "Admin: Reject Withdrawal",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/withdrawals/your_withdrawal_id/reject",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"withdrawals",
+						"your_withdrawal_id",
+						"reject"
+					]
+				},
+				"description": "Admin rejects a withdrawal request."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		}
+	]
+}
