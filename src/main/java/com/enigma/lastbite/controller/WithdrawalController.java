@@ -4,6 +4,7 @@ package com.enigma.lastbite.controller;
 import com.enigma.lastbite.constant.ResponseMessage;
 import com.enigma.lastbite.dto.request.WithdrawalApproveRequest;
 import com.enigma.lastbite.dto.request.WithdrawalCreateRequest;
+import com.enigma.lastbite.dto.request.WithdrawalFilterRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.WithdrawalResponse;
 import com.enigma.lastbite.service.WithdrawalService;
@@ -40,47 +41,49 @@ public class WithdrawalController {
     /* -------- Seller: lihat riwayat penarikan ---------- */
     @GetMapping("/mine")
     public ResponseEntity<CommonResponse<List<WithdrawalResponse>>> getMyWithdrawals(
+            WithdrawalFilterRequest filter,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortField,
             @RequestParam(defaultValue = "desc") String sortDir,
             HttpServletRequest request
     ) {
-        Page<WithdrawalResponse> data = withdrawalService.getMine(page, size, sortField, sortDir);
+        Page<WithdrawalResponse> data = withdrawalService.getMine(filter, page, size, sortField, sortDir);
         return ResponseUtil.buildResponse(
                 HttpStatus.OK,
                 ResponseMessage.SUCCESS_GET_DATA,
                 data.getContent(),
                 data,
                 request.getRequestURI(),
-                null,
+                filter,
                 sortField,
                 sortDir
         );
     }
 
-    /* --------- Admin: list & detail penarikan ---------- */
     @GetMapping
     public ResponseEntity<CommonResponse<List<WithdrawalResponse>>> getAllWithdrawals(
-            @RequestParam(required = false) String status,
+            WithdrawalFilterRequest filter,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortField,
             @RequestParam(defaultValue = "desc") String sortDir,
             HttpServletRequest request
     ) {
-        Page<WithdrawalResponse> responsePage = withdrawalService.getAllWithPagination(status, page, size, sortField, sortDir);
+        Page<WithdrawalResponse> responsePage = withdrawalService.getAllWithPagination(filter, page, size, sortField, sortDir);
         return ResponseUtil.buildResponse(
                 HttpStatus.OK,
                 ResponseMessage.SUCCESS_GET_DATA,
                 responsePage.getContent(),
                 responsePage,
                 request.getRequestURI(),
-                status,
+                filter,
                 sortField,
                 sortDir
         );
     }
+
+
 
 
     @GetMapping("/{id}")

@@ -26,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -41,19 +42,21 @@ public class OrderServiceImpl implements OrderService {
     private final UserService userService;
     private final JwtUtils jwtUtils;
     private final PaymentService paymentService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public OrderServiceImpl(
             OrderRepository orderRepository,
             MenuItemService menuItemService,
             UserService userService,
             JwtUtils jwtUtils,
-            @Lazy PaymentService paymentService
+            @Lazy PaymentService paymentService,SimpMessagingTemplate messagingTemplate
     ) {
         this.orderRepository = orderRepository;
         this.menuItemService = menuItemService;
         this.userService = userService;
         this.paymentService = paymentService;
         this.jwtUtils = jwtUtils;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -123,8 +126,16 @@ public class OrderServiceImpl implements OrderService {
             throw new CustomException(ErrorCode.ORDER_NOT_PENDING_PAYMENT);
         }
         order.setOrderStatus(OrderStatus.PAID);
+        System.out.println("masuk sini");
         order.setUpdatedAt(LocalDateTime.now());
-        orderRepository.save(order);
+        Order updatedOrder = orderRepository.save(order);
+
+        String sellerId = updatedOrder.getSellerProfile().getId();
+        String destination = String.format("/topic/seller/%s", sellerId);
+        log.info("WebSocket: Sent PAID notification for order {}", orderId);
+
+        OrderResponse response = OrderMapper.toResponse(updatedOrder);
+        messagingTemplate.convertAndSend(destination, response);
     }
 
     @Override
@@ -136,7 +147,14 @@ public class OrderServiceImpl implements OrderService {
         }
         order.setOrderStatus(OrderStatus.PREPARING);
         order.setUpdatedAt(LocalDateTime.now());
-        return OrderMapper.toResponse(orderRepository.save(order));
+        Order updatedOrder = orderRepository.save(order);
+        OrderResponse response = OrderMapper.toResponse(updatedOrder);
+
+        String destination = String.format("/topic/order/%s", orderId);
+        messagingTemplate.convertAndSend(destination, response);
+        log.info("WebSocket: Sent PREPARING notification for order {}", orderId);
+
+        return response;
     }
 
     @Override
@@ -148,7 +166,14 @@ public class OrderServiceImpl implements OrderService {
         }
         order.setOrderStatus(OrderStatus.READY_FOR_PICKUP);
         order.setUpdatedAt(LocalDateTime.now());
-        return OrderMapper.toResponse(orderRepository.save(order));
+        Order updatedOrder = orderRepository.save(order);
+        OrderResponse response = OrderMapper.toResponse(updatedOrder);
+
+        String destination = String.format("/topic/order/%s", orderId);
+        messagingTemplate.convertAndSend(destination, response);
+        log.info("WebSocket: Sent READY_FOR_PICKUP notification for order {}", orderId);
+
+        return response;
     }
 
     @Override

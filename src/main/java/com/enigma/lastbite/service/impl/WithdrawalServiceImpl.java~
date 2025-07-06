@@ -184,9 +184,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         Sort.Direction direction = "asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
 
-        // Panggil specification dengan filter, dan null untuk userId
-        Specification<WithdrawalRequest> spec = WithdrawalSpecification.getSpecification(filter, null);
-
+        Specification<WithdrawalRequest> spec = WithdrawalSpecification.getSpecification(filter);
         Page<WithdrawalRequest> data = withdrawalRepo.findAll(spec, pageable);
         return data.map(WithdrawalMapper::toResponse);
     }

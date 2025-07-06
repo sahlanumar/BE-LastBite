@@ -1,5 +1,6 @@
 package com.enigma.lastbite.specification;
 
+import com.enigma.lastbite.constant.WithdrawalStatus;
 import com.enigma.lastbite.dto.request.WithdrawalFilterRequest;
 import com.enigma.lastbite.entity.WithdrawalRequest;
 import jakarta.persistence.criteria.Predicate;
@@ -7,21 +8,9 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class WithdrawalSpecification {
 
-    /**
-     * Membuat Specification untuk WithdrawalRequest berdasarkan filter dan userId (opsional).
-     * @param filter DTO yang berisi kriteria filter seperti status dan rentang tanggal.
-     * @param userId ID dari user yang melakukan request (untuk metode getMine). Bisa null jika tidak diperlukan (untuk getAll).
-     * @return Specification<WithdrawalRequest>
-     */
-    public static Specification<WithdrawalRequest> getSpecification(WithdrawalFilterRequest filter, String userId) {
+    public static Specification<WithdrawalRequest> getSpecification(WithdrawalFilterRequest filter) {
         return (root, query, cb) -> {
             Predicate predicate = cb.conjunction();
-
-            // Tambahkan filter berdasarkan userId jika tidak null
-            if (userId != null && !userId.isEmpty()) {
-                // Asumsi relasi: WithdrawalRequest -> Seller -> User -> id
-                predicate = cb.and(predicate, cb.equal(root.get("seller").get("user").get("id"), userId));
-            }
 
             if (filter.getStatus() != null) {
                 predicate = cb.and(predicate, cb.equal(root.get("status"), filter.getStatus()));

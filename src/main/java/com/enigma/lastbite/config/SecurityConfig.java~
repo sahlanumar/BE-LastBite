@@ -70,7 +70,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
 
                         .requestMatchers(SWAGGER_URL_PATHS).permitAll()
-                        .requestMatchers("/ws/**").permitAll()
                         // =============================================================================
                         // AUTHENTICATION (PUBLIK & ADMIN)
                         // =============================================================================
