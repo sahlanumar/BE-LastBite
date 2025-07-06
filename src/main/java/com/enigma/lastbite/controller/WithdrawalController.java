@@ -8,8 +8,10 @@ import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.WithdrawalResponse;
 import com.enigma.lastbite.service.WithdrawalService;
 import com.enigma.lastbite.util.ResponseUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,23 +39,46 @@ public class WithdrawalController {
 
     /* -------- Seller: lihat riwayat penarikan ---------- */
     @GetMapping("/mine")
-    public ResponseEntity<CommonResponse<List<WithdrawalResponse>>> getMyWithdrawals() {
-        List<WithdrawalResponse> data = withdrawalService.getMine();
+    public ResponseEntity<CommonResponse<?>> getMyWithdrawals(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortField,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            HttpServletRequest request
+    ) {
+        Page<WithdrawalResponse> data = withdrawalService.getMine(page, size, sortField, sortDir);
         return ResponseUtil.buildResponse(
-                HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, data
+                HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA,
+                data.getContent(), data,
+                request.getRequestURI(), null,
+                sortField, sortDir
         );
     }
 
     /* --------- Admin: list & detail penarikan ---------- */
     @GetMapping
-    public ResponseEntity<CommonResponse<List<WithdrawalResponse>>> getAll(
-            @RequestParam(required = false) String status /* PENDING|APPROVED|REJECTED */
+    @GetMapping
+    public ResponseEntity<CommonResponse<List<WithdrawalResponse>>> getAllWithdrawals(
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortField,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            HttpServletRequest request
     ) {
-        List<WithdrawalResponse> data = withdrawalService.getAll(status);
+        Page<WithdrawalResponse> responsePage = withdrawalService.getAllWithPagination(status, page, size, sortField, sortDir);
         return ResponseUtil.buildResponse(
-                HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, data
+                HttpStatus.OK,
+                ResponseMessage.SUCCESS_GET_DATA,
+                responsePage.getContent(),
+                responsePage,
+                request.getRequestURI(),
+                status,
+                sortField,
+                sortDir
         );
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponse<WithdrawalResponse>> getById(@PathVariable String id) {

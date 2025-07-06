@@ -14,8 +14,14 @@ import com.enigma.lastbite.repository.WithdrawalRequestRepository;
 import com.enigma.lastbite.security.JwtUtils;
 import com.enigma.lastbite.service.UserService;
 import com.enigma.lastbite.service.WithdrawalService;
+import com.enigma.lastbite.specification.WithdrawalSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,8 +38,6 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     private final SellerProfileRepository sellerRepo;
     private final UserService userService;
     private final JwtUtils jwtUtils;
-    // Hapus CloudinaryService jika tidak dipakai untuk upload bukti
-    // private final CloudinaryService cloudinaryService;
 
     @Override
     @Transactional
@@ -76,6 +80,12 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         WithdrawalRequest wr = withdrawalRepo.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
+        SellerProfile seller = wr.getSeller();
+
+        if(seller.getBalance().compareTo(wr.getAmount()) < 0) {
+            throw new CustomException(ErrorCode.INSUFFICIENT_BALANCE);
+        }
+
         // 2. Pastikan statusnya masih PENDING
         if (wr.getStatus() != WithdrawalStatus.PENDING) {
             log.warn("Attempted to approve a request with non-PENDING status: {}", wr.getStatus());
@@ -91,7 +101,12 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         wr.setStatus(WithdrawalStatus.APPROVED);
         wr.setProcessedBy(admin);
         wr.setProcessedDate(OffsetDateTime.now());
-        wr.setProofOfPaymentUrl(proofUrl); // Set URL bukti transfer
+        wr.setProofOfPaymentUrl(proofUrl);
+
+        // 5. Kurangi saldo seller terlebih dahulu untuk mencegah double-spending
+        seller.setBalance(seller.getBalance().subtract(wr.getAmount()));
+        sellerRepo.saveAndFlush(seller);
+        log.info("Seller balance updated. New balance: {}", seller.getBalance());
 
         withdrawalRepo.save(wr);
         log.info("Request {} approved by admin {}", id, adminUsername);
@@ -141,36 +156,32 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         return WithdrawalMapper.toResponse(wr);
     }
 
+
+
     @Override
     @Transactional(readOnly = true)
-    public List<WithdrawalResponse> getMine() {
+    public Page<WithdrawalResponse> getMine(int page, int size, String sortField, String sortDir) {
         String username = jwtUtils.getUsernameFromJwtToken(jwtUtils.getTokenFromHeader());
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        return withdrawalRepo.findAllBySeller_User_Id(user.getId())
-                .stream()
-                .map(WithdrawalMapper::toResponse)
-                .collect(Collectors.toList());
+        Sort sort = Sort.by("asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<WithdrawalRequest> data = withdrawalRepo.findAllBySeller_User_Id(user.getId(), pageable);
+        return data.map(WithdrawalMapper::toResponse);
     }
+
 
     @Override
     @Transactional(readOnly = true)
-    public List<WithdrawalResponse> getAll(String status) {
-        List<WithdrawalRequest> requests;
-        if (status == null || status.isBlank()) {
-            requests = withdrawalRepo.findAll();
-        } else {
-            try {
-                WithdrawalStatus st = WithdrawalStatus.valueOf(status.toUpperCase());
-                requests = withdrawalRepo.findAllByStatus(st);
-            } catch (IllegalArgumentException e) {
-                // Handle jika status yang dimasukkan tidak valid
-                throw new CustomException(ErrorCode.INVALID_STATUS_FILTER);
-            }
-        }
-        return requests.stream()
-                .map(WithdrawalMapper::toResponse)
-                .collect(Collectors.toList());
+    public Page<WithdrawalResponse> getAllWithPagination(String status, int page, int size, String sortField, String sortDir) {
+        Specification<WithdrawalRequest> spec = WithdrawalSpecification.getSpecification(status);
+
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
+
+        Page<WithdrawalRequest> withdrawals = withdrawalRepo.findAll(spec, pageable);
+        return withdrawals.map(WithdrawalMapper::toResponse);
     }
 }

@@ -133,6 +133,17 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/users/me", "/api/users/me/password").authenticated()
                         .requestMatchers("/api/users/**").hasRole("ADMIN") // Admin punya akses penuh kelola user lain
 
+                        // =============================================================================
+                        // WITHDRAWALS (SELLER & ADMIN)
+                        // =============================================================================
+                        .requestMatchers(HttpMethod.POST, "/api/withdrawals").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.GET, "/api/withdrawals/mine").hasRole("SELLER")
+
+                        .requestMatchers(HttpMethod.GET, "/api/withdrawals").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/withdrawals/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/withdrawals/**").hasRole("ADMIN")
+
+
                         // Aturan default: semua request lain yang tidak cocok di atas harus terotentikasi
                         .anyRequest().authenticated()
                 );

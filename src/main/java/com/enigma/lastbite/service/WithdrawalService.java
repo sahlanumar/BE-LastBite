@@ -2,6 +2,7 @@ package com.enigma.lastbite.service;
 
 import com.enigma.lastbite.dto.request.WithdrawalCreateRequest;
 import com.enigma.lastbite.dto.response.WithdrawalResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -10,6 +11,6 @@ public interface WithdrawalService {
     WithdrawalResponse approveRequest(String id, String proofUrl);
     WithdrawalResponse rejectRequest(String id);
     WithdrawalResponse getById(String id);
-    List<WithdrawalResponse> getMine();                    // seller
-    List<WithdrawalResponse> getAll(String status);        // admin
+    Page<WithdrawalResponse> getMine(int page, int size, String sortField, String sortDir);
+    Page<WithdrawalResponse> getAllWithPagination(String status, int page, int size, String sortField, String sortDir);// admin
 }

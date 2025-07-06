@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
@@ -27,6 +29,7 @@ public class CartItem {
 
     @ManyToOne
     @JoinColumn(name = "menu_item_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private MenuItem menuItem;
 
     @Column(nullable = false)
