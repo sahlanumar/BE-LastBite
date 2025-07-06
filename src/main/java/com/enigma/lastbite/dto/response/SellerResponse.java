@@ -29,6 +29,7 @@ public class SellerResponse {
     private String profileImageUrl;
     private String phoneNumber;
     private String storeImageUrl;
+    private Long totalOrders;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

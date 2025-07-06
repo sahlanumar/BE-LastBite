@@ -51,7 +51,7 @@ public class SellerServiceImpl implements SellerService {
     public SellerResponse getByUserId(String userId) {
         SellerProfile sellerProfile = sellerProfileRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Long totalOrder = orderService.countCompletedOrdersBySellerId(sellerProfile.getId());
-        return SellerMapper.toSellerResponse(sellerProfile, totalOrder);
+        return SellerMapper.toSellerResponse(sellerProfile, totalOrder); 
     }
 
     @Override

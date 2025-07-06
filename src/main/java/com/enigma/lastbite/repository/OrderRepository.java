@@ -35,6 +35,13 @@ public interface OrderRepository extends JpaRepository<Order, String>, JpaSpecif
             @Param("menuItemId") String menuItemId
     );
 
+    @Query("""
+    SELECT COUNT(o) FROM Order o
+    WHERE o.sellerProfile.id = :sellerProfileId
+    AND o.orderStatus = 'COMPLETED'
+""")
+    long countCompletedOrdersBySellerProfileId(@Param("sellerProfileId") String sellerProfileId);
+
     // =================== Tambahan untuk menghindari error PostgreSQL ===================
 
     @Query("""

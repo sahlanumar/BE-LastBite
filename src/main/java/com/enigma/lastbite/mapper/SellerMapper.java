@@ -51,4 +51,26 @@ public class SellerMapper {
                 .updatedAt(sellerProfile.getUpdatedAt())
                 .build();
     }
+    public static SellerResponse toSellerResponse(SellerProfile sellerProfile,Long totalOrder) {
+        return SellerResponse.builder()
+                .id(sellerProfile.getId())
+                .userId(sellerProfile.getUser().getId())
+                .username(sellerProfile.getUser().getUsername())
+                .email(sellerProfile.getUser().getEmail())
+                .storeName(sellerProfile.getStoreName())
+                .storeDescription(sellerProfile.getStoreDescription())
+                .address(sellerProfile.getAddress())
+                .latitude(sellerProfile.getLatitude())
+                .longitude(sellerProfile.getLongitude())
+                .status(sellerProfile.getStatus())
+                .averageRating(sellerProfile.getAverageRatingMenu())
+                .balance(sellerProfile.getBalance())
+                .phoneNumber(sellerProfile.getUser().getPhoneNumber())
+                .storeImageUrl(sellerProfile.getStoreImageUrl())
+                .profileImageUrl(sellerProfile.getUser().getProfileImageUrl())
+                .createdAt(sellerProfile.getCreatedAt())
+                .updatedAt(sellerProfile.getUpdatedAt())
+                .totalOrders(totalOrder)
+                .build();
+    }
 }

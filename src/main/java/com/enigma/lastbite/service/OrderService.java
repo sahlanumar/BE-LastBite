@@ -11,6 +11,7 @@ import com.enigma.lastbite.entity.MenuItem;
 import com.enigma.lastbite.entity.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -43,4 +44,6 @@ public interface OrderService {
     Order findOrderByIdOrThrow(String id);
 
     ReportResponse getReport(ReportFilterRequest filter);
+
+    long countCompletedOrdersBySellerId( String sellerId);
 }
