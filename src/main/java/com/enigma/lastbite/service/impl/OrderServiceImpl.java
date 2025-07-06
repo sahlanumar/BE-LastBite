@@ -152,7 +152,6 @@ public class OrderServiceImpl implements OrderService {
 
         String destination = String.format("/topic/order/%s", orderId);
         messagingTemplate.convertAndSend(destination, response);
-        log.info("WebSocket: Sent PREPARING notification for order {}", orderId);
 
         return response;
     }
