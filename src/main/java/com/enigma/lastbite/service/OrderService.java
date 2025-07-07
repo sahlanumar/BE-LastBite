@@ -1,10 +1,7 @@
 package com.enigma.lastbite.service;
 
 import com.enigma.lastbite.constant.OrderStatus;
-import com.enigma.lastbite.dto.request.OrderFilterRequest;
-import com.enigma.lastbite.dto.request.OrderRequest;
-import com.enigma.lastbite.dto.request.ReportFilterRequest;
-import com.enigma.lastbite.dto.request.VerifyOrderRequest;
+import com.enigma.lastbite.dto.request.*;
 import com.enigma.lastbite.dto.response.OrderResponse;
 import com.enigma.lastbite.dto.response.ReportResponse;
 import com.enigma.lastbite.entity.MenuItem;
@@ -18,6 +15,8 @@ import java.util.List;
 public interface OrderService {
 
     List<Order> findAllCompletedOrdersByCustomerId(String customerId); // Menambahkan metode ini di OrderService/Repository: findAllCompletedOrdersByCustomerId
+
+    OrderResponse createOrderFromCart(CreateOrderFromCartRequest request);
 
     List<Order> findListOrderByCustomerIdAndMenuItemId(String customerId, String menuItemId);
 

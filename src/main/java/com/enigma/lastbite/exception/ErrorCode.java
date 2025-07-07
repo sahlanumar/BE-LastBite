@@ -51,6 +51,7 @@ public enum ErrorCode {
     OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "Stok produk habis"),
     INVALID_MENU_ITEM(HttpStatus.BAD_REQUEST, "Item menu tidak valid"),
     MENU_ITEM_NOT_IN_ORDER(HttpStatus.BAD_REQUEST, "Item menu tidak ada dalam pesanan"),
+    MENU_ITEM_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "Item menu sedang tidak tersedia"),
 
     //====================================================================
     // KERANJANG (CART)
@@ -58,6 +59,7 @@ public enum ErrorCode {
     CART_NOT_FOUND(HttpStatus.NOT_FOUND, "Keranjang tidak ditemukan"),
     CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "Item di keranjang tidak ditemukan"),
     INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "Jumlah tidak valid"),
+    CART_EMPTY_FOR_SELLER(HttpStatus.BAD_REQUEST, "Keranjang kosong untuk penjual ini"),
 
     //====================================================================
     // PESANAN & TRANSAKSI (ORDER & TRANSACTION)

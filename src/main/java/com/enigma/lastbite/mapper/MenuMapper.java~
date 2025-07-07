@@ -59,6 +59,8 @@ public class MenuMapper {
 
     public static MenuItemResponse toMenuItemResponse(MenuItem menuItem) {
         Double distanceKm = null;
+
+
         return MenuItemResponse.builder()
                 .id(menuItem.getId())
                 .sellerProfileId(menuItem.getSellerProfile().getId())

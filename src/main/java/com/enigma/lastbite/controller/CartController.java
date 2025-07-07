@@ -2,6 +2,7 @@ package com.enigma.lastbite.controller;
 
 import com.enigma.lastbite.constant.ResponseMessage;
 import com.enigma.lastbite.dto.request.AddItemToCartRequest;
+import com.enigma.lastbite.dto.response.CartGroupedResponse;
 import com.enigma.lastbite.dto.response.CartResponse;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.service.CartService;
@@ -31,8 +32,8 @@ public class CartController {
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponse<CartResponse>> getCartByLogin() {
-        CartResponse cart = cartService.getCartByLogin();
+    public ResponseEntity<CommonResponse<CartGroupedResponse>> getCartByLogin() {
+        CartGroupedResponse cart = cartService.getCartByLogin();
         return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, cart);
     }
 

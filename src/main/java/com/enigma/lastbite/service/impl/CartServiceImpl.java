@@ -1,6 +1,7 @@
 package com.enigma.lastbite.service.impl;
 
 import com.enigma.lastbite.dto.request.AddItemToCartRequest;
+import com.enigma.lastbite.dto.response.CartGroupedResponse;
 import com.enigma.lastbite.dto.response.CartResponse;
 import com.enigma.lastbite.entity.Cart;
 import com.enigma.lastbite.entity.CartItem;
@@ -62,12 +63,11 @@ public class CartServiceImpl implements CartService {
         cart.getItems().add(cartItem);
         Cart updatedCart = cartRepository.save(cart);
 
-
         return CartMapper.toCartResponse(updatedCart);
     }
 
     @Override
-    public CartResponse getCartByLogin() {
+    public CartGroupedResponse getCartByLogin() { // Ubah tipe return
         String token = jwtUtils.getTokenFromHeader();
         jwtUtils.validateJwtToken(token);
         String username = jwtUtils.getUsernameFromJwtToken(token);
@@ -75,12 +75,14 @@ public class CartServiceImpl implements CartService {
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        // Pastikan relasi eager loading atau data seller diambil
+        // JPQL di repository bisa membantu ini untuk menghindari N+1 problem
         Cart cart = cartRepository.findByCustomerId(user.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
 
-        return CartMapper.toCartResponse(cart);
+        // Panggil mapper yang baru
+        return CartMapper.toCartGroupedResponse(cart);
     }
-
     @Override
     @Transactional
     public CartResponse updateItemQuantity(String cartItemId, Integer quantity) {
@@ -134,5 +136,15 @@ public class CartServiceImpl implements CartService {
 
         cart.setUpdatedAt(LocalDateTime.now());
         cartRepository.save(cart);
+    }
+
+    @Override
+    public Cart findByCustomerId(String customerId) {
+        return cartRepository.findByCustomerId(customerId).orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
+    }
+
+    @Override
+    public Cart save(Cart cart) {
+        return cartRepository.save(cart);
     }
 }

@@ -2,16 +2,14 @@ package com.enigma.lastbite.controller;
 
 import com.enigma.lastbite.constant.OrderStatus;
 import com.enigma.lastbite.constant.ResponseMessage;
-import com.enigma.lastbite.dto.request.OrderFilterRequest;
-import com.enigma.lastbite.dto.request.OrderRequest;
-import com.enigma.lastbite.dto.request.ReportFilterRequest;
-import com.enigma.lastbite.dto.request.VerifyOrderRequest;
+import com.enigma.lastbite.dto.request.*;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.OrderResponse;
 import com.enigma.lastbite.dto.response.ReportResponse;
 import com.enigma.lastbite.service.OrderService;
 import com.enigma.lastbite.util.ResponseUtil;
 import com.enigma.lastbite.validation.ValidationGroups;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -170,5 +168,16 @@ public class OrderController {
                 ResponseMessage.SUCCESS_GET_DATA,
                 data
         );
+    }
+
+    @PostMapping("/from-cart")
+    public ResponseEntity<CommonResponse<OrderResponse>> createOrderFromCart(@Valid @RequestBody CreateOrderFromCartRequest request) {
+        OrderResponse orderResponse = orderService.createOrderFromCart(request);
+        CommonResponse<OrderResponse> response = CommonResponse.<OrderResponse>builder()
+                .statusCode(HttpStatus.CREATED.value())
+                .message("Order created successfully from cart")
+                .data(orderResponse)
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

@@ -14,10 +14,7 @@ import com.enigma.lastbite.mapper.OrderMapper;
 import com.enigma.lastbite.repository.MenuItemReviewRepository;
 import com.enigma.lastbite.repository.OrderRepository;
 import com.enigma.lastbite.security.JwtUtils;
-import com.enigma.lastbite.service.MenuItemService;
-import com.enigma.lastbite.service.OrderService;
-import com.enigma.lastbite.service.PaymentService;
-import com.enigma.lastbite.service.UserService;
+import com.enigma.lastbite.service.*;
 import com.enigma.lastbite.specification.OrderSpecification;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -43,13 +41,15 @@ public class OrderServiceImpl implements OrderService {
     private final JwtUtils jwtUtils;
     private final PaymentService paymentService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final CartService cartService;
 
     public OrderServiceImpl(
             OrderRepository orderRepository,
             MenuItemService menuItemService,
             UserService userService,
             JwtUtils jwtUtils,
-            @Lazy PaymentService paymentService,SimpMessagingTemplate messagingTemplate
+            @Lazy PaymentService paymentService,SimpMessagingTemplate messagingTemplate,
+            @Lazy CartService cartService
     ) {
         this.orderRepository = orderRepository;
         this.menuItemService = menuItemService;
@@ -57,6 +57,7 @@ public class OrderServiceImpl implements OrderService {
         this.paymentService = paymentService;
         this.jwtUtils = jwtUtils;
         this.messagingTemplate = messagingTemplate;
+        this.cartService = cartService;
     }
 
     @Override
@@ -79,6 +80,10 @@ public class OrderServiceImpl implements OrderService {
 
             if(menuItem.getQuantityAvailable() < itemRequest.getQuantity()) {
                 throw new CustomException(ErrorCode.OUT_OF_STOCK);
+            }
+
+            if(menuItem.getDisplayEndTime().isBefore(LocalDateTime.now())) {
+                throw new CustomException(ErrorCode.MENU_ITEM_NOT_AVAILABLE);
             }
 
             if (sellerProfile == null) {
@@ -111,6 +116,82 @@ public class OrderServiceImpl implements OrderService {
                 .build();
         PaymentResponse paymentResponse = paymentService.createPayment(paymentRequest);
 
+        return OrderMapper.toResponse(savedOrder, paymentResponse);
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public OrderResponse createOrderFromCart(CreateOrderFromCartRequest request) {
+        // 1. Dapatkan Customer dari token JWT
+        String token = jwtUtils.getTokenFromHeader();
+        jwtUtils.validateJwtToken(token);
+        String username = jwtUtils.getUsernameFromJwtToken(token);
+        User customer = userService.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 2. Dapatkan keranjang milik customer (gunakan JOIN FETCH untuk efisiensi)
+        Cart cart = cartService.findByCustomerId(customer.getId());
+
+        // 3. Filter item di keranjang berdasarkan sellerId dari request
+        List<CartItem> itemsForOrder = cart.getItems().stream()
+                .filter(cartItem -> cartItem.getMenuItem().getSellerProfile().getId().equals(request.getSellerId()))
+                .collect(Collectors.toList());
+
+        // 4. Jika tidak ada item untuk seller tersebut, throw error
+        if (itemsForOrder.isEmpty()) {
+            throw new CustomException(ErrorCode.CART_EMPTY_FOR_SELLER); // Anda perlu menambahkan ErrorCode ini
+        }
+
+        // 5. Inisialisasi variabel-variabel untuk order
+        List<OrderItem> orderItems = new ArrayList<>();
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        // Dapatkan seller profile dari item pertama (karena semuanya dari seller yang sama)
+        SellerProfile sellerProfile = itemsForOrder.get(0).getMenuItem().getSellerProfile();
+
+        // 6. Loop melalui item yang sudah difilter untuk membuat OrderItem
+        for (CartItem cartItem : itemsForOrder) {
+            MenuItem menuItem = cartItem.getMenuItem();
+            Integer quantity = cartItem.getQuantity();
+
+            // Validasi stok dan ketersediaan (sama seperti metode lama Anda)
+            if (menuItem.getQuantityAvailable() < quantity) {
+                throw new CustomException(ErrorCode.OUT_OF_STOCK);
+            }
+            if (menuItem.getDisplayEndTime().isBefore(LocalDateTime.now())) {
+                throw new CustomException(ErrorCode.MENU_ITEM_NOT_AVAILABLE);
+            }
+
+            // Buat OrderItem dari CartItem (bisa dibuatkan mapper khusus)
+            OrderItem orderItem = OrderMapper.toOrderItemEntity(cartItem);
+            orderItems.add(orderItem);
+
+            // Kurangi stok
+            menuItem.setQuantityAvailable(menuItem.getQuantityAvailable() - quantity);
+            menuItemService.save(menuItem); // atau simpan nanti secara batch
+
+            // Akumulasi total harga
+            totalAmount = totalAmount.add(
+                    menuItem.getDiscountedPrice().multiply(BigDecimal.valueOf(quantity))
+            );
+        }
+
+        // 7. Buat entitas Order
+        String verificationCode = generateVerificationCode();
+        Order order = OrderMapper.toOrderEntity(customer, sellerProfile, orderItems, totalAmount, verificationCode);
+
+        Order savedOrder = orderRepository.saveAndFlush(order);
+
+        // 8. HAPUS item yang sudah di-checkout dari keranjang
+        cart.getItems().removeAll(itemsForOrder);
+        cartService.save(cart);
+
+        // 9. Buat pembayaran
+        PaymentRequest paymentRequest = PaymentRequest.builder()
+                .orderId(savedOrder.getId())
+                .build();
+        PaymentResponse paymentResponse = paymentService.createPayment(paymentRequest);
+
+        // 10. Kembalikan response
         return OrderMapper.toResponse(savedOrder, paymentResponse);
     }
 

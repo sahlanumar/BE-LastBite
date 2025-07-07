@@ -64,33 +64,15 @@ public class MenuItemServiceImpl implements MenuItemService {
 
     @Transactional
     @Override
-    public MenuItemResponse create(MenuItemCreateRequest request, MultipartFile imageFile) {
-        // Validasi Seller dan statusnya
+    public MenuItemResponse create(MenuItemCreateRequest request) {
         SellerProfile sellerProfile = sellerService.findBySellerId(request.getSellerProfileId());
         if(sellerProfile.getStatus() != UserStatus.ACTIVE) {
             throw new CustomException(ErrorCode.SELLER_NOT_ACTIVE);
         }
-
-        // 1. Upload gambar ke Cloudinary
-        try {
-            UploadImageResponse uploadResponse = cloudinaryService.uploadFile(imageFile);
-            String imageUrl = uploadResponse.getUrl(); // Asumsi DTO Anda punya getter getUrl()
-
-            // 2. Buat entitas MenuItem dari request
-            MenuItem menuItem = MenuMapper.toMenuItemEntity(request, sellerProfile);
-
-            // 3. Set URL gambar dari hasil upload Cloudinary
-            menuItem.setImageUrl(imageUrl);
-
-            // 4. Simpan entitas ke database
-            menuItemRepository.save(menuItem);
-            return MenuMapper.toMenuItemResponse(menuItem);
-
-        } catch (IOException e) {
-            // Jika upload gagal, lempar exception
-            log.error("Gagal mengunggah file ke Cloudinary: {}", e.getMessage());
-            throw new CustomException(ErrorCode.IMAGE_UPLOAD_FAILED);
-        }
+        // MenuMapper akan mengambil imageUrl langsung dari DTO request
+        MenuItem menuItem = MenuMapper.toMenuItemEntity(request, sellerProfile);
+        menuItemRepository.save(menuItem);
+        return MenuMapper.toMenuItemResponse(menuItem);
     }
 
     @Transactional(readOnly = true)
@@ -180,6 +162,7 @@ public class MenuItemServiceImpl implements MenuItemService {
         );
 
         Page<MenuItem> menuItems = menuItemRepository.findAll(spec, pageable);
+        menuItems.map();
         return menuItems.map(MenuMapper::toMenuItemResponse);
     }
 
@@ -191,13 +174,19 @@ public class MenuItemServiceImpl implements MenuItemService {
         MenuMapper.updateFromDto(menuItem, request);
 
         ListingStatus status = ListingStatus.NOT_AVAILABLE;
-        if (menuItem.getQuantityAvailable() > 0 && menuItem.getDisplayEndTime().isAfter(LocalDateTime.now()) && menuItem.getDisplayStartTime().isBefore(LocalDateTime.now())) {
+        log.info("Menu item is not available");
+        log.info("Menu item quantity available: {}", menuItem.getQuantityAvailable());
+        log.info("Menu item display end time: {}", menuItem.getDisplayEndTime());
+        log.info("Menu item display start time: {}", menuItem.getDisplayStartTime());
+        log.info("Current time: {}", LocalDateTime.now());
+        if (menuItem.getQuantityAvailable() > 0 && menuItem.getDisplayEndTime().isAfter(LocalDateTime.now()) ) {
+            log.info("Menu item is available");
             status = ListingStatus.AVAILABLE;
         }
         menuItem.setStatus(status);
 
-        menuItemRepository.save(menuItem);
-        return MenuMapper.toMenuItemResponse(menuItem);
+        MenuItem updatedMenuItem = menuItemRepository.save(menuItem);
+        return MenuMapper.toMenuItemResponse(updatedMenuItem);
     }
 
     @Transactional

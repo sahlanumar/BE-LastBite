@@ -162,6 +162,10 @@ public class MenuItemServiceImpl implements MenuItemService {
         );
 
         Page<MenuItem> menuItems = menuItemRepository.findAll(spec, pageable);
+        menuItems.map(item -> {
+            item.setStatus(ListingStatus.AVAILABLE);
+            return item;
+        });
         return menuItems.map(MenuMapper::toMenuItemResponse);
     }
 
@@ -173,13 +177,19 @@ public class MenuItemServiceImpl implements MenuItemService {
         MenuMapper.updateFromDto(menuItem, request);
 
         ListingStatus status = ListingStatus.NOT_AVAILABLE;
-        if (menuItem.getQuantityAvailable() > 0 && menuItem.getDisplayEndTime().isAfter(LocalDateTime.now()) && menuItem.getDisplayStartTime().isBefore(LocalDateTime.now())) {
+        log.info("Menu item is not available");
+        log.info("Menu item quantity available: {}", menuItem.getQuantityAvailable());
+        log.info("Menu item display end time: {}", menuItem.getDisplayEndTime());
+        log.info("Menu item display start time: {}", menuItem.getDisplayStartTime());
+        log.info("Current time: {}", LocalDateTime.now());
+        if (menuItem.getQuantityAvailable() > 0 && menuItem.getDisplayEndTime().isAfter(LocalDateTime.now()) ) {
+            log.info("Menu item is available");
             status = ListingStatus.AVAILABLE;
         }
         menuItem.setStatus(status);
 
-        menuItemRepository.save(menuItem);
-        return MenuMapper.toMenuItemResponse(menuItem);
+        MenuItem updatedMenuItem = menuItemRepository.save(menuItem);
+        return MenuMapper.toMenuItemResponse(updatedMenuItem);
     }
 
     @Transactional
