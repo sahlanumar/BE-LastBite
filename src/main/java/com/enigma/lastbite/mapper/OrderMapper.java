@@ -86,6 +86,9 @@ public class OrderMapper {
                 .customerName(order.getCustomer().getFullName())
                 .orderItems(itemResponses)
                 .urlMidtrans(order.getUrlMidtrans())
+                .storeName(order.getSellerProfile().getStoreName())
+                .latitude(String.valueOf(order.getSellerProfile().getLatitude()))
+                .longitude(String.valueOf(order.getSellerProfile().getLongitude()))
                 .verificationCode(order.getVerificationCode())
                 .notes(order.getNotes())
                 .createdAt(order.getCreatedAt())
@@ -102,6 +105,7 @@ public class OrderMapper {
                 .menuItemName(item.getMenuItem().getName())
                 .quantity(item.getQuantityPurchased())
                 .pricePerItem(item.getPricePerItem())
+                .productImageUrl(item.getMenuItem().getImageUrl())
                 .build();
     }
 

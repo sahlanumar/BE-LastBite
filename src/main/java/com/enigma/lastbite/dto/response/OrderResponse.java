@@ -23,7 +23,6 @@ public class OrderResponse {
     private String verificationCode;
     private String notes;
     private String customerName;
-    private String imgProductUrl;
     private String storeName;
     private String longitude;
     private String latitude;

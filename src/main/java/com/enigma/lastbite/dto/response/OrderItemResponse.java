@@ -15,4 +15,5 @@ public class OrderItemResponse {
     private String menuItemName;
     private Integer quantity;
     private BigDecimal pricePerItem;
+    private String productImageUrl;
 }

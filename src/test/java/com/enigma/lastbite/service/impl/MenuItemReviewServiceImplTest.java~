@@ -88,13 +88,6 @@ class MenuItemReviewServiceImplTest {
         when(menuItemReviewRepository.save(any(MenuItemReview.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(menuItemReviewRepository.findAllByMenuItemId("menu-1")).thenReturn(List.of());
 
-        // ✅ Tambahkan ini
-        SellerProfile dummySeller = dummyMenuItem.getSellerProfile();
-        when(sellerService.findBySellerId("seller-1")).thenReturn(dummySeller);
-        when(menuItemService.averageRatingBySellerProfileId("seller-1")).thenReturn(4.5);
-        when(sellerService.save(any())).thenReturn(dummySeller);
-        when(menuItemService.save(any())).thenReturn(dummyMenuItem);
-
         try (MockedStatic<MenuReviewMapper> mocked = mockStatic(MenuReviewMapper.class)) {
             MenuItemReview dummyReview = MenuItemReview.builder()
                     .order(dummyOrder)

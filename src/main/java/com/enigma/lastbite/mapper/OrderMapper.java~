@@ -41,7 +41,7 @@ public class OrderMapper {
                 .build();
     }
 
-    public static Order toOrderEntity(User customer, SellerProfile seller, List<OrderItem> items, BigDecimal totalAmount, String verificationCode,String urlMidtrans) {
+    public static Order toOrderEntity(User customer, SellerProfile seller, List<OrderItem> items, BigDecimal totalAmount, String verificationCode) {
         Order order = Order.builder()
                 .customer(customer)
                 .sellerProfile(seller) // Nama parameter di sini bisa 'seller' atau 'sellerProfile', yang penting tipenya SellerProfile
@@ -49,7 +49,6 @@ public class OrderMapper {
                 .totalAmount(totalAmount)
                 .orderStatus(OrderStatus.PENDING_PAYMENT)
                 .verificationCode(verificationCode)
-                .urlMidtrans(urlMidtrans)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -86,6 +85,7 @@ public class OrderMapper {
                 .status(order.getOrderStatus())
                 .customerName(order.getCustomer().getFullName())
                 .orderItems(itemResponses)
+                .urlMidtrans(order.getUrlMidtrans())
                 .verificationCode(order.getVerificationCode())
                 .notes(order.getNotes())
                 .createdAt(order.getCreatedAt())

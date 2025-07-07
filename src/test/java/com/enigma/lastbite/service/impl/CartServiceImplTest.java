@@ -115,8 +115,12 @@ class CartServiceImplTest {
         @DisplayName("addItem(): Menambah item baru ke keranjang yang sudah ada → Sukses")
         void addItem_NewItemToExistingCart_Success() {
             try (MockedStatic<CartMapper> mockedMapper = mockStatic(CartMapper.class)) {
-                // Given (Setup tetap sama)
-                AddItemToCartRequest request = AddItemToCartRequest.builder().menuItemId("menu-2").quantity(2).build();
+                // Given
+                AddItemToCartRequest request = AddItemToCartRequest.builder()
+                        .menuItemId("menu-2")
+                        .quantity(2)
+                        .build();
+
                 MenuItem newItem = MenuItem.builder()
                         .id("menu-2")
                         .name("Mie Ayam")
@@ -129,40 +133,46 @@ class CartServiceImplTest {
                         .displayEndTime(LocalDateTime.now().plusHours(5))
                         .build();
 
+                // Setup user auth dan dependency
                 setupUserAuthentication("testuser");
                 when(cartRepository.findByCustomerId(dummyUser.getId())).thenReturn(Optional.of(dummyCart));
                 when(menuItemService.findById("menu-2")).thenReturn(newItem);
+                when(cartRepository.save(any(Cart.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+                // Penting: mock hasil dari CartMapper.toCartItemEntity(...) agar return-nya tidak null
+                CartItem newCartItem = CartItem.builder()
+                        .menuItem(newItem)
+                        .quantity(2)
+                        .cart(dummyCart)
+                        .build();
+
+                mockedMapper.when(() -> CartMapper.toCartItemEntity(request, newItem, dummyCart))
+                        .thenReturn(newCartItem);
 
                 mockedMapper.when(() -> CartMapper.toCartGroupedResponse(any(Cart.class)))
                         .thenReturn(CartGroupedResponse.builder().build());
 
-
                 // When
                 cartService.addItem(request);
 
-
-                // Then: Gunakan ArgumentCaptor untuk memeriksa apa yang SEBENARNYA disimpan
-
-                // 1. Buat ArgumentCaptor untuk tipe data yang ingin ditangkap (Cart)
+                // Then
                 ArgumentCaptor<Cart> cartArgumentCaptor = ArgumentCaptor.forClass(Cart.class);
-
-                // 2. Verifikasi pemanggilan metode .save() dan perintahkan captor untuk menangkap argumennya
                 verify(cartRepository).save(cartArgumentCaptor.capture());
-
-                // 3. Ambil objek Cart yang ditangkap dari captor
                 Cart capturedCart = cartArgumentCaptor.getValue();
 
-                // 4. Lakukan semua asersi pada objek yang ditangkap (capturedCart), bukan pada dummyCart
                 assertEquals(2, capturedCart.getItems().size(), "Keranjang yang disimpan seharusnya memiliki 2 item");
 
                 Optional<CartItem> addedItemOpt = capturedCart.getItems().stream()
-                        .filter(item -> item != null && item.getMenuItem() != null && item.getMenuItem().getId().equals("menu-2"))
+                        .filter(item -> item != null && item.getMenuItem() != null &&
+                                item.getMenuItem().getId().equals("menu-2"))
                         .findFirst();
 
                 assertTrue(addedItemOpt.isPresent(), "Item baru (menu-2) seharusnya ada di dalam keranjang yang disimpan");
                 assertEquals(2, addedItemOpt.get().getQuantity(), "Kuantitas item baru seharusnya 2");
             }
         }
+
+
 
         @Test
         @DisplayName("addItem(): Menambah kuantitas item yang sudah ada di keranjang → Sukses")
