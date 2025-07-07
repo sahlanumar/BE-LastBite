@@ -6,20 +6,9 @@ import com.enigma.lastbite.dto.response.WithdrawalResponse;
 import com.enigma.lastbite.entity.SellerProfile;
 import com.enigma.lastbite.entity.WithdrawalRequest;
 
-/**
- * Utility class untuk memetakan data antara DTO Withdrawal dan Entitas Withdrawal.
- * Versi ini sudah disesuaikan dengan semua kelas yang telah disediakan.
- */
+
 public class WithdrawalMapper {
-    
-    /**
-     * Memetakan WithdrawalCreateRequest DTO dan SellerProfile menjadi entitas WithdrawalRequest baru.
-     * requestDate akan diisi otomatis oleh Hibernate berkat @CreationTimestamp.
-     *
-     * @param req    DTO yang berisi jumlah dana yang akan ditarik.
-     * @param seller Entitas SellerProfile yang mengajukan permintaan.
-     * @return Entitas WithdrawalRequest baru yang siap untuk disimpan.
-     */
+
     public static WithdrawalRequest toEntity(WithdrawalCreateRequest req, SellerProfile seller) {
         return WithdrawalRequest.builder()
                 .seller(seller)
@@ -31,12 +20,6 @@ public class WithdrawalMapper {
                 .build();
     }
 
-    /**
-     * Memetakan entitas WithdrawalRequest menjadi WithdrawalResponse DTO.
-     *
-     * @param entity Entitas WithdrawalRequest dari database.
-     * @return DTO WithdrawalResponse.
-     */
     public static WithdrawalResponse toResponse(WithdrawalRequest entity) {
         if (entity == null) {
             return null;
