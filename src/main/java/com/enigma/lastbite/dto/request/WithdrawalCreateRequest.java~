@@ -17,7 +17,7 @@ public class WithdrawalCreateRequest {
     @NotBlank(message = "Nama bank wajib diisi")
     @Size(max = 100, message = "Maksimal 100 karakter")
     private String bankName;
-
+    
     @NotBlank(message = "Nomor rekening wajib diisi")
     @Pattern(regexp = "\\d{1,50}",
             message = "Nomor rekening hanya boleh berisi angka (maks. 50 digit)")

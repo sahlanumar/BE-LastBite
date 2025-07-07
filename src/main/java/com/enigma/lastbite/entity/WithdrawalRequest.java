@@ -49,6 +49,12 @@ public class WithdrawalRequest {
     @JoinColumn(name = "processed_by_id")
     private User processedBy;
 
+    @Column(name = "bank_name")
+    private String bankName;
+
+    @Column(name = "account_number")
+    private String accountNumber;
+
     @Column(name = "proof_of_payment_url")
     private String proofOfPaymentUrl;
 

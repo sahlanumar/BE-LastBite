@@ -36,13 +36,9 @@ public interface OrderService {
 
     void updateStatusToPaid(String orderId);
 
-    Page<OrderResponse> getAllOrdersForCustomer(OrderFilterRequest filter,
-                                                int page, int size,
-                                                String sortField, String sortDir);
+    Page<OrderResponse> getAllOrdersForCustomer(Pageable pageable);
 
-    Page<OrderResponse> getAllOrdersForSeller(OrderFilterRequest filter,
-                                              int page, int size,
-                                              String sortField, String sortDir);
+    Page<OrderResponse> getAllOrdersForSeller(Pageable pageable);
 
     Order findOrderByIdOrThrow(String id);
 

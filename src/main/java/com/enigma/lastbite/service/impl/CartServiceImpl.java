@@ -2,7 +2,6 @@ package com.enigma.lastbite.service.impl;
 
 import com.enigma.lastbite.dto.request.AddItemToCartRequest;
 import com.enigma.lastbite.dto.response.CartGroupedResponse;
-import com.enigma.lastbite.dto.response.CartResponse;
 import com.enigma.lastbite.entity.Cart;
 import com.enigma.lastbite.entity.CartItem;
 import com.enigma.lastbite.entity.MenuItem;
@@ -23,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,102 +36,93 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public CartResponse addItem(AddItemToCartRequest request) {
-        String token = jwtUtils.getTokenFromHeader();
-        jwtUtils.validateJwtToken(token);
-        String username = jwtUtils.getUsernameFromJwtToken(token);
-
+    public CartGroupedResponse addItem(AddItemToCartRequest request) {
+        String username = getUsernameFromToken();
         User user = userService.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Cart cart = cartRepository.findByCustomerId(user.getId()).orElseGet(() -> {
-            Cart newCart = new Cart();
-            newCart.setCustomer(user);
-            newCart.setCreatedAt(LocalDateTime.now());
-            newCart.setUpdatedAt(LocalDateTime.now());
-            newCart.setItems(new ArrayList<>());
-            return cartRepository.save(newCart);
-        });
-
+        Cart cart = findOrCreateCartForUser(user);
         MenuItem menuItem = menuItemService.findById(request.getMenuItemId());
 
-        CartItem cartItem = CartMapper.toCartItemEntity(request, menuItem, cart);
+        // Logika cerdas: Cek jika item sudah ada, jika ya, tambah kuantitasnya
+        Optional<CartItem> existingCartItem = cart.getItems().stream()
+                .filter(item -> item.getMenuItem().getId().equals(request.getMenuItemId()))
+                .findFirst();
 
-        cartItemRepository.save(cartItem);
+        if (existingCartItem.isPresent()) {
+            CartItem itemToUpdate = existingCartItem.get();
+            itemToUpdate.setQuantity(itemToUpdate.getQuantity() + request.getQuantity());
+        } else {
+            CartItem newCartItem = CartMapper.toCartItemEntity(request, menuItem, cart);
+            cart.getItems().add(newCartItem);
+        }
 
         cart.setUpdatedAt(LocalDateTime.now());
-        cart.getItems().add(cartItem);
         Cart updatedCart = cartRepository.save(cart);
 
-        return CartMapper.toCartResponse(updatedCart);
+        return CartMapper.toCartGroupedResponse(updatedCart);
     }
 
     @Override
-    public CartGroupedResponse getCartByLogin() { // Ubah tipe return
-        String token = jwtUtils.getTokenFromHeader();
-        jwtUtils.validateJwtToken(token);
-        String username = jwtUtils.getUsernameFromJwtToken(token);
-
+    public CartGroupedResponse getCartByLogin() {
+        String username = getUsernameFromToken();
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // Pastikan relasi eager loading atau data seller diambil
-        // JPQL di repository bisa membantu ini untuk menghindari N+1 problem
         Cart cart = cartRepository.findByCustomerId(user.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
 
-        // Panggil mapper yang baru
         return CartMapper.toCartGroupedResponse(cart);
     }
-    @Override
-    @Transactional
-    public CartResponse updateItemQuantity(String cartItemId, Integer quantity) {
-        CartItem cartItem = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new CustomException(ErrorCode.CART_ITEM_NOT_FOUND));
-
-        if (quantity <= 0) {
-            cartItemRepository.delete(cartItem);
-            return CartMapper.toCartResponse(cartItem.getCart());
-        }
-
-        cartItem.setQuantity(quantity);
-        CartItem updatedCartItem = cartItemRepository.save(cartItem);
-
-        Cart cart = updatedCartItem.getCart();
-        cart.setUpdatedAt(LocalDateTime.now());
-        cartRepository.save(cart);
-
-        return CartMapper.toCartResponse(cart);
-    }
 
     @Override
     @Transactional
-    public CartResponse removeItem(String cartItemId) {
+    public CartGroupedResponse updateItemQuantity(String cartItemId, Integer quantity) {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CART_ITEM_NOT_FOUND));
 
         Cart cart = cartItem.getCart();
-        cartItemRepository.delete(cartItem);
+
+        if (quantity <= 0) {
+            // Hapus item dari list di dalam cart, orphanRemoval akan bekerja
+            cart.getItems().remove(cartItem);
+        } else {
+            cartItem.setQuantity(quantity);
+        }
 
         cart.setUpdatedAt(LocalDateTime.now());
-        cartRepository.save(cart);
+        Cart updatedCart = cartRepository.save(cart);
 
-        return CartMapper.toCartResponse(cart);
+        return CartMapper.toCartGroupedResponse(updatedCart);
+    }
+
+    @Override
+    @Transactional
+    public CartGroupedResponse removeItem(String cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CART_ITEM_NOT_FOUND));
+
+        Cart cart = cartItem.getCart();
+        // Cukup hapus dari list, JPA dengan orphanRemoval=true akan menghapus dari DB
+        cart.getItems().remove(cartItem);
+
+        cart.setUpdatedAt(LocalDateTime.now());
+        Cart updatedCart = cartRepository.save(cart);
+
+        return CartMapper.toCartGroupedResponse(updatedCart);
     }
 
     @Override
     @Transactional
     public void clearCart() {
-        String token = jwtUtils.getTokenFromHeader();
-        jwtUtils.validateJwtToken(token);
-        String username = jwtUtils.getUsernameFromJwtToken(token);
-
+        String username = getUsernameFromToken();
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Cart cart = cartRepository.findByCustomerId(user.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
 
-        cartItemRepository.deleteAll(cart.getItems());
+        // Kosongkan list item, orphanRemoval=true akan menghapus semua CartItem terkait
+        cart.getItems().clear();
 
         cart.setUpdatedAt(LocalDateTime.now());
         cartRepository.save(cart);
@@ -146,5 +136,21 @@ public class CartServiceImpl implements CartService {
     @Override
     public Cart save(Cart cart) {
         return cartRepository.save(cart);
+    }
+
+    // Metode privat untuk mengurangi duplikasi kode
+    private String getUsernameFromToken() {
+        String token = jwtUtils.getTokenFromHeader();
+        jwtUtils.validateJwtToken(token);
+        return jwtUtils.getUsernameFromJwtToken(token);
+    }
+
+    private Cart findOrCreateCartForUser(User user) {
+        return cartRepository.findByCustomerId(user.getId()).orElseGet(() -> {
+            Cart newCart = new Cart();
+            newCart.setCustomer(user);
+            newCart.setItems(new ArrayList<>());
+            return cartRepository.save(newCart);
+        });
     }
 }

@@ -24,10 +24,10 @@ public class CartController {
     private final CartService cartService;
 
     @PostMapping("/items")
-    public ResponseEntity<CommonResponse<CartResponse>> addItem(
+    public ResponseEntity<CommonResponse<CartGroupedResponse>> addItem(
             @Validated(ValidationGroups.Create.class) @RequestBody AddItemToCartRequest request) {
 
-        CartResponse cart = cartService.addItem(request);
+        CartGroupedResponse cart = cartService.addItem(request);
         return ResponseUtil.buildResponse(HttpStatus.CREATED, ResponseMessage.SUCCESS_SAVE_DATA, cart);
     }
 
@@ -38,19 +38,19 @@ public class CartController {
     }
 
     @PutMapping("/items/{cartItemId}")
-    public ResponseEntity<CommonResponse<CartResponse>> updateItemQuantity(
+    public ResponseEntity<CommonResponse<CartGroupedResponse>> updateItemQuantity(
             @PathVariable String cartItemId,
             @RequestParam @Min(value = 1, message = "Kuantitas minimal harus 1") Integer quantity) {
 
-        CartResponse cart = cartService.updateItemQuantity(cartItemId, quantity);
+        CartGroupedResponse cart = cartService.updateItemQuantity(cartItemId, quantity);
         return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, cart);
     }
 
     @DeleteMapping("/items/{cartItemId}")
-    public ResponseEntity<CommonResponse<CartResponse>> removeItem(
+    public ResponseEntity<CommonResponse<CartGroupedResponse>> removeItem(
             @PathVariable String cartItemId) {
 
-        CartResponse cart = cartService.removeItem(cartItemId);
+        CartGroupedResponse cart = cartService.removeItem(cartItemId);
         return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_DELETE_DATA, cart);
     }
 

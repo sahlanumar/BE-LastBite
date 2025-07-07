@@ -6,10 +6,10 @@ import com.enigma.lastbite.dto.response.CartResponse;
 import com.enigma.lastbite.entity.Cart;
 
 public interface CartService {
-    CartResponse addItem( AddItemToCartRequest request);
+    CartGroupedResponse addItem( AddItemToCartRequest request);
     CartGroupedResponse getCartByLogin();
-    CartResponse updateItemQuantity( String cartItemId, Integer quantity);
-    CartResponse removeItem( String cartItemId);
+    CartGroupedResponse updateItemQuantity( String cartItemId, Integer quantity);
+    CartGroupedResponse removeItem( String cartItemId);
     void clearCart();
     Cart findByCustomerId(String customerId);
     Cart save(Cart cart);

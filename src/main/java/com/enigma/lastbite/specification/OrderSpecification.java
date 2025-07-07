@@ -18,6 +18,8 @@ public class OrderSpecification {
                 sellerId == null ? cb.conjunction() : cb.equal(root.get("sellerProfile").get("id"), sellerId);
     }
 
+
+
     public static Specification<Order> hasStatus(OrderStatus status) {
         return (root, query, cb) ->
                 status == null ? cb.conjunction() : cb.equal(root.get("orderStatus"), status);

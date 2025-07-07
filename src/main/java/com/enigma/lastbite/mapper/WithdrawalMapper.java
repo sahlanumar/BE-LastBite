@@ -25,6 +25,8 @@ public class WithdrawalMapper {
                 .seller(seller)
                 .amount(req.getAmount())
                 .status(WithdrawalStatus.PENDING)
+                .accountNumber(req.getAccountNumber())
+                .bankName(req.getBankName())
                 // requestDate tidak perlu di-set di sini, akan ditangani oleh @CreationTimestamp
                 .build();
     }
@@ -52,6 +54,8 @@ public class WithdrawalMapper {
                 .requestDate(entity.getRequestDate())
                 .processedDate(entity.getProcessedDate())
                 .processedBy(processedByUsername)
+                .bankName(entity.getBankName())
+                .accountNumber(entity.getAccountNumber())
                 .proofOfPaymentUrl(entity.getProofOfPaymentUrl())
                 .balance(entity.getSeller().getBalance())
                 .build();

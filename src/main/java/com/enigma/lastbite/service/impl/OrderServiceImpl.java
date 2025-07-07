@@ -125,64 +125,73 @@ public class OrderServiceImpl implements OrderService {
         // 1. Dapatkan Customer dari token JWT
         String token = jwtUtils.getTokenFromHeader();
         jwtUtils.validateJwtToken(token);
-        String username = jwtUtils.getUsernameFromJwtToken(token);
+        String username = jwtUtils.getUsernameFromJwtToken(token); // Asumsi Anda punya metode helper ini
         User customer = userService.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. Dapatkan keranjang milik customer (gunakan JOIN FETCH untuk efisiensi)
+        // 2. Dapatkan keranjang milik customer
         Cart cart = cartService.findByCustomerId(customer.getId());
 
-        // 3. Filter item di keranjang berdasarkan sellerId dari request
-        List<CartItem> itemsForOrder = cart.getItems().stream()
+        // 3. Ambil SEMUA item dari keranjang untuk seller yang dipilih
+        List<CartItem> allItemsForSeller = cart.getItems().stream()
                 .filter(cartItem -> cartItem.getMenuItem().getSellerProfile().getId().equals(request.getSellerId()))
                 .collect(Collectors.toList());
 
-        // 4. Jika tidak ada item untuk seller tersebut, throw error
-        if (itemsForOrder.isEmpty()) {
-            throw new CustomException(ErrorCode.CART_EMPTY_FOR_SELLER); // Anda perlu menambahkan ErrorCode ini
+        if (allItemsForSeller.isEmpty()) {
+            throw new CustomException(ErrorCode.CART_EMPTY_FOR_SELLER);
         }
 
-        // 5. Inisialisasi variabel-variabel untuk order
+        // ====> LANGKAH BARU: SARING ITEM YANG HANYA AVAILABLE <====
+        LocalDateTime now = LocalDateTime.now();
+        List<CartItem> availableItemsForOrder = allItemsForSeller.stream()
+                .filter(cartItem -> {
+                    MenuItem menuItem = cartItem.getMenuItem();
+                    boolean isStockAvailable = menuItem.getQuantityAvailable() >= cartItem.getQuantity();
+                    boolean isTimeAvailable = !now.isAfter(menuItem.getDisplayEndTime()) && !now.isBefore(menuItem.getDisplayStartTime());
+                    return isStockAvailable && isTimeAvailable;
+                })
+                .collect(Collectors.toList());
+
+        // 4. Jika setelah disaring tidak ada item yang bisa dipesan, throw error
+        if (availableItemsForOrder.isEmpty()) {
+            throw new CustomException(ErrorCode.NO_AVAILABLE_ITEMS_FOR_CHECKOUT); // ErrorCode baru
+        }
+
+        // 5. Inisialisasi variabel untuk order HANYA dengan item yang tersedia
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
-        // Dapatkan seller profile dari item pertama (karena semuanya dari seller yang sama)
-        SellerProfile sellerProfile = itemsForOrder.get(0).getMenuItem().getSellerProfile();
+        SellerProfile sellerProfile = availableItemsForOrder.get(0).getMenuItem().getSellerProfile();
 
-        // 6. Loop melalui item yang sudah difilter untuk membuat OrderItem
-        for (CartItem cartItem : itemsForOrder) {
+        // 6. Loop melalui item YANG SUDAH TERSEDIA untuk membuat OrderItem
+        for (CartItem cartItem : availableItemsForOrder) {
             MenuItem menuItem = cartItem.getMenuItem();
-            Integer quantity = cartItem.getQuantity();
 
-            // Validasi stok dan ketersediaan (sama seperti metode lama Anda)
-            if (menuItem.getQuantityAvailable() < quantity) {
-                throw new CustomException(ErrorCode.OUT_OF_STOCK);
-            }
-            if (menuItem.getDisplayEndTime().isBefore(LocalDateTime.now())) {
-                throw new CustomException(ErrorCode.MENU_ITEM_NOT_AVAILABLE);
-            }
+            // ---- Validasi di dalam loop ini tidak lagi diperlukan ----
+            // ---- karena sudah dilakukan oleh filter di atas. ----
+            // ---- Ini membuat kode lebih bersih. ----
 
-            // Buat OrderItem dari CartItem (bisa dibuatkan mapper khusus)
+            // Buat OrderItem dari CartItem
             OrderItem orderItem = OrderMapper.toOrderItemEntity(cartItem);
             orderItems.add(orderItem);
 
             // Kurangi stok
-            menuItem.setQuantityAvailable(menuItem.getQuantityAvailable() - quantity);
-            menuItemService.save(menuItem); // atau simpan nanti secara batch
+            menuItem.setQuantityAvailable(menuItem.getQuantityAvailable() - cartItem.getQuantity());
+            menuItemService.save(menuItem);
 
             // Akumulasi total harga
             totalAmount = totalAmount.add(
-                    menuItem.getDiscountedPrice().multiply(BigDecimal.valueOf(quantity))
+                    menuItem.getDiscountedPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()))
             );
         }
 
         // 7. Buat entitas Order
-        String verificationCode = generateVerificationCode();
+        String verificationCode = generateVerificationCode(); // Asumsi Anda punya metode ini
         Order order = OrderMapper.toOrderEntity(customer, sellerProfile, orderItems, totalAmount, verificationCode);
 
         Order savedOrder = orderRepository.saveAndFlush(order);
 
-        // 8. HAPUS item yang sudah di-checkout dari keranjang
-        cart.getItems().removeAll(itemsForOrder);
+        // 8. HAPUS HANYA ITEM YANG BERHASIL DIPESAN dari keranjang
+        cart.getItems().removeAll(availableItemsForOrder);
         cartService.save(cart);
 
         // 9. Buat pembayaran
@@ -308,28 +317,57 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderResponse> getAllOrdersForCustomer(Pageable pageable) {
-        String token = jwtUtils.getTokenFromHeader();
+    public Page<OrderResponse> getAllOrdersForCustomer(OrderFilterRequest filter,
+                                                       int page, int size,
+                                                       String sortField, String sortDir) {
+
+        // --- Ambil user ter‐autentikasi ---
+        String token     = jwtUtils.getTokenFromHeader();
         jwtUtils.validateJwtToken(token);
-        String username = jwtUtils.getUsernameFromJwtToken(token);
-        User customer = userService.findByUsername(username)
+        String username  = jwtUtils.getUsernameFromJwtToken(token);
+        User  customer   = userService.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Page<Order> orders = orderRepository.findAllByCustomer_Id(customer.getId(), pageable);
+        // --- Pastikan filter memuat customerId yang benar ---
+        //    (paksa supaya user tidak bisa “mengintip” order orang lain)
+        filter.setCustomerId(customer.getId().toString());
+
+        // --- Pagination & sorting ---
+        Sort sort = Sort.by("asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC
+                        : Sort.Direction.DESC,
+                (sortField == null || sortField.isBlank()) ? "createdAt"
+                        : sortField);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // --- Gunakan Specification sehingga status, tanggal, dll. ikut diproses ---
+        Page<Order> orders = orderRepository.findAll(OrderSpecification.build(filter), pageable);
         return orders.map(OrderMapper::toResponse);
     }
 
     @Override
-    public Page<OrderResponse> getAllOrdersForSeller(Pageable pageable) {
-        String token = jwtUtils.getTokenFromHeader();
+    public Page<OrderResponse> getAllOrdersForSeller(OrderFilterRequest filter,
+                                                     int page, int size,
+                                                     String sortField, String sortDir) {
+
+        String token     = jwtUtils.getTokenFromHeader();
         jwtUtils.validateJwtToken(token);
-        String username = jwtUtils.getUsernameFromJwtToken(token);
-        User user = userService.findByUsername(username)
+        String username  = jwtUtils.getUsernameFromJwtToken(token);
+        User sellerUser  = userService.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Page<Order> orders = orderRepository.findAllBySellerProfile_User_Id(user.getId(), pageable);
+        // Seller di‐identifikasi via userId pada SellerProfile
+        filter.setSellerId(sellerUser.getId().toString());
+
+        Sort sort = Sort.by("asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC
+                        : Sort.Direction.DESC,
+                (sortField == null || sortField.isBlank()) ? "createdAt"
+                        : sortField);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Order> orders = orderRepository.findAll(OrderSpecification.build(filter), pageable);
         return orders.map(OrderMapper::toResponse);
     }
+
 
     @Override
     public List<Order> findAllCompletedOrdersByCustomerId(String customerId) {

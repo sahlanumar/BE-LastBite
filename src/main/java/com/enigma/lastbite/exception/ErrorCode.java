@@ -72,6 +72,7 @@ public enum ErrorCode {
     INVALID_TRANSACTION_DETAIL_DATA(HttpStatus.BAD_REQUEST, "Data detail transaksi tidak valid"),
     ORDER_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "Pesanan belum selesai"),
     INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "Kode verifikasi tidak valid"),
+    NO_AVAILABLE_ITEMS_FOR_CHECKOUT(HttpStatus.BAD_REQUEST, "Tidak ada item yang tersedia untuk checkout"),
     // -- Alur Status Pesanan
     ORDER_NOT_PENDING_PAYMENT(HttpStatus.CONFLICT, "Gagal memperbarui status, pesanan tidak menunggu pembayaran"),
     ORDER_NOT_PAID(HttpStatus.CONFLICT, "Pesanan harus LUNAS untuk dapat diterima"),

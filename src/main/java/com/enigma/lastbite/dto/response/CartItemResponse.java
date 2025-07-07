@@ -20,4 +20,5 @@ public class CartItemResponse {
     private Integer quantity;
     private BigDecimal price;
     private BigDecimal subtotal;
+    private String status;
 }
