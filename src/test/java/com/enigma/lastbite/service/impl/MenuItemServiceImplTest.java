@@ -1,96 +1,159 @@
-
 package com.enigma.lastbite.service.impl;
 
+import com.enigma.lastbite.constant.ListingStatus;
+import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.MenuItemCreateRequest;
+import com.enigma.lastbite.dto.request.MenuItemUpdateRequest;
 import com.enigma.lastbite.dto.response.MenuItemResponse;
 import com.enigma.lastbite.entity.MenuItem;
 import com.enigma.lastbite.entity.SellerProfile;
+import com.enigma.lastbite.exception.CustomException;
+import com.enigma.lastbite.exception.ErrorCode;
+import com.enigma.lastbite.mapper.MenuMapper;
 import com.enigma.lastbite.repository.MenuItemRepository;
-import com.enigma.lastbite.service.SellerService;
+import com.enigma.lastbite.security.JwtUtils;
+import com.enigma.lastbite.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MenuItemServiceImplTest {
 
-    @Mock
-    private MenuItemRepository menuItemRepository;
-
-    @Mock
-    private SellerService sellerService;
+    @Mock private MenuItemRepository menuItemRepository;
+    @Mock private SellerService sellerService;
+    @Mock private JwtUtils jwtUtils;
+    @Mock private UserService userService;
+    @Mock private MenuItemReviewService menuItemReviewService;
+    @Mock private OrderService orderService;
+    @Mock private CloudinaryService cloudinaryService;
 
     @InjectMocks
     private MenuItemServiceImpl menuItemService;
 
-    private MenuItem menuItem;
-    private SellerProfile sellerProfile;
-    private MenuItemCreateRequest createRequest;
+    private SellerProfile dummySeller;
+    private MenuItem dummyItem;
 
     @BeforeEach
     void setUp() {
-        sellerProfile = new SellerProfile();
-        sellerProfile.setId("sellerId");
+        dummySeller = SellerProfile.builder()
+                .id("seller-1")
+                .status(UserStatus.ACTIVE)
+                .build();
 
-        menuItem = new MenuItem();
-        menuItem.setId("menuItemId");
-        menuItem.setName("Nasi Goreng");
-        menuItem.setOriginalPrice(BigDecimal.valueOf(10000));
-        menuItem.setDiscountedPrice(BigDecimal.valueOf(10000));
-        menuItem.setSellerProfile(sellerProfile);
-
-        createRequest = new MenuItemCreateRequest();
-        createRequest.setName("Nasi Goreng");
-        menuItem.setOriginalPrice(BigDecimal.valueOf(10000));
-        menuItem.setDiscountedPrice(BigDecimal.valueOf(10000));
-        createRequest.setSellerProfileId("sellerId");
+        dummyItem = MenuItem.builder()
+                .id("menu-1")
+                .name("Bakso")
+                .sellerProfile(dummySeller)
+                .quantityAvailable(10)
+                .displayStartTime(LocalDateTime.now().minusHours(1))
+                .displayEndTime(LocalDateTime.now().plusHours(2))
+                .build();
     }
 
     @Test
-    void create_Success() {
-        when(sellerService.findBySellerId("sellerId")).thenReturn(sellerProfile);
-        when(menuItemRepository.save(any(MenuItem.class))).thenReturn(menuItem);
+    void create_ValidRequest_ReturnsResponse() {
+        // Given
+        MenuItemCreateRequest request = MenuItemCreateRequest.builder()
+                .name("Bakso")
+                .sellerProfileId("seller-1")
+                .originalPrice(BigDecimal.valueOf(15000))
+                .discountedPrice(BigDecimal.valueOf(10000))
+                .build();
 
-        MenuItemResponse response = menuItemService.create(createRequest);
+        when(sellerService.findBySellerId("seller-1")).thenReturn(dummySeller);
 
-        assertNotNull(response);
-        assertEquals("Nasi Goreng", response.getName());
+        try (MockedStatic<MenuMapper> mockedMapper = mockStatic(MenuMapper.class)) {
+            mockedMapper.when(() -> MenuMapper.toMenuItemEntity(request, dummySeller)).thenReturn(dummyItem);
+            mockedMapper.when(() -> MenuMapper.toMenuItemResponse(dummyItem)).thenReturn(
+                    MenuItemResponse.builder().id("menu-1").name("Bakso").build());
+
+            // When
+            MenuItemResponse response = menuItemService.create(request);
+
+            // Then
+            verify(menuItemRepository).save(dummyItem);
+            assertEquals("menu-1", response.getId());
+        }
     }
 
     @Test
-    void getById_Success() {
-        when(menuItemRepository.findById("menuItemId")).thenReturn(Optional.of(menuItem));
+    void create_SellerNotActive_ThrowsException() {
+        SellerProfile inactive = SellerProfile.builder()
+                .id("seller-1")
+                .status(UserStatus.INACTIVE)
+                .build();
+        when(sellerService.findBySellerId("seller-1")).thenReturn(inactive);
 
-        MenuItemResponse response = menuItemService.getById("menuItemId");
+        MenuItemCreateRequest request = MenuItemCreateRequest.builder()
+                .sellerProfileId("seller-1")
+                .build();
 
-        assertNotNull(response);
-        assertEquals("menuItemId", response.getId());
+        CustomException ex = assertThrows(CustomException.class, () -> menuItemService.create(request));
+        assertEquals(ErrorCode.SELLER_NOT_ACTIVE, ex.getErrorCode());
     }
 
     @Test
-    void getAll_Success() {
-        Page<MenuItem> page = new PageImpl<>(Collections.singletonList(menuItem));
-        when(menuItemRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+    void getById_Found_ReturnsResponse() {
+        when(menuItemRepository.findById("menu-1")).thenReturn(Optional.of(dummyItem));
+        try (MockedStatic<MenuMapper> mockedMapper = mockStatic(MenuMapper.class)) {
+            mockedMapper.when(() -> MenuMapper.toMenuItemResponse(dummyItem))
+                    .thenReturn(MenuItemResponse.builder().id("menu-1").build());
 
-        Page<MenuItemResponse> response = menuItemService.getAll(
-                null, null, null, null, null, null, null, null, 0, 10, "name", "asc", null, null);
+            MenuItemResponse response = menuItemService.getById("menu-1");
+            assertEquals("menu-1", response.getId());
+        }
+    }
 
-        assertNotNull(response);
-        assertEquals(1, response.getTotalElements());
+    @Test
+    void getById_NotFound_ThrowsException() {
+        when(menuItemRepository.findById("menu-999")).thenReturn(Optional.empty());
+        assertThrows(Exception.class, () -> menuItemService.getById("menu-999"));
+    }
+
+    @Test
+    void update_ValidMenuItem_SetsAvailableStatus() {
+        dummyItem.setQuantityAvailable(5);
+        dummyItem.setDisplayEndTime(LocalDateTime.now().plusHours(2));
+        dummyItem.setDisplayStartTime(LocalDateTime.now().minusHours(1));
+
+        MenuItemUpdateRequest updateRequest = MenuItemUpdateRequest.builder().name("Updated Bakso").build();
+
+        when(menuItemRepository.findById("menu-1")).thenReturn(Optional.of(dummyItem));
+        when(menuItemRepository.save(any())).thenReturn(dummyItem);
+
+        try (MockedStatic<MenuMapper> mockedMapper = mockStatic(MenuMapper.class)) {
+            mockedMapper.when(() -> MenuMapper.updateFromDto(dummyItem, updateRequest)).thenAnswer(i -> null);
+            mockedMapper.when(() -> MenuMapper.toMenuItemResponse(dummyItem))
+                    .thenReturn(MenuItemResponse.builder().id("menu-1").name("Updated Bakso").build());
+
+            MenuItemResponse updated = menuItemService.update("menu-1", updateRequest);
+
+            assertEquals(ListingStatus.AVAILABLE, dummyItem.getStatus());
+            assertEquals("Updated Bakso", updated.getName());
+        }
+    }
+
+    @Test
+    void deleteById_ValidId_Success() {
+        when(menuItemRepository.findById("menu-1")).thenReturn(Optional.of(dummyItem));
+        menuItemService.deleteById("menu-1");
+        verify(menuItemRepository).delete(dummyItem);
+    }
+
+    @Test
+    void averageRatingBySellerProfileId_CallsRepository() {
+        when(menuItemRepository.findAverageRatingBySellerProfileId("seller-1")).thenReturn(4.5);
+        Double result = menuItemService.averageRatingBySellerProfileId("seller-1");
+        assertEquals(4.5, result);
     }
 }
