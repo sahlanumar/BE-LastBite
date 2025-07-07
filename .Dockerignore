@@ -1,0 +1,17 @@
+# Output build
+/target
+
+# Config sensitive
+.env
+*.key
+*.pem
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# Logs & caches
+*.log
+logs/
+.cache/

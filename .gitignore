@@ -36,3 +36,7 @@ build/
 ### Environment Variables ###
 # Abaikan file environment lokal yang berisi data sensitif
 .env
+
+### Docker ###
+.dockerignore
+docker-compose.yml
