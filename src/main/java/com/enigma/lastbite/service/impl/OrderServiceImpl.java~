@@ -42,7 +42,6 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentService paymentService;
     private final SimpMessagingTemplate messagingTemplate;
     private final CartService cartService;
-    private final SellerService sellerService;
 
     public OrderServiceImpl(
             OrderRepository orderRepository,
@@ -50,8 +49,7 @@ public class OrderServiceImpl implements OrderService {
             UserService userService,
             JwtUtils jwtUtils,
             @Lazy PaymentService paymentService,SimpMessagingTemplate messagingTemplate,
-            @Lazy CartService cartService,
-            @Lazy SellerService sellerService
+            @Lazy CartService cartService
     ) {
         this.orderRepository = orderRepository;
         this.menuItemService = menuItemService;
@@ -60,7 +58,6 @@ public class OrderServiceImpl implements OrderService {
         this.jwtUtils = jwtUtils;
         this.messagingTemplate = messagingTemplate;
         this.cartService = cartService;
-        this.sellerService = sellerService;
     }
 
     @Override
@@ -394,7 +391,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public ReportResponse getReport(ReportFilterRequest filter) {
         long customerCount = userService.countByRole(UserRole.ROLE_CUSTOMER);
-        long sellerCount = sellerService.countByStatus(UserStatus.ACTIVE);
+        long sellerCount = userService.countByRole(UserRole.ROLE_SELLER);
 
         LocalDateTime start = filter.getStart();
         LocalDateTime end = filter.getEnd();

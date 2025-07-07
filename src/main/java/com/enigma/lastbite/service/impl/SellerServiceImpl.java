@@ -1,5 +1,6 @@
 package com.enigma.lastbite.service.impl;
 
+import com.enigma.lastbite.constant.UserRole;
 import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.SellerUpdateRequest;
 import com.enigma.lastbite.dto.response.SellerResponse;
@@ -97,4 +98,11 @@ public class SellerServiceImpl implements SellerService {
     public SellerProfile save(SellerProfile sellerProfile) {
         return sellerProfileRepository.save(sellerProfile);
     }
+
+    @Override
+    public long countByStatus(UserStatus status) {
+        return sellerProfileRepository.countByStatus(status);
+    }
+
+
 }

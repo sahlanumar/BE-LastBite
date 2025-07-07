@@ -1,5 +1,6 @@
 package com.enigma.lastbite.service;
 
+import com.enigma.lastbite.constant.UserRole;
 import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.SellerUpdateRequest;
 import com.enigma.lastbite.dto.response.SellerResponse;
@@ -28,5 +29,7 @@ public interface SellerService {
     SellerProfile findBySellerId(String id);
 
     SellerProfile save(SellerProfile sellerProfile);
+
+    long countByStatus(UserStatus status);
 
 }
