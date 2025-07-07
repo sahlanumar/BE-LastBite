@@ -1,0 +1,247 @@
+package com.enigma.lastbite.service.impl;
+
+import com.enigma.lastbite.constant.UserRole;
+import com.enigma.lastbite.dto.request.PasswordChangeRequest;
+import com.enigma.lastbite.dto.request.UserFilterRequest;
+import com.enigma.lastbite.dto.request.UserUpdateRequest;
+import com.enigma.lastbite.dto.response.UserResponse;
+import com.enigma.lastbite.entity.User;
+import com.enigma.lastbite.exception.CustomException;
+import com.enigma.lastbite.exception.ErrorCode;
+import com.enigma.lastbite.mapper.UserMapper;
+import com.enigma.lastbite.repository.UserRepository;
+import com.enigma.lastbite.security.JwtUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class UserServiceImplTest {
+
+    @Mock private UserRepository userRepository;
+    @Mock private JwtUtils jwtUtils;
+    @Mock private PasswordEncoder passwordEncoder;
+    @InjectMocks private UserServiceImpl userService;
+
+    private User dummyUser;
+
+    @BeforeEach
+    void setUp() {
+        dummyUser = User.builder()
+                .id("u1")
+                .username("luffy")
+                .email("luffy@onepiece.com")
+                .passwordHash("hashedPwd")
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    /* -----------------------------------------------------------------------
+     * Basic CRUD
+     * ---------------------------------------------------------------------*/
+    @Test
+    @DisplayName("findById(): user ditemukan → success")
+    void findById_success() {
+        when(userRepository.findById("u1")).thenReturn(Optional.of(dummyUser));
+
+        User found = userService.findById("u1");
+
+        assertEquals("luffy", found.getUsername());
+        verify(userRepository).findById("u1");
+    }
+
+    @Test
+    @DisplayName("findById(): user tidak ada → USER_NOT_FOUND")
+    void findById_notFound() {
+        when(userRepository.findById("u1")).thenReturn(Optional.empty());
+
+        CustomException ex = assertThrows(CustomException.class,
+                () -> userService.findById("u1"));
+        assertEquals(ErrorCode.USER_NOT_FOUND, ex.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("save(): menyimpan user baru")
+    void save_success() {
+        when(userRepository.save(dummyUser)).thenReturn(dummyUser);
+
+        User saved = userService.save(dummyUser);
+
+        assertEquals("u1", saved.getId());
+        verify(userRepository).save(dummyUser);
+    }
+
+    /* -----------------------------------------------------------------------
+     * findAllUsers() + specification / paging
+     * ---------------------------------------------------------------------*/
+    @Test
+    @DisplayName("findAllUsers(): hasil dipetakan ke UserResponse list")
+    void findAllUsers_success() {
+        // Page berisi 1 user
+        Page<User> page = new PageImpl<>(List.of(dummyUser));
+        when(userRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class), any(Pageable.class))).thenReturn(page);
+
+        // Mock static mapper
+        try (MockedStatic<UserMapper> mocked = mockStatic(UserMapper.class)) {
+            UserResponse mapped = UserResponse.builder()
+                    .id("u1")
+                    .username("luffy")
+                    .email("luffy@onepiece.com")
+                    .build();
+            mocked.when(() -> UserMapper.toUserResponse(dummyUser)).thenReturn(mapped);
+
+            Page<UserResponse> result =
+                    userService.findAllUsers(new UserFilterRequest(), 0, 10, null, "asc");
+
+            assertEquals(1, result.getTotalElements());
+            assertEquals("luffy", result.getContent().get(0).getUsername());
+        }
+    }
+
+    /* -----------------------------------------------------------------------
+     * getUserByLogin()
+     * ---------------------------------------------------------------------*/
+    @Test
+    @DisplayName("getUserByLogin(): token valid → UserResponse dikembalikan")
+    void getUserByLogin_success() {
+        when(jwtUtils.getTokenFromHeader()).thenReturn("Bearer token");
+        when(jwtUtils.validateJwtToken("Bearer token")).thenReturn(true);
+        when(jwtUtils.getUsernameFromJwtToken("Bearer token")).thenReturn("luffy");
+        when(userRepository.findByUsername("luffy")).thenReturn(Optional.of(dummyUser));
+
+        try (MockedStatic<UserMapper> mocked = mockStatic(UserMapper.class)) {
+            UserResponse expected = UserResponse.builder()
+                    .id("u1").username("luffy").build();
+            mocked.when(() -> UserMapper.toUserResponse(dummyUser)).thenReturn(expected);
+
+            UserResponse resp = userService.getUserByLogin();
+
+            assertEquals("u1", resp.getId());
+        }
+    }
+
+    /* -----------------------------------------------------------------------
+     * updateUserById()
+     * ---------------------------------------------------------------------*/
+    @Test
+    void updateUserById_success() {
+        UserUpdateRequest req = UserUpdateRequest.builder()
+                .fullName("Monkey D. Luffy")
+                .build();
+
+        when(userRepository.findById("u1")).thenReturn(Optional.of(dummyUser));
+        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        try (MockedStatic<UserMapper> mocked = mockStatic(UserMapper.class)) {
+            // Stub updateFromDto → set name
+            mocked.when(() -> UserMapper.updateFromDto(dummyUser, req))
+                    .then(inv -> { dummyUser.setFullName("Monkey D. Luffy"); return null; });
+
+            mocked.when(() -> UserMapper.toUserResponse(dummyUser))
+                    .thenReturn(UserResponse.builder().id("u1").fullName("Monkey D. Luffy").build());
+
+            UserResponse resp = userService.updateUserById("u1", req);
+
+            assertEquals("Monkey D. Luffy", resp.getFullName());
+        }
+    }
+
+    /* -----------------------------------------------------------------------
+     * updatePasswordById()
+     * ---------------------------------------------------------------------*/
+    @Test
+    void updatePasswordById_success() {
+        PasswordChangeRequest req = PasswordChangeRequest.builder()
+                .oldPassword("old")
+                .newPassword("new123")
+                .confirmNewPassword("new123")
+                .build();
+
+        when(userRepository.findById("u1")).thenReturn(Optional.of(dummyUser));
+        when(passwordEncoder.matches("old", "hashedPwd")).thenReturn(true);
+        when(passwordEncoder.encode("new123")).thenReturn("newHashed");
+        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        try (MockedStatic<UserMapper> mocked = mockStatic(UserMapper.class)) {
+            mocked.when(() -> UserMapper.toUserResponse(dummyUser))
+                    .thenReturn(UserResponse.builder().id("u1").build());
+
+            UserResponse resp = userService.updatePasswordById("u1", req);
+
+            assertEquals("u1", resp.getId());
+            assertEquals("newHashed", dummyUser.getPasswordHash());
+        }
+    }
+
+    @Test
+    void updatePasswordById_invalidOldPassword() {
+        PasswordChangeRequest req = PasswordChangeRequest.builder()
+                .oldPassword("wrong")
+                .newPassword("new")
+                .confirmNewPassword("new")
+                .build();
+
+        when(userRepository.findById("u1")).thenReturn(Optional.of(dummyUser));
+        when(passwordEncoder.matches("wrong", "hashedPwd")).thenReturn(false);
+
+        CustomException ex = assertThrows(CustomException.class,
+                () -> userService.updatePasswordById("u1", req));
+        assertEquals(ErrorCode.INVALID_PASSWORD, ex.getErrorCode());
+    }
+
+    /* -----------------------------------------------------------------------
+     * deleteUserById()
+     * ---------------------------------------------------------------------*/
+    @Test
+    void deleteUserById_success() {
+        when(userRepository.findById("u1")).thenReturn(Optional.of(dummyUser));
+        doNothing().when(userRepository).delete(dummyUser);
+
+        assertDoesNotThrow(() -> userService.deleteUserById("u1"));
+        verify(userRepository).delete(dummyUser);
+    }
+
+    /* -----------------------------------------------------------------------
+     * countByRole()
+     * ---------------------------------------------------------------------*/
+    @Test
+    void countByRole_success() {
+        when(userRepository.countByRole(UserRole.ROLE_SELLER)).thenReturn(5L);
+
+        long cnt = userService.countByRole(UserRole.ROLE_SELLER);
+
+        assertEquals(5L, cnt);
+    }
+
+    /* -----------------------------------------------------------------------
+     * updateUser(): suspendedUntil set → USER_CANT_SUSPEND
+     * ---------------------------------------------------------------------*/
+    @Test
+    void updateUser_cantSuspend() {
+        UserUpdateRequest req = UserUpdateRequest.builder()
+                .suspendedUntil(LocalDateTime.now().plusDays(3))
+                .build();
+
+        // Token → username → user
+        when(jwtUtils.getTokenFromHeader()).thenReturn("t");
+        when(jwtUtils.validateJwtToken("t")).thenReturn(true);
+        when(jwtUtils.getUsernameFromJwtToken("t")).thenReturn("luffy");
+        when(userRepository.findByUsername("luffy")).thenReturn(Optional.of(dummyUser));
+
+        CustomException ex = assertThrows(CustomException.class,
+                () -> userService.updateUser(req));
+        assertEquals(ErrorCode.USER_CANT_SUSPEND, ex.getErrorCode());
+    }
+}

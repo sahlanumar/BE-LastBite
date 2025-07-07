@@ -4,6 +4,7 @@ import com.enigma.lastbite.validation.PasswordsMatch;
 import com.enigma.lastbite.validation.ValidationGroups;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -12,6 +13,7 @@ import lombok.Data;
 @Data
 // Terapkan validasi custom di level kelas
 @PasswordsMatch(groups = ValidationGroups.Update.class)
+@Builder
 public class PasswordChangeRequest {
 
     // Password lama wajib diisi untuk verifikasi.
