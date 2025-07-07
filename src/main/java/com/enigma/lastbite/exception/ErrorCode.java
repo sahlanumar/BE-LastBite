@@ -35,6 +35,7 @@ public enum ErrorCode {
     SELLER_NOT_ACTIVE(HttpStatus.BAD_REQUEST, "Penjual tidak aktif"),
     PASSWORD_REQUIRED(HttpStatus.BAD_REQUEST, "Kata sandi diperlukan"),
     USERNAME_OR_EMAIL_REQUIRED(HttpStatus.BAD_REQUEST, "Username atau email harus diisi"),
+    SELLER_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "Profil penjual tidak ditemukan"),
 
     //====================================================================
     // TOKEN OTENTIKASI (AUTHENTICATION TOKEN)

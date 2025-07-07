@@ -119,6 +119,10 @@ public class OrderServiceImpl implements OrderService {
                 .build();
         PaymentResponse paymentResponse = paymentService.createPayment(paymentRequest);
 
+        savedOrder.setUrlMidtrans(paymentResponse.getRedirectUrl());
+
+        orderRepository.saveAndFlush(savedOrder);
+
         return OrderMapper.toResponse(savedOrder, paymentResponse);
     }
 
@@ -324,25 +328,20 @@ public class OrderServiceImpl implements OrderService {
                                                        int page, int size,
                                                        String sortField, String sortDir) {
 
-        // --- Ambil user ter‐autentikasi ---
-        String token     = jwtUtils.getTokenFromHeader();
+        String token = jwtUtils.getTokenFromHeader();
         jwtUtils.validateJwtToken(token);
-        String username  = jwtUtils.getUsernameFromJwtToken(token);
-        User  customer   = userService.findByUsername(username)
+        String username = jwtUtils.getUsernameFromJwtToken(token);
+        User customer = userService.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // --- Pastikan filter memuat customerId yang benar ---
-        //    (paksa supaya user tidak bisa “mengintip” order orang lain)
         filter.setCustomerId(customer.getId().toString());
 
-        // --- Pagination & sorting ---
         Sort sort = Sort.by("asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC
                         : Sort.Direction.DESC,
                 (sortField == null || sortField.isBlank()) ? "createdAt"
                         : sortField);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        // --- Gunakan Specification sehingga status, tanggal, dll. ikut diproses ---
         Page<Order> orders = orderRepository.findAll(OrderSpecification.build(filter), pageable);
         return orders.map(OrderMapper::toResponse);
     }
@@ -352,14 +351,16 @@ public class OrderServiceImpl implements OrderService {
                                                      int page, int size,
                                                      String sortField, String sortDir) {
 
-        String token     = jwtUtils.getTokenFromHeader();
+        String token = jwtUtils.getTokenFromHeader();
         jwtUtils.validateJwtToken(token);
-        String username  = jwtUtils.getUsernameFromJwtToken(token);
-        User sellerUser  = userService.findByUsername(username)
+        String username = jwtUtils.getUsernameFromJwtToken(token);
+        User sellerUser = userService.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // Seller di‐identifikasi via userId pada SellerProfile
-        filter.setSellerId(sellerUser.getId().toString());
+
+        SellerProfile sellerProfile = sellerService.findBySellerId(sellerUser.getId());
+
+        filter.setSellerId(sellerProfile.getId().toString());
 
         Sort sort = Sort.by("asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC
                         : Sort.Direction.DESC,

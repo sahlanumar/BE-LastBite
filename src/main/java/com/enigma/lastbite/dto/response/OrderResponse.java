@@ -22,6 +22,12 @@ public class OrderResponse {
     private BigDecimal totalAmount;
     private String verificationCode;
     private String notes;
+    private String customerName;
+    private String imgProductUrl;
+    private String storeName;
+    private String longitude;
+    private String latitude;
+    private String urlMidtrans;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<OrderItemResponse> orderItems;

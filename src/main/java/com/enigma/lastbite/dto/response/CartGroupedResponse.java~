@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor // Membuat constructor dengan semua field (public by default)
 @NoArgsConstructor
+@Builder
 public class CartGroupedResponse {
     private String cartId;
     private String customerId;

@@ -79,43 +79,42 @@ public class OrderController {
     @GetMapping("/customer/me")
     public ResponseEntity<CommonResponse<List<OrderResponse>>> getMyOrdersAsCustomer(
             @RequestParam(required = false) OrderStatus status,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime createdFrom,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime createdTo,
-            @RequestParam(defaultValue = "0")   int page,
-            @RequestParam(defaultValue = "10")  int size,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdTo,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortField,
             @RequestParam(defaultValue = "desc") String sortDir,
             @RequestParam(defaultValue = "") String baseUrl
     ) {
 
-        // isi hanya filter “umum”; customerId disuntik otomatis di service
+
         OrderFilterRequest filter = new OrderFilterRequest();
         filter.setStatus(status);
         filter.setCreatedFrom(createdFrom);
         filter.setCreatedTo(createdTo);
 
-        Page<OrderResponse> orderPage =
-                orderService.getAllOrdersForCustomer(filter, page, size, sortField, sortDir);
+        Page<OrderResponse> orderPage = orderService.getAllOrdersForCustomer(filter, page, size, sortField, sortDir);
 
         return ResponseUtil.buildResponse(
-                HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA,
+                HttpStatus.OK,
+                ResponseMessage.SUCCESS_GET_DATA,
                 orderPage.getContent(),
-                orderPage, baseUrl, Collections.emptyMap(),
-                sortField, sortDir
+                orderPage,
+                baseUrl,
+                filter,
+                sortField,
+                sortDir
         );
     }
 
     @GetMapping("/seller/me")
     public ResponseEntity<CommonResponse<List<OrderResponse>>> getMyOrdersAsSeller(
             @RequestParam(required = false) OrderStatus status,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime createdFrom,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime createdTo,
-            @RequestParam(defaultValue = "0")   int page,
-            @RequestParam(defaultValue = "10")  int size,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdTo,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortField,
             @RequestParam(defaultValue = "desc") String sortDir,
             @RequestParam(defaultValue = "") String baseUrl
@@ -126,16 +125,20 @@ public class OrderController {
         filter.setCreatedFrom(createdFrom);
         filter.setCreatedTo(createdTo);
 
-        Page<OrderResponse> orderPage =
-                orderService.getAllOrdersForSeller(filter, page, size, sortField, sortDir);
+        Page<OrderResponse> orderPage = orderService.getAllOrdersForSeller(filter, page, size, sortField, sortDir);
 
         return ResponseUtil.buildResponse(
-                HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA,
+                HttpStatus.OK,
+                ResponseMessage.SUCCESS_GET_DATA,
                 orderPage.getContent(),
-                orderPage, baseUrl, Collections.emptyMap(),
-                sortField, sortDir
+                orderPage,
+                baseUrl,
+                filter,
+                sortField,
+                sortDir
         );
     }
+
 
     @PutMapping("/{orderId}/accept")
     public ResponseEntity<CommonResponse<OrderResponse>> acceptOrder(@PathVariable String orderId) {

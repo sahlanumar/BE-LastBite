@@ -61,4 +61,7 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MenuItemReview> reviews;
+
+    @Column(name = "url_midtrans")
+    private String urlMidtrans;
 }

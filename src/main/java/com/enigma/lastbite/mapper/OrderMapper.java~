@@ -25,14 +25,31 @@ public class OrderMapper {
                 .build();
     }
 
-    public static Order toOrderEntity(User customer, SellerProfile seller, List<OrderItem> items, BigDecimal totalAmount, String verificationCode) {
+    // ===> METODE BARU YANG PERLU DITAMBAHKAN <===
+    /**
+     * Mengubah objek CartItem menjadi entitas OrderItem.
+     * Diperlukan untuk fungsionalitas checkout dari keranjang.
+     * @param cartItem Item dari keranjang belanja.
+     * @return Entitas OrderItem yang siap disimpan.
+     */
+    public static OrderItem toOrderItemEntity(CartItem cartItem) {
+        // Mengambil quantity dari CartItem dan price dari MenuItem yang terkait
+        return OrderItem.builder()
+                .menuItem(cartItem.getMenuItem())
+                .quantityPurchased(cartItem.getQuantity())
+                .pricePerItem(cartItem.getMenuItem().getDiscountedPrice())
+                .build();
+    }
+
+    public static Order toOrderEntity(User customer, SellerProfile seller, List<OrderItem> items, BigDecimal totalAmount, String verificationCode,String urlMidtrans) {
         Order order = Order.builder()
                 .customer(customer)
-                .sellerProfile(seller)
+                .sellerProfile(seller) // Nama parameter di sini bisa 'seller' atau 'sellerProfile', yang penting tipenya SellerProfile
                 .orderItems(items)
                 .totalAmount(totalAmount)
                 .orderStatus(OrderStatus.PENDING_PAYMENT)
                 .verificationCode(verificationCode)
+                .urlMidtrans(urlMidtrans)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -59,12 +76,15 @@ public class OrderMapper {
             itemResponses = Collections.emptyList();
         }
 
+        // Di service, Anda memanggil toResponse(savedOrder, paymentResponse)
+        // Mapper ini akan menempatkan paymentResponse ke field 'payment' di OrderResponse
         return OrderResponse.builder()
                 .orderId(order.getId())
                 .customerId(order.getCustomer().getId())
                 .sellerId(order.getSellerProfile().getId())
                 .totalAmount(order.getTotalAmount())
                 .status(order.getOrderStatus())
+                .customerName(order.getCustomer().getFullName())
                 .orderItems(itemResponses)
                 .verificationCode(order.getVerificationCode())
                 .notes(order.getNotes())
