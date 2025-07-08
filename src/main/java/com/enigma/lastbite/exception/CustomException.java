@@ -30,7 +30,7 @@ public class CustomException extends RuntimeException {
     }
 
     public ErrorCode getErrorCode() {
-        return errorCode; // TAMBAHKAN METHOD INI
+        return errorCode;
     }
 
 }

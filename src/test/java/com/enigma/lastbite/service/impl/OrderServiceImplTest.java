@@ -721,7 +721,7 @@ class OrderServiceImplTest {
                 when(orderRepository.countByStatusBetween(OrderStatus.COMPLETED, start, end)).thenReturn(successTx);
                 when(orderRepository.sumTotalAmountByStatusBetween(OrderStatus.COMPLETED, start, end)).thenReturn(successAmount);
                 mockedMapper.when(() -> OrderMapper.toResponse(anyLong(), anyLong(), anyLong(), any()))
-                        .thenReturn(new ReportResponse());
+                        .thenReturn(ReportResponse.builder().totalSuccessTx(successTx).totalSuccessAmount(successAmount).build());
 
 
                 // When

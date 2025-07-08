@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class SellerRegisterRequest {
 
-    // --- Data untuk tabel 'users' ---
     // Username dibutuhkan untuk login dan tidak boleh duplikat
     @NotBlank(message = "Username tidak boleh kosong", groups = ValidationGroups.Create.class)
     @Size(min = 3, max = 100, message = "Username harus antara 3 dan 100 karakter", groups = ValidationGroups.Create.class)

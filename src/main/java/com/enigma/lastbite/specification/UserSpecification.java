@@ -17,12 +17,11 @@ public class UserSpecification {
     public static Specification<User> hasRole(UserRole role) {
         return (root, query, cb) -> {
             if (role == null) {
-                return cb.conjunction(); // Jika filter role tidak diberikan, jangan filter apa-apa.
+                return cb.conjunction();
             }
-            // Lakukan join dengan koleksi 'roles'. Ini akan menghasilkan join ke tabel relasi.
+
             Join<User, Role> rolesJoin = root.join("roles");
-            // Buat kondisi (predicate) dimana 'name' dari entitas Role yang di-join
-            // sama dengan nilai enum UserRole yang diberikan.
+
             return cb.equal(rolesJoin.get("name"), role);
         };
     }
@@ -30,28 +29,24 @@ public class UserSpecification {
     public static Specification<User> hasStatus(UserStatus status) {
         return (root, query, cb) -> {
             if (status == null) {
-                return cb.conjunction(); // Jika tidak ada filter status, kembalikan semua
+                return cb.conjunction();
             }
 
             LocalDateTime now = LocalDateTime.now();
 
             switch (status) {
                 case ACTIVE:
-                    // Pengguna aktif jika 'suspendedUntil' kosong (null) ATAU sudah lewat dari sekarang.
                     return cb.or(
                             cb.isNull(root.get("suspendedUntil")),
                             cb.lessThanOrEqualTo(root.get("suspendedUntil"), now)
                     );
                 case INACTIVE:
-                    // Pengguna tidak aktif (disuspend) jika 'suspendedUntil' ada DAN masih di masa depan.
                     return cb.and(
                             cb.isNotNull(root.get("suspendedUntil")),
                             cb.greaterThan(root.get("suspendedUntil"), now)
                     );
                 case CANCELLED:
-                    // Tidak ada logika untuk CANCELLED berdasarkan entity User saat ini.
-                    // Jadi kita tidak menerapkan filter apa pun untuk status ini.
-                    return cb.conjunction();
+                   return cb.conjunction();
                 default:
                     return cb.conjunction();
             }
@@ -69,7 +64,6 @@ public class UserSpecification {
         };
     }
 
-    /** search by username/fullName/email (ilike) */
     public static Specification<User> containsKeyword(String keyword) {
         return (root, query, cb) -> {
             if (keyword == null || keyword.isBlank()) return cb.conjunction();
@@ -82,7 +76,6 @@ public class UserSpecification {
         };
     }
 
-    /** helper untuk merangkai semuanya */
     public static Specification<User> build(UserFilterRequest f) {
         return Specification.where(hasRole(f.getRole()))
                 .and(hasStatus(f.getStatus()))

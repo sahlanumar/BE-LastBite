@@ -15,15 +15,12 @@ public class UsernameOrEmailValidator implements ConstraintValidator<UsernameOrE
     @Override
     public boolean isValid(LoginRequest loginRequest, ConstraintValidatorContext context) {
         if (loginRequest == null) {
-            return true; // Biarkan validasi lain (seperti @NotNull) yang menanganinya
+            return true;
         }
 
-        // Menggunakan StringUtils.hasText untuk memeriksa apakah string tidak null,
-        // tidak kosong, dan tidak hanya berisi spasi.
         boolean isUsernameProvided = StringUtils.hasText(loginRequest.getUsername());
         boolean isEmailProvided = StringUtils.hasText(loginRequest.getEmail());
 
-        // Validasi berhasil jika salah satu dari keduanya (atau keduanya) diisi
         return isUsernameProvided || isEmailProvided;
     }
 }

@@ -12,14 +12,12 @@ import java.lang.annotation.Target;
  * Anotasi validasi untuk memastikan bahwa salah satu dari field 'username' atau 'email' diisi.
  * Anotasi ini akan diterapkan pada level kelas.
  */
-@Target({ElementType.TYPE}) // Menandakan anotasi ini untuk digunakan pada kelas
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = UsernameOrEmailValidator.class) // Menunjuk ke kelas yang berisi logika validasi
+@Constraint(validatedBy = UsernameOrEmailValidator.class)
 public @interface UsernameOrEmailRequired {
-    // Pesan error default jika validasi gagal
     String message() default "Username atau email harus diisi";
 
-    // Boilerplate yang dibutuhkan untuk custom validation
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

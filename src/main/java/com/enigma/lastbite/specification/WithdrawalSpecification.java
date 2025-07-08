@@ -17,9 +17,7 @@ public class WithdrawalSpecification {
         return (root, query, cb) -> {
             Predicate predicate = cb.conjunction();
 
-            // Tambahkan filter berdasarkan userId jika tidak null
             if (userId != null && !userId.isEmpty()) {
-                // Asumsi relasi: WithdrawalRequest -> Seller -> User -> id
                 predicate = cb.and(predicate, cb.equal(root.get("seller").get("user").get("id"), userId));
             }
 

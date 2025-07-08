@@ -38,7 +38,6 @@ public class SellerController {
     ) {
         Page<SellerResponse> sellerPage = sellerService.getAll(storeName, status, page, size, sortField, sortDir);
 
-        // Filter dapat dikemas sebagai class, agar compatible dengan ResponseUtil
         SellerFilterRequest filter = new SellerFilterRequest();
         filter.setStoreName(storeName);
         filter.setStatus(status);
@@ -59,6 +58,12 @@ public class SellerController {
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponse<SellerResponse>> getSellerById(@PathVariable String id) {
         SellerResponse sellerResponse = sellerService.getById(id);
+        return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, sellerResponse);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<CommonResponse<SellerResponse>> getSellerByAuth() {
+        SellerResponse sellerResponse = sellerService.getByLogin();
         return ResponseUtil.buildResponse(HttpStatus.OK, ResponseMessage.SUCCESS_GET_DATA, sellerResponse);
     }
 

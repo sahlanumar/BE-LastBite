@@ -1,4 +1,3 @@
-// src/main/java/com/enigma/lastbite/controller/WithdrawalController.java
 package com.enigma.lastbite.controller;
 
 import com.enigma.lastbite.constant.ResponseMessage;

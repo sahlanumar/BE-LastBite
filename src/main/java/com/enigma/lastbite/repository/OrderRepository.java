@@ -42,7 +42,6 @@ public interface OrderRepository extends JpaRepository<Order, String>, JpaSpecif
 """)
     long countCompletedOrdersBySellerProfileId(@Param("sellerProfileId") String sellerProfileId);
 
-    // =================== Tambahan untuk menghindari error PostgreSQL ===================
 
     @Query("""
         SELECT COUNT(o) FROM Order o
@@ -77,8 +76,6 @@ public interface OrderRepository extends JpaRepository<Order, String>, JpaSpecif
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
-
-    // ==============================================
 
     @Query("""
         SELECT COALESCE(SUM(o.totalAmount), 0)

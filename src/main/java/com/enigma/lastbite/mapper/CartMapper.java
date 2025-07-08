@@ -31,45 +31,35 @@ public class CartMapper {
      * Termasuk logika untuk menentukan 'status' item secara dinamis.
      */
     public static CartItemResponse toCartItemResponse(CartItem cartItem) {
-        // Panggil metode helper untuk mendapatkan status
         String dynamicStatus = determineItemStatus(cartItem);
 
         return CartItemResponse.builder()
                 .cartItemId(cartItem.getId())
                 .menuItemId(cartItem.getMenuItem().getId())
                 .menuItemName(cartItem.getMenuItem().getName())
-                // storeName akan ada di level seller jika menggunakan CartGroupedResponse
-                // .storeName(cartItem.getMenuItem().getSellerProfile().getStoreName())
                 .imageUrl(cartItem.getMenuItem().getImageUrl())
                 .quantity(cartItem.getQuantity())
                 .price(cartItem.getMenuItem().getDiscountedPrice())
                 .subtotal(cartItem.getMenuItem().getDiscountedPrice().multiply(new BigDecimal(cartItem.getQuantity())))
-                .status(dynamicStatus) // Set status yang sudah dihitung
+                .status(dynamicStatus)
                 .build();
     }
 
     private static String determineItemStatus(CartItem cartItem) {
         MenuItem menuItem = cartItem.getMenuItem();
-        LocalDateTime now = LocalDateTime.now(); // Mengambil waktu server saat ini
+        LocalDateTime now = LocalDateTime.now();
 
-        // 1. Cek Ketersediaan Waktu
-        // Jika waktu sekarang sudah melewati akhir waktu tampil ATAU belum memasuki waktu mulai tampil
         if (now.isAfter(menuItem.getDisplayEndTime()) || now.isBefore(menuItem.getDisplayStartTime())) {
             return ListingStatus.NOT_AVAILABLE.name();
         }
 
-        // 2. Cek Ketersediaan Stok
-        // Jika stok yang tersedia lebih sedikit dari yang diminta di keranjang
         if (menuItem.getQuantityAvailable() < cartItem.getQuantity()) {
             return ListingStatus.SOLD_OUT.name();
         }
 
-        // 3. Jika lolos semua pengecekan
-        // Item tersedia untuk di-checkout dari keranjang
         return ListingStatus.AVAILABLE.name();
     }
 
-    // Metode untuk mengelompokkan cart (dari jawaban sebelumnya, sudah menggunakan toCartItemResponse yang baru)
     public static CartGroupedResponse toCartGroupedResponse(Cart cart) {
         Map<SellerProfile, List<CartItem>> itemsBySeller = cart.getItems().stream()
                 .collect(Collectors.groupingBy(cartItem -> cartItem.getMenuItem().getSellerProfile()));

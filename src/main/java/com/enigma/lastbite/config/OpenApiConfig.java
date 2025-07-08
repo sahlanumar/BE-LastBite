@@ -15,17 +15,11 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI lastBiteOpenAPI() {
-        // Definisikan skema keamanan 'bearerAuth'
         final String securitySchemeName = "bearerAuth";
 
         return new OpenAPI()
-                // 1. Tambahkan item keamanan (Security Requirement) secara global
-                // Baris ini akan memunculkan gembok pada setiap endpoint
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
-
-                // 2. Definisikan komponen skema keamanan
-                // Baris ini akan membuat tombol "Authorize" muncul dan menjelaskan cara kerja 'bearerAuth'
-                .components(
+                        .components(
                         new Components()
                                 .addSecuritySchemes(securitySchemeName,
                                         new SecurityScheme()
@@ -35,7 +29,6 @@ public class OpenApiConfig {
                                                 .bearerFormat("JWT")
                                                 .description("Masukkan JWT Token dengan prefix 'Bearer '. Contoh: 'Bearer eyJhbGciOiJI...'")
                                 )
-                                // Anda masih bisa menambahkan skema lain jika perlu
                                 .addSecuritySchemes("superAdminKey",
                                         new SecurityScheme()
                                                 .type(SecurityScheme.Type.APIKEY)
@@ -44,7 +37,6 @@ public class OpenApiConfig {
                                                 .description("Super Admin secret key")
                                 )
                 )
-                // 3. Informasi umum API
                 .info(new Info()
                         .title("LastBite API")
                         .description("API documentation for LastBite application")

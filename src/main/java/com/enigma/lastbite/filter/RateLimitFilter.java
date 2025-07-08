@@ -31,7 +31,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
     // Kelas untuk menyimpan informasi counter dan timestamp
     private static class RequestCounter {
         AtomicInteger count = new AtomicInteger(0);
-        long resetTime = System.currentTimeMillis() + 60000; // reset setiap 1 menit
+        long resetTime = System.currentTimeMillis() + 60000;
     }
 
     @Override

@@ -34,11 +34,9 @@ public class MenuItemSpecification {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("discountedPrice"), maxPrice));
             }
             if (minRating != null) {
-                // Langsung akses 'averageRating' dari root (MenuItem)
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("averageRating"), minRating));
             }
             if (maxRating != null) {
-                // Langsung akses 'averageRating' dari root (MenuItem)
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("averageRating"), maxRating));
             }
 

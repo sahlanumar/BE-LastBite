@@ -16,10 +16,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class UserFilterRequest {
-    private UserRole role;           // ROLE_CUSTOMER, ROLE_ADMIN, …
-    private UserStatus status;       // ACTIVE, SUSPENDED, …
+    private UserRole role;
+    private UserStatus status;
     private LocalDateTime createdFrom;
     private LocalDateTime createdTo;
-    private String search;           // bebas: username / fullName / email
+    private String search;
 }
 

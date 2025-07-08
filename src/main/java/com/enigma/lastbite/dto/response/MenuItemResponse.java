@@ -26,6 +26,7 @@ public class MenuItemResponse {
     private LocalDateTime displayStartTime;
     private LocalDateTime displayEndTime;
     private ListingStatus status;
+    private String storeDescription;
     private Boolean isDelleted;
     private BigDecimal averageRating;
     private LocalDateTime createdAt;

@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@UsernameOrEmailRequired // Terapkan anotasi custom di sini
+@UsernameOrEmailRequired
 @Builder
 public class LoginRequest {
 

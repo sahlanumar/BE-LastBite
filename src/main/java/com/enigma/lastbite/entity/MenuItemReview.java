@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-// <-- DIUBAH: unique constraint sekarang berdasarkan order dan menu item
 @Table(name = TableNames.MENU_ITEM_REVIEW, uniqueConstraints = {
         @UniqueConstraint(columnNames = {"order_id", "menu_item_id"})
 })
@@ -25,12 +24,6 @@ public class MenuItemReview {
     @Column(columnDefinition = "VARCHAR(36)")
     private String id;
 
-    // <-- DIHAPUS: Relasi langsung ke User tidak diperlukan lagi
-    // @ManyToOne
-    // @JoinColumn(name = "customer_id", nullable = false)
-    // private User customer;
-
-    // <-- DITAMBAHKAN: Relasi ke Order, yang memiliki informasi customer
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;

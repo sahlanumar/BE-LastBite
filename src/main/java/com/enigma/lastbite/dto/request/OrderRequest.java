@@ -25,6 +25,6 @@ public class OrderRequest {
      * pada setiap objek OrderItemRequest di dalam list.
      */
     @NotEmpty(message = "Pesanan harus memiliki setidaknya satu item", groups = ValidationGroups.Create.class)
-    @Valid // Memicu validasi pada objek di dalam list
+    @Valid
     private List<OrderItemRequest> orderItems;
 }

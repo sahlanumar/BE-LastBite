@@ -16,7 +16,6 @@ public class WithdrawalMapper {
                 .status(WithdrawalStatus.PENDING)
                 .accountNumber(req.getAccountNumber())
                 .bankName(req.getBankName())
-                // requestDate tidak perlu di-set di sini, akan ditangani oleh @CreationTimestamp
                 .build();
     }
 
@@ -25,7 +24,6 @@ public class WithdrawalMapper {
             return null;
         }
 
-        // Menangani jika relasi seller atau processedBy (admin) null untuk mencegah error
         String sellerId = (entity.getSeller() != null) ? entity.getSeller().getId() : null;
         String processedByUsername = (entity.getProcessedBy() != null) ? entity.getProcessedBy().getUsername() : null;
 

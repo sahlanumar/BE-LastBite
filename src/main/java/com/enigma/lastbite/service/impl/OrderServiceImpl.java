@@ -129,17 +129,16 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public OrderResponse createOrderFromCart(CreateOrderFromCartRequest request) {
-        // 1. Dapatkan Customer dari token JWT
         String token = jwtUtils.getTokenFromHeader();
         jwtUtils.validateJwtToken(token);
-        String username = jwtUtils.getUsernameFromJwtToken(token); // Asumsi Anda punya metode helper ini
+        String username = jwtUtils.getUsernameFromJwtToken(token);
         User customer = userService.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 2. Dapatkan keranjang milik customer
+
         Cart cart = cartService.findByCustomerId(customer.getId());
 
-        // 3. Ambil SEMUA item dari keranjang untuk seller yang dipilih
+
         List<CartItem> allItemsForSeller = cart.getItems().stream()
                 .filter(cartItem -> cartItem.getMenuItem().getSellerProfile().getId().equals(request.getSellerId()))
                 .collect(Collectors.toList());
@@ -148,7 +147,6 @@ public class OrderServiceImpl implements OrderService {
             throw new CustomException(ErrorCode.CART_EMPTY_FOR_SELLER);
         }
 
-        // ====> LANGKAH BARU: SARING ITEM YANG HANYA AVAILABLE <====
         LocalDateTime now = LocalDateTime.now();
         List<CartItem> availableItemsForOrder = allItemsForSeller.stream()
                 .filter(cartItem -> {
@@ -159,55 +157,41 @@ public class OrderServiceImpl implements OrderService {
                 })
                 .collect(Collectors.toList());
 
-        // 4. Jika setelah disaring tidak ada item yang bisa dipesan, throw error
         if (availableItemsForOrder.isEmpty()) {
-            throw new CustomException(ErrorCode.NO_AVAILABLE_ITEMS_FOR_CHECKOUT); // ErrorCode baru
+            throw new CustomException(ErrorCode.NO_AVAILABLE_ITEMS_FOR_CHECKOUT);
         }
 
-        // 5. Inisialisasi variabel untuk order HANYA dengan item yang tersedia
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
         SellerProfile sellerProfile = availableItemsForOrder.get(0).getMenuItem().getSellerProfile();
 
-        // 6. Loop melalui item YANG SUDAH TERSEDIA untuk membuat OrderItem
         for (CartItem cartItem : availableItemsForOrder) {
             MenuItem menuItem = cartItem.getMenuItem();
 
-            // ---- Validasi di dalam loop ini tidak lagi diperlukan ----
-            // ---- karena sudah dilakukan oleh filter di atas. ----
-            // ---- Ini membuat kode lebih bersih. ----
-
-            // Buat OrderItem dari CartItem
             OrderItem orderItem = OrderMapper.toOrderItemEntity(cartItem);
             orderItems.add(orderItem);
 
-            // Kurangi stok
             menuItem.setQuantityAvailable(menuItem.getQuantityAvailable() - cartItem.getQuantity());
             menuItemService.save(menuItem);
 
-            // Akumulasi total harga
             totalAmount = totalAmount.add(
                     menuItem.getDiscountedPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()))
             );
         }
 
-        // 7. Buat entitas Order
-        String verificationCode = generateVerificationCode(); // Asumsi Anda punya metode ini
+        String verificationCode = generateVerificationCode();
         Order order = OrderMapper.toOrderEntity(customer, sellerProfile, orderItems, totalAmount, verificationCode);
 
         Order savedOrder = orderRepository.saveAndFlush(order);
 
-        // 8. HAPUS HANYA ITEM YANG BERHASIL DIPESAN dari keranjang
         cart.getItems().removeAll(availableItemsForOrder);
         cartService.save(cart);
 
-        // 9. Buat pembayaran
         PaymentRequest paymentRequest = PaymentRequest.builder()
                 .orderId(savedOrder.getId())
                 .build();
         PaymentResponse paymentResponse = paymentService.createPayment(paymentRequest);
 
-        // 10. Kembalikan response
         return OrderMapper.toResponse(savedOrder, paymentResponse);
     }
 

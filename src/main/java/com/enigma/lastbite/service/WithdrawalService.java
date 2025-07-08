@@ -9,9 +9,14 @@ import java.util.List;
 
 public interface WithdrawalService {
     WithdrawalResponse createRequest(WithdrawalCreateRequest req);
+
     WithdrawalResponse approveRequest(String id, String proofUrl);
+
     WithdrawalResponse rejectRequest(String id);
+
     WithdrawalResponse getById(String id);
+
     Page<WithdrawalResponse> getMine(WithdrawalFilterRequest filter, int page, int size, String sortField, String sortDir);
-    Page<WithdrawalResponse> getAllWithPagination(WithdrawalFilterRequest filter, int page, int size, String sortField, String sortDir);// admin
+
+    Page<WithdrawalResponse> getAllWithPagination(WithdrawalFilterRequest filter, int page, int size, String sortField, String sortDir);
 }

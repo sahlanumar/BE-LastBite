@@ -36,7 +36,6 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
                 .build();
 
         final ObjectMapper mapper = new ObjectMapper();
-        // Configure object mapper for LocalDateTime
         mapper.findAndRegisterModules();
         mapper.writeValue(response.getOutputStream(), errorResponse);
     }

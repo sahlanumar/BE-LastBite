@@ -4,7 +4,7 @@ import com.enigma.lastbite.constant.ListingStatus;
 import lombok.Data;
 import java.math.BigDecimal;
 
-@Data // Lombok akan membuatkan getter, setter, dll.
+@Data
 public class MenuItemSearchRequest {
     private String name;
     private String sellerId;
@@ -12,7 +12,7 @@ public class MenuItemSearchRequest {
     private BigDecimal minPrice;
     private Boolean isAvailable;
     private ListingStatus status;
-    private Double minRating; // Field untuk filter rating
+    private Double minRating;
     private Double maxRating;
     private Double lat;
     private Double lon;

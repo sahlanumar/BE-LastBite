@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/carts")
 @RequiredArgsConstructor
-@Validated // Anotasi ini diperlukan untuk mengaktifkan validasi pada parameter method
+@Validated
 public class CartController {
 
     private final CartService cartService;

@@ -20,7 +20,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
     @Override
     public UploadImageResponse uploadFile(MultipartFile file) throws IOException {
-        final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+        final long MAX_FILE_SIZE = 10 * 1024 * 1024;
 
         if (file.getSize() > MAX_FILE_SIZE) {
             throw new CustomException(ErrorCode.FILE_TOO_LARGE);

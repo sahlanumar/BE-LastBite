@@ -10,6 +10,7 @@ import com.enigma.lastbite.exception.CustomException;
 import com.enigma.lastbite.exception.ErrorCode;
 import com.enigma.lastbite.mapper.SellerMapper;
 import com.enigma.lastbite.repository.SellerProfileRepository;
+import com.enigma.lastbite.security.JwtUtils;
 import com.enigma.lastbite.service.MenuItemService;
 import com.enigma.lastbite.service.OrderService;
 import com.enigma.lastbite.service.SellerService;
@@ -32,9 +33,11 @@ public class SellerServiceImpl implements SellerService {
     private final SellerProfileRepository sellerProfileRepository;
     private final UserService userService;
     private final MenuItemService menuItemService;
+    private final JwtUtils jwtUtils;
     private final OrderService orderService;
 
-    public SellerServiceImpl(SellerProfileRepository sellerProfileRepository,@Lazy MenuItemService menuItemService,@Lazy UserService userService,@Lazy OrderService orderService) {
+    public SellerServiceImpl(SellerProfileRepository sellerProfileRepository,@Lazy MenuItemService menuItemService,@Lazy UserService userService,@Lazy OrderService orderService, JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
         this.userService = userService;
         this.sellerProfileRepository = sellerProfileRepository;
         this.menuItemService = menuItemService;
@@ -54,6 +57,19 @@ public class SellerServiceImpl implements SellerService {
         Long totalOrder = orderService.countCompletedOrdersBySellerId(sellerProfile.getId());
         return SellerMapper.toSellerResponse(sellerProfile, totalOrder);
     }
+
+    @Override
+    public SellerResponse getByLogin() {
+        String token = jwtUtils.getTokenFromHeader();
+        jwtUtils.validateJwtToken(token);
+        String username = jwtUtils.getUsernameFromJwtToken(token);
+        User user = userService.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        SellerProfile sellerProfile = sellerProfileRepository.findByUserId(user.getId()).orElseThrow(() -> new CustomException(ErrorCode.SELLER_NOT_FOUND));
+        Long totalOrder = orderService.countCompletedOrdersBySellerId(sellerProfile.getId());
+        return SellerMapper.toSellerResponse(sellerProfile, totalOrder);
+    }
+
 
     @Override
     public SellerProfile getSellerProfileByUserId(String userId) {

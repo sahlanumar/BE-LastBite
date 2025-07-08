@@ -72,7 +72,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     @Transactional
     public WithdrawalResponse approveRequest(String id, String proofUrl) {
         log.info("Approving withdrawal request with id: {}", id);
-
+        // 1. Cari request berdasarkan ID
         WithdrawalRequest wr = withdrawalRepo.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
@@ -82,20 +82,24 @@ public class WithdrawalServiceImpl implements WithdrawalService {
             throw new CustomException(ErrorCode.INSUFFICIENT_BALANCE);
         }
 
+        // 2. Pastikan statusnya masih PENDING
         if (wr.getStatus() != WithdrawalStatus.PENDING) {
             log.warn("Attempted to approve a request with non-PENDING status: {}", wr.getStatus());
             throw new CustomException(ErrorCode.STATUS_NOT_ALLOWED);
         }
 
+        // 3. Dapatkan admin yang memproses
         String adminUsername = jwtUtils.getUsernameFromJwtToken(jwtUtils.getTokenFromHeader());
         User admin = userService.findByUsername(adminUsername)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        // 4. Update status dan data terkait
         wr.setStatus(WithdrawalStatus.APPROVED);
         wr.setProcessedBy(admin);
         wr.setProcessedDate(OffsetDateTime.now());
         wr.setProofOfPaymentUrl(proofUrl);
 
+        // 5. Kurangi saldo seller terlebih dahulu untuk mencegah double-spending
         seller.setBalance(seller.getBalance().subtract(wr.getAmount()));
         sellerRepo.saveAndFlush(seller);
         log.info("Seller balance updated. New balance: {}", seller.getBalance());
@@ -109,23 +113,28 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     @Transactional
     public WithdrawalResponse rejectRequest(String id) {
         log.info("Rejecting withdrawal request with id: {}", id);
+        // 1. Cari request berdasarkan ID
         WithdrawalRequest wr = withdrawalRepo.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
+        // 2. Pastikan statusnya masih PENDING
         if (wr.getStatus() != WithdrawalStatus.PENDING) {
             log.warn("Attempted to reject a request with non-PENDING status: {}", wr.getStatus());
             throw new CustomException(ErrorCode.STATUS_NOT_ALLOWED);
         }
 
+        // 3. Kembalikan dana ke saldo seller
         SellerProfile seller = wr.getSeller();
         seller.setBalance(seller.getBalance().add(wr.getAmount()));
         sellerRepo.save(seller);
         log.info("Balance refunded to seller {}. Amount: {}", seller.getId(), wr.getAmount());
 
+        // 4. Dapatkan admin yang memproses
         String adminUsername = jwtUtils.getUsernameFromJwtToken(jwtUtils.getTokenFromHeader());
         User admin = userService.findByUsername(adminUsername)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        // 5. Update status dan data terkait
         wr.setStatus(WithdrawalStatus.REJECTED);
         wr.setProcessedBy(admin);
         wr.setProcessedDate(OffsetDateTime.now());
@@ -155,6 +164,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         Sort.Direction direction = "asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
 
+        // Panggil specification dengan menyertakan filter dan user.getId()
         Specification<WithdrawalRequest> spec = WithdrawalSpecification.getSpecification(filter, user.getId());
 
         Page<WithdrawalRequest> data = withdrawalRepo.findAll(spec, pageable);
@@ -169,6 +179,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         Sort.Direction direction = "asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
 
+        // Panggil specification dengan filter, dan null untuk userId
         Specification<WithdrawalRequest> spec = WithdrawalSpecification.getSpecification(filter, null);
 
         Page<WithdrawalRequest> data = withdrawalRepo.findAll(spec, pageable);

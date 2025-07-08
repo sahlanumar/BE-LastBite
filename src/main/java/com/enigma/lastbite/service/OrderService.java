@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface OrderService {
 
-    List<Order> findAllCompletedOrdersByCustomerId(String customerId); // Menambahkan metode ini di OrderService/Repository: findAllCompletedOrdersByCustomerId
+    List<Order> findAllCompletedOrdersByCustomerId(String customerId);
 
     OrderResponse createOrderFromCart(CreateOrderFromCartRequest request);
 

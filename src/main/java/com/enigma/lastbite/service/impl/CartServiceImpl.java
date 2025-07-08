@@ -43,7 +43,6 @@ public class CartServiceImpl implements CartService {
         Cart cart = findOrCreateCartForUser(user);
         MenuItem menuItem = menuItemService.findById(request.getMenuItemId());
 
-        // Logika cerdas: Cek jika item sudah ada, jika ya, tambah kuantitasnya
         Optional<CartItem> existingCartItem = cart.getItems().stream()
                 .filter(item -> item.getMenuItem().getId().equals(request.getMenuItemId()))
                 .findFirst();
@@ -83,7 +82,6 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartItem.getCart();
 
         if (quantity <= 0) {
-            // Hapus item dari list di dalam cart, orphanRemoval akan bekerja
             cart.getItems().remove(cartItem);
         } else {
             cartItem.setQuantity(quantity);
@@ -102,7 +100,6 @@ public class CartServiceImpl implements CartService {
                 .orElseThrow(() -> new CustomException(ErrorCode.CART_ITEM_NOT_FOUND));
 
         Cart cart = cartItem.getCart();
-        // Cukup hapus dari list, JPA dengan orphanRemoval=true akan menghapus dari DB
         cart.getItems().remove(cartItem);
 
         cart.setUpdatedAt(LocalDateTime.now());
@@ -120,8 +117,6 @@ public class CartServiceImpl implements CartService {
 
         Cart cart = cartRepository.findByCustomerId(user.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
-
-        // Kosongkan list item, orphanRemoval=true akan menghapus semua CartItem terkait
         cart.getItems().clear();
 
         cart.setUpdatedAt(LocalDateTime.now());
@@ -138,7 +133,6 @@ public class CartServiceImpl implements CartService {
         return cartRepository.save(cart);
     }
 
-    // Metode privat untuk mengurangi duplikasi kode
     private String getUsernameFromToken() {
         String token = jwtUtils.getTokenFromHeader();
         jwtUtils.validateJwtToken(token);

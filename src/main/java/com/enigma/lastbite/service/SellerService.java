@@ -12,6 +12,8 @@ public interface SellerService {
 
     SellerResponse getByUserId(String userId);
 
+    SellerResponse getByLogin();
+
     SellerProfile getSellerProfileByUserId(String userId);
 
     Page<SellerResponse> getAll(

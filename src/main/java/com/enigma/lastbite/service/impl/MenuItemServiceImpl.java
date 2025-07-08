@@ -70,7 +70,7 @@ public class MenuItemServiceImpl implements MenuItemService {
         if(sellerProfile.getStatus() != UserStatus.ACTIVE) {
             throw new CustomException(ErrorCode.SELLER_NOT_ACTIVE);
         }
-        // MenuMapper akan mengambil imageUrl langsung dari DTO request
+
         MenuItem menuItem = MenuMapper.toMenuItemEntity(request, sellerProfile);
         menuItemRepository.save(menuItem);
         return MenuMapper.toMenuItemResponse(menuItem);
@@ -88,19 +88,16 @@ public class MenuItemServiceImpl implements MenuItemService {
     public Page<MenuItemResponse> getAll(
             String name, String sellerId, BigDecimal maxPrice, BigDecimal minPrice,
             Boolean isAvailable, ListingStatus status,
-            // PASTIKAN PARAMETER BARU UNTUK RATING INI ADA DI SIGNATURE METHOD ANDA
             Double minRating, Double maxRating,
             int page, int size,
             String sortField, String sortDir, Double userLat, Double userLon) {
 
-        // Panggil specification dengan semua parameter yang benar
         Specification<MenuItem> spec = MenuItemSpecification.getSpecification(
                 name, sellerId, maxPrice, minPrice, isAvailable, status,
                 minRating, maxRating
         );
 
 
-        // Bagian ini untuk sorting yang efisien di database (selain 'distance')
         if (!"distance".equalsIgnoreCase(sortField)) {
             Sort sort = Sort.by(
                     "asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC,
@@ -112,8 +109,6 @@ public class MenuItemServiceImpl implements MenuItemService {
             return menuItems.map(item -> MenuMapper.toMenuItemResponse(item, userLat, userLon));
         }
 
-        // --- BAGIAN INI JANGAN DIKOMENTARI ---
-        // Ini adalah logika fallback untuk sorting 'distance' yang dilakukan di memori
         List<MenuItem> allItems = menuItemRepository.findAll(spec);
         List<MenuItemResponse> responses = allItems.stream()
                 .map(item -> MenuMapper.toMenuItemResponse(item, userLat, userLon))
@@ -150,7 +145,6 @@ public class MenuItemServiceImpl implements MenuItemService {
     public Page<MenuItemResponse> getAllByLogin(
             String name, BigDecimal maxPrice, BigDecimal minPrice,
             Boolean isAvailable, ListingStatus status,
-            // --- PERBAIKAN: Tambahkan parameter rating di signature ---
             Double minRating, Double maxRating,
             int page, int size,
             String sortField, String sortDir) {
@@ -166,7 +160,6 @@ public class MenuItemServiceImpl implements MenuItemService {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        // --- PERBAIKAN UTAMA: Panggil getSpecification dengan parameter yang lengkap ---
         Specification<MenuItem> spec = MenuItemSpecification.getSpecification(
                 name, sellerId, maxPrice, minPrice, isAvailable, status,
                 minRating,

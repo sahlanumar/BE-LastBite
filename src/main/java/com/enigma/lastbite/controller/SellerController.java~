@@ -2,6 +2,7 @@ package com.enigma.lastbite.controller;
 
 import com.enigma.lastbite.constant.ResponseMessage;
 import com.enigma.lastbite.constant.UserStatus;
+import com.enigma.lastbite.dto.request.SellerFilterRequest;
 import com.enigma.lastbite.dto.request.SellerUpdateRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.PagingResponse;
@@ -32,24 +33,27 @@ public class SellerController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "storeName") String sortField,
-            @RequestParam(defaultValue = "asc") String sortDir
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(defaultValue = "") String baseUrl
     ) {
         Page<SellerResponse> sellerPage = sellerService.getAll(storeName, status, page, size, sortField, sortDir);
 
-        PagingResponse pagingResponse = PagingResponse.builder()
-                .currentPage(page + 1)
-                .totalPage(sellerPage.getTotalPages())
-                .size(size)
-                .build();
+        SellerFilterRequest filter = new SellerFilterRequest();
+        filter.setStoreName(storeName);
+        filter.setStatus(status);
 
-        CommonResponse<List<SellerResponse>> response = CommonResponse.<List<SellerResponse>>builder()
-                .statusCode(HttpStatus.OK.value())
-                .message(ResponseMessage.SUCCESS_GET_DATA)
-                .data(sellerPage.getContent())
-                .paging(pagingResponse)
-                .build();
-        return ResponseEntity.ok(response);
+        return ResponseUtil.buildResponse(
+                HttpStatus.OK,
+                ResponseMessage.SUCCESS_GET_DATA,
+                sellerPage.getContent(),
+                sellerPage,
+                baseUrl,
+                filter,
+                sortField,
+                sortDir
+        );
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponse<SellerResponse>> getSellerById(@PathVariable String id) {

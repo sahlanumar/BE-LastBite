@@ -12,11 +12,9 @@ public class PasswordsMatchValidator implements ConstraintValidator<PasswordsMat
 
     @Override
     public boolean isValid(PasswordChangeRequest request, ConstraintValidatorContext context) {
-        // Jika request null atau salah satu password null, biarkan anotasi @NotBlank yang menanganinya
         if (request == null || request.getNewPassword() == null || request.getConfirmNewPassword() == null) {
             return true;
         }
-        // Validasi berhasil jika kedua password cocok
         return request.getNewPassword().equals(request.getConfirmNewPassword());
     }
 }
