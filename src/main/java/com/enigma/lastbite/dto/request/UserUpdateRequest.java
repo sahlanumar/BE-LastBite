@@ -45,4 +45,7 @@ public class UserUpdateRequest {
 
     private String profileImageUrl;
 
+    private String suspendedReason;
+
+
 }

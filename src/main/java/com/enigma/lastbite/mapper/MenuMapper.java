@@ -55,6 +55,9 @@ public class MenuMapper {
         if (request.getDisplayEndTime() != null) {
             menuItem.setDisplayEndTime(request.getDisplayEndTime());
         }
+        if (request.getIsDeleted() != null) {
+            menuItem.setDeleted(request.getIsDeleted());
+        }
     }
 
     public static MenuItemResponse toMenuItemResponse(MenuItem menuItem) {
@@ -99,6 +102,7 @@ public class MenuMapper {
                 .displayStartTime(menuItem.getDisplayStartTime())
                 .displayEndTime(menuItem.getDisplayEndTime())
                 .status(menuItem.getStatus())
+                .isDelleted(menuItem.isDeleted())
                 .averageRating(menuItem.getAverageRating())
                 .createdAt(menuItem.getCreatedAt())
                 .updatedAt(menuItem.getUpdatedAt())

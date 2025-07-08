@@ -2,6 +2,7 @@ package com.enigma.lastbite.service.impl;
 
 import com.enigma.lastbite.constant.ListingStatus;
 import com.enigma.lastbite.constant.OrderStatus;
+import com.enigma.lastbite.constant.UserRole;
 import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.MenuItemCreateRequest;
 import com.enigma.lastbite.dto.request.MenuItemUpdateRequest;
@@ -130,6 +131,17 @@ public class MenuItemServiceImpl implements MenuItemService {
         int end = Math.min((start + pageable.getPageSize()), responses.size());
         List<MenuItemResponse> pagedList = (start >= responses.size()) ? List.of() : responses.subList(start, end);
 
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        if(user.getRoles().contains(UserRole.ROLE_CUSTOMER)) {
+            pagedList = pagedList.stream().filter(menuItemResponse -> {
+                if(menuItemResponse.getQuantityAvailable() > 0 && menuItemResponse.getDisplayEndTime().isAfter(LocalDateTime.now())) {
+                    return true;
+                }
+                return false;
+            }).toList();
+        }
+
         return new PageImpl<>(pagedList, pageable, responses.size());
     }
 
@@ -157,14 +169,25 @@ public class MenuItemServiceImpl implements MenuItemService {
         // --- PERBAIKAN UTAMA: Panggil getSpecification dengan parameter yang lengkap ---
         Specification<MenuItem> spec = MenuItemSpecification.getSpecification(
                 name, sellerId, maxPrice, minPrice, isAvailable, status,
-                minRating, // Tambahkan ini
-                maxRating  // Tambahkan ini
+                minRating,
+                maxRating
         );
 
         Page<MenuItem> menuItems = menuItemRepository.findAll(spec, pageable);
         menuItems.map(item -> {
-            item.setStatus(ListingStatus.AVAILABLE);
+            if(item.getQuantityAvailable() > 0 && item.getDisplayEndTime().isAfter(LocalDateTime.now())) {
+                item.setStatus(ListingStatus.AVAILABLE);
+            }else {
+                item.setStatus(ListingStatus.NOT_AVAILABLE);
+            }
             return item;
+        });
+        menuItems.filter(menuItem -> {
+            if(menuItem.isDeleted()) {
+                return false;
+            }else {
+                return true;
+            }
         });
         return menuItems.map(MenuMapper::toMenuItemResponse);
     }
@@ -172,18 +195,17 @@ public class MenuItemServiceImpl implements MenuItemService {
     @Transactional
     @Override
     public MenuItemResponse update(String id, MenuItemUpdateRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userService.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        if(!user.getRoles().contains(UserRole.ROLE_SELLER)&&request.getIsDeleted() != null) {
+            throw new CustomException(ErrorCode.NOT_ADMIN);
+        }
         MenuItem menuItem = findByIdOrThrowNotFound(id);
 
         MenuMapper.updateFromDto(menuItem, request);
 
         ListingStatus status = ListingStatus.NOT_AVAILABLE;
-        log.info("Menu item is not available");
-        log.info("Menu item quantity available: {}", menuItem.getQuantityAvailable());
-        log.info("Menu item display end time: {}", menuItem.getDisplayEndTime());
-        log.info("Menu item display start time: {}", menuItem.getDisplayStartTime());
-        log.info("Current time: {}", LocalDateTime.now());
         if (menuItem.getQuantityAvailable() > 0 && menuItem.getDisplayEndTime().isAfter(LocalDateTime.now()) ) {
-            log.info("Menu item is available");
             status = ListingStatus.AVAILABLE;
         }
         menuItem.setStatus(status);

@@ -53,6 +53,7 @@ public enum ErrorCode {
     INVALID_MENU_ITEM(HttpStatus.BAD_REQUEST, "Item menu tidak valid"),
     MENU_ITEM_NOT_IN_ORDER(HttpStatus.BAD_REQUEST, "Item menu tidak ada dalam pesanan"),
     MENU_ITEM_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "Item menu sedang tidak tersedia"),
+    NOT_ADMIN(HttpStatus.BAD_REQUEST, "Anda bukan admin"),
 
     //====================================================================
     // KERANJANG (CART)

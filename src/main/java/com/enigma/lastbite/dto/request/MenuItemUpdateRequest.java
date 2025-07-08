@@ -78,4 +78,6 @@ public class MenuItemUpdateRequest {
      * Bersifat opsional.
      */
     private LocalDateTime displayEndTime;
+
+    private Boolean isDeleted;
 }

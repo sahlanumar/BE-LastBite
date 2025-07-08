@@ -22,6 +22,7 @@ public class UserMapper {
                 throw new RuntimeException("Admin cannot be suspended");
             }
             user.setSuspendedUntil(request.getSuspendedUntil());
+            user.setSuspendReason(request.getSuspendedReason());
         }
         if (request.getLatitude() != null) {
             user.setLatitude(request.getLatitude());
@@ -47,6 +48,7 @@ public class UserMapper {
                 .profileImageUrl(user.getProfileImageUrl())
                 .role(String.valueOf(user.getRoles().stream().map(role -> role.getName().name()).toList()))
                 .suspendedUntil(user.getSuspendedUntil())
+                .suspendedReason(user.getSuspendReason())
                 .createdAt(user.getCreatedAt())
                 .build();
     }

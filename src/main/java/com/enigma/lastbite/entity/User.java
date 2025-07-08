@@ -77,6 +77,9 @@ public class User implements UserDetails {
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
+    @Column(name = "suspend_reason")
+    private String suspendReason;
+
     @Column(nullable = false, precision = 10, scale = 8)
     private BigDecimal latitude;
 
