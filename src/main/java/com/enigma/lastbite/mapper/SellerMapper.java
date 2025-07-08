@@ -1,5 +1,6 @@
 package com.enigma.lastbite.mapper;
 
+import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.SellerUpdateRequest;
 import com.enigma.lastbite.dto.response.SellerResponse;
 import com.enigma.lastbite.entity.SellerProfile;
@@ -24,6 +25,9 @@ public class SellerMapper {
         }
         if (request.getStatus() != null) {
             sellerProfile.setStatus(request.getStatus());
+            if(request.getStatus().equals(UserStatus.CANCELLED)){
+                sellerProfile.setCancelReason(request.getCancelReason());
+            }
         }
         if (request.getStoreImageUrl() != null) {
             sellerProfile.setStoreImageUrl(request.getStoreImageUrl());
@@ -42,6 +46,7 @@ public class SellerMapper {
                 .latitude(sellerProfile.getLatitude())
                 .longitude(sellerProfile.getLongitude())
                 .status(sellerProfile.getStatus())
+                .cancellationReason(sellerProfile.getCancelReason())
                 .averageRating(sellerProfile.getAverageRatingMenu())
                 .balance(sellerProfile.getBalance())
                 .phoneNumber(sellerProfile.getUser().getPhoneNumber())
@@ -63,6 +68,7 @@ public class SellerMapper {
                 .latitude(sellerProfile.getLatitude())
                 .longitude(sellerProfile.getLongitude())
                 .status(sellerProfile.getStatus())
+                .cancellationReason(sellerProfile.getCancelReason())
                 .averageRating(sellerProfile.getAverageRatingMenu())
                 .balance(sellerProfile.getBalance())
                 .phoneNumber(sellerProfile.getUser().getPhoneNumber())

@@ -41,5 +41,7 @@ public class SellerUpdateRequest {
     // Status baru untuk user/seller (misal: ACTIVE, INACTIVE). Opsional.
     private UserStatus status;
 
+    private String cancelReason;
+
     private String storeImageUrl;
 }
