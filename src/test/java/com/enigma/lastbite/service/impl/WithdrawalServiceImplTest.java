@@ -111,7 +111,7 @@ class WithdrawalServiceImplTest {
         when(userService.findByUsername("admin")).thenReturn(Optional.of(new User()));
         when(withdrawalRepo.save(any(WithdrawalRequest.class))).thenReturn(withdrawalRequest);
 
-        WithdrawalResponse response = withdrawalService.rejectRequest("wdId");
+        WithdrawalResponse response = withdrawalService.rejectRequest("wdId", "reason");
 
         assertNotNull(response);
         assertEquals(WithdrawalStatus.REJECTED, response.getStatus());

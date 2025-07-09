@@ -17,6 +17,7 @@ public class WithdrawalResponse {
     private OffsetDateTime requestDate;
     private OffsetDateTime processedDate;
     private String bankName;
+    private String cancelReason;
     private String accountNumber;
     private String processedBy;
     private String proofOfPaymentUrl;

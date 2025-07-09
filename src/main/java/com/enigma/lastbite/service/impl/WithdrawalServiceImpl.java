@@ -107,7 +107,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
 
     @Override
     @Transactional
-    public WithdrawalResponse rejectRequest(String id) {
+    public WithdrawalResponse rejectRequest(String id, String reason) {
         log.info("Rejecting withdrawal request with id: {}", id);
         WithdrawalRequest wr = withdrawalRepo.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
@@ -129,6 +129,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         wr.setStatus(WithdrawalStatus.REJECTED);
         wr.setProcessedBy(admin);
         wr.setProcessedDate(OffsetDateTime.now());
+        wr.setCancelReason(reason);
 
         withdrawalRepo.save(wr);
         log.info("Request {} rejected by admin {}", id, adminUsername);

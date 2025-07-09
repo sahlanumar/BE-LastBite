@@ -37,7 +37,7 @@ public class WithdrawalMapper {
                 .processedBy(processedByUsername)
                 .bankName(entity.getBankName())
                 .accountNumber(entity.getAccountNumber())
-                .cancelReason(entity.getCancelReason())
+                .cancelReason(entity.getSeller().getCancelReason())
                 .proofOfPaymentUrl(entity.getProofOfPaymentUrl())
                 .balance(entity.getSeller().getBalance())
                 .build();

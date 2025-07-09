@@ -4,7 +4,6 @@ import com.enigma.lastbite.constant.ResponseMessage;
 import com.enigma.lastbite.dto.request.WithdrawalApproveRequest;
 import com.enigma.lastbite.dto.request.WithdrawalCreateRequest;
 import com.enigma.lastbite.dto.request.WithdrawalFilterRequest;
-import com.enigma.lastbite.dto.request.WithdrawalRejectRequest;
 import com.enigma.lastbite.dto.response.CommonResponse;
 import com.enigma.lastbite.dto.response.WithdrawalResponse;
 import com.enigma.lastbite.service.WithdrawalService;
@@ -108,8 +107,8 @@ public class WithdrawalController {
 
     /* -------------- Admin: reject request -------------- */
     @PutMapping("/{id}/reject")
-    public ResponseEntity<CommonResponse<WithdrawalResponse>> reject(@PathVariable String id,@Valid @RequestBody WithdrawalRejectRequest req) {
-        WithdrawalResponse data = withdrawalService.rejectRequest(id, req.getCancelReason());
+    public ResponseEntity<CommonResponse<WithdrawalResponse>> reject(@PathVariable String id) {
+        WithdrawalResponse data = withdrawalService.rejectRequest(id);
         return ResponseUtil.buildResponse(
                 HttpStatus.OK, ResponseMessage.SUCCESS_UPDATE_DATA, data
         );

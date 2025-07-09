@@ -12,7 +12,7 @@ public interface WithdrawalService {
 
     WithdrawalResponse approveRequest(String id, String proofUrl);
 
-    WithdrawalResponse rejectRequest(String id);
+    WithdrawalResponse rejectRequest(String id, String message);
 
     WithdrawalResponse getById(String id);
 
