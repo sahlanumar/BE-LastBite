@@ -74,6 +74,7 @@ public class AuthMapper {
                 .address(request.getAddress())
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
+                .storeImageUrl(request.getStoreImageUrl())
                 .balance(BigDecimal.ZERO)
                 .averageRatingMenu(BigDecimal.ZERO)
                 .createdAt(LocalDateTime.now())
