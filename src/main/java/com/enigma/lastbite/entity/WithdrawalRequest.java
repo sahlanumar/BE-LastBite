@@ -61,4 +61,7 @@ public class WithdrawalRequest {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "cancel_reason")
+    private String cancelReason;
 }

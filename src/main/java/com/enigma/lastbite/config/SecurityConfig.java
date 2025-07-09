@@ -125,7 +125,7 @@ public class SecurityConfig {
                         // =============================================================================
                         // UPLOAD (AUTHENTICATED USERS)
                         // =============================================================================
-                        .requestMatchers("/api/upload/**").authenticated()
+                        .requestMatchers("/api/upload/**").permitAll()
 
                         // =============================================================================
                         // USERS (ADMIN & AUTHENTICATED)
@@ -143,7 +143,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/withdrawals").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/withdrawals/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/withdrawals/**").hasRole("ADMIN")
-
 
                         // Aturan default: semua request lain yang tidak cocok di atas harus terotentikasi
                         .anyRequest().authenticated()

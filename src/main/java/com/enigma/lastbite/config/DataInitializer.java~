@@ -1,9 +1,8 @@
-package Group3.CourseApp.config;
+package com.enigma.lastbite.config;
 
-
-import Group3.CourseApp.constant.UserRole;
-import Group3.CourseApp.entity.Role;
-import Group3.CourseApp.repository.RoleRepository;
+import com.enigma.lastbite.constant.UserRole;
+import com.enigma.lastbite.entity.Role;
+import com.enigma.lastbite.repository.RoleRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

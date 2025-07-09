@@ -1,28 +1,161 @@
+//package com.enigma.lastbite.config;
+//
+//import com.enigma.lastbite.constant.UserRole;
+//import com.enigma.lastbite.entity.Role;
+//import com.enigma.lastbite.repository.RoleRepository;
+//import jakarta.annotation.PostConstruct;
+//import lombok.RequiredArgsConstructor;
+//import org.springframework.stereotype.Component;
+//
+//@Component
+//@RequiredArgsConstructor
+//public class DataInitializer {
+//
+//    private final RoleRepository roleRepository;
+//
+//    @PostConstruct
+//    public void initRoles() {
+//        for (UserRole role : UserRole.values()) {
+//            if (!roleRepository.findByName(role).isPresent()) {
+//                Role newRole = new Role();
+//                newRole.setName(role);
+//                roleRepository.save(newRole);
+//            }
+//        }
+//    }
+//}
+
 package com.enigma.lastbite.config;
 
-
-
-import com.enigma.lastbite.constant.UserRole;
-import com.enigma.lastbite.entity.Role;
-import com.enigma.lastbite.repository.RoleRepository;
+import com.enigma.lastbite.constant.*;
+import com.enigma.lastbite.entity.*;
+import com.enigma.lastbite.repository.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class DataInitializer {
 
     private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private final SellerProfileRepository sellerProfileRepository;
+    private final MenuItemRepository menuItemRepository;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
 
     @PostConstruct
-    public void initRoles() {
+    public void initData() {
+        initRoles();
+        initUsersAndData();
+    }
+
+    private void initRoles() {
         for (UserRole role : UserRole.values()) {
             if (!roleRepository.findByName(role).isPresent()) {
-                Role newRole = new Role();
-                newRole.setName(role);
-                roleRepository.save(newRole);
+                roleRepository.save(Role.builder().name(role).build());
             }
         }
     }
+
+    private void initUsersAndData() {
+        if (!userRepository.existsByUsername("admin_jkt")) {
+            Role roleAdmin = roleRepository.findByName(UserRole.ROLE_ADMIN).get();
+            Role roleSeller = roleRepository.findByName(UserRole.ROLE_SELLER).get();
+            Role roleCustomer = roleRepository.findByName(UserRole.ROLE_CUSTOMER).get();
+
+            // Create admin
+            User admin = createUser("admin_jkt", "Admin Jakarta", "admin.jkt@lastbite.com", roleAdmin, -6.2088, 106.8456);
+
+            // Sellers
+            User seller1 = createUser("warung_betawi", "Bang Mamat", "mamat.betawi@example.com", roleSeller, -6.1751, 106.8650);
+            User seller2 = createUser("sushi_mentai_jkt", "Chef Yuda", "yuda.sushi@example.com", roleSeller, -6.2244, 106.8096);
+            User seller3 = createUser("kopi_senja_blok_m", "Rina Melati", "rina.kopi@example.com", roleSeller, -6.2443, 106.8021);
+
+            // Customers
+            User customer1 = createUser("budi_hartono", "Budi Hartono", "budi.hartono@example.com", roleCustomer, -6.2100, 106.8400);
+            User customer2 = createUser("cindy_larissa", "Cindy Larissa", "cindy.larissa@example.com", roleCustomer, -6.2500, 106.8100);
+            User customer3 = createUser("deni_setiawan", "Deni Setiawan", "deni.setiawan@example.com", roleCustomer, -6.2300, 106.8200);
+
+            // Seller Profiles
+            SellerProfile sp1 = createSellerProfile(seller1, "Warung Betawi Bang Mamat", "Masakan khas Betawi asli...", "Jl. Kebon Sirih No. 17, Menteng", -6.1751, 106.8650, "https://images.unsplash.com/photo-1552590635-27c2c2122d39?q=80&w=1000");
+            SellerProfile sp2 = createSellerProfile(seller2, "Sushi Mentai Jakarta", "Aneka sushi dan mentai...", "Mall Pacific Place", -6.2244, 106.8096, "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=1000");
+            SellerProfile sp3 = createSellerProfile(seller3, "Kopi Senja Blok M", "Kedai kopi pilihan...", "Jl. Melawai IV No. 7", -6.2443, 106.8021, "https://images.unsplash.com/photo-1511920183353-3b2a5d5539aa?q=80&w=1000");
+
+            // Menu Items
+            LocalDateTime now = LocalDateTime.now();
+            createMenuItem(sp1, "Soto Betawi Daging", "Soto kuah santan dengan daging sapi", "https://images.unsplash.com/photo-1627309302178-0c21c59058b7?q=80&w=1000", BigDecimal.valueOf(40000), BigDecimal.valueOf(32000), 15, now.plusHours(1), now.plusHours(5));
+            createMenuItem(sp1, "Nasi Uduk Komplit", "Nasi uduk gurih dengan ayam goreng", "https://images.unsplash.com/photo-1604259595843-73d839a8596b?q=80&w=1000", BigDecimal.valueOf(35000), BigDecimal.valueOf(28000), 10, now.plusHours(1), now.plusHours(5));
+            createMenuItem(sp2, "Salmon Mentai Rice", "Nasi pulen dan salmon mentai", "https://images.unsplash.com/photo-1617196034183-424990479e3a?q=80&w=1000", BigDecimal.valueOf(55000), BigDecimal.valueOf(45000), 20, now.plusHours(2), now.plusHours(6));
+            createMenuItem(sp2, "Kani Mentai Sushi Roll", "Sushi roll isi crab stick dan mentai", "https://images.unsplash.com/photo-1611141659349-3811445b08c9?q=80&w=1000", BigDecimal.valueOf(45000), BigDecimal.valueOf(38000), 25, now.plusHours(2), now.plusHours(6));
+            createMenuItem(sp3, "Paket Donat Gula", "3 Pcs donat kentang lembut", "https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=1000", BigDecimal.valueOf(30000), BigDecimal.valueOf(22000), 8, now.plusMinutes(30), now.plusHours(4));
+            createMenuItem(sp3, "Croissant Coklat", "Croissant renyah dengan coklat", "https://images.unsplash.com/photo-1568582390640-5211d1370894?q=80&w=1000", BigDecimal.valueOf(25000), BigDecimal.valueOf(18000), 0, now.plusMinutes(30), now.plusHours(4), ListingStatus.SOLD_OUT);
+
+            // Cart
+            Cart cart1 = cartRepository.save(Cart.builder().customer(customer1).build());
+            cartItemRepository.save(CartItem.builder().cart(cart1).menuItem(menuItemRepository.findAll().get(2)).quantity(1).build());
+            cartItemRepository.save(CartItem.builder().cart(cart1).menuItem(menuItemRepository.findAll().get(3)).quantity(1).build());
+
+            Cart cart2 = cartRepository.save(Cart.builder().customer(customer2).build());
+            Cart cart3 = cartRepository.save(Cart.builder().customer(customer3).build());
+            cartItemRepository.save(CartItem.builder().cart(cart3).menuItem(menuItemRepository.findAll().get(0)).quantity(2).build());
+        }
+    }
+
+    private User createUser(String username, String fullName, String email, Role role, double lat, double lng) {
+        User user = User.builder()
+                .username(username)
+                .fullName(fullName)
+                .email(email)
+                .passwordHash("$2a$10$3nB.K3G.EpyTDdY/8XW69uT5d2F.D1Q.zC5X.mO9R.2bJ.oO8uGkG") // "password123"
+                .phoneNumber("08" + UUID.randomUUID().toString().substring(0, 10))
+                .latitude(BigDecimal.valueOf(lat))
+                .longitude(BigDecimal.valueOf(lng))
+                .profileImageUrl("https://i.pravatar.cc/150?u=" + username)
+                .roles(Set.of(role))
+                .build();
+        return userRepository.save(user);
+    }
+
+    private SellerProfile createSellerProfile(User user, String storeName, String description, String address, double lat, double lng, String imageUrl) {
+        return sellerProfileRepository.save(SellerProfile.builder()
+                .user(user)
+                .storeName(storeName)
+                .storeDescription(description)
+                .address(address)
+                .latitude(BigDecimal.valueOf(lat))
+                .longitude(BigDecimal.valueOf(lng))
+                .status(UserStatus.ACTIVE)
+                .balance(BigDecimal.valueOf(1000000))
+                .storeImageUrl(imageUrl)
+                .build());
+    }
+
+    private void createMenuItem(SellerProfile profile, String name, String desc, String img, BigDecimal orig, BigDecimal disc, int qty, LocalDateTime start, LocalDateTime end) {
+        createMenuItem(profile, name, desc, img, orig, disc, qty, start, end, ListingStatus.AVAILABLE);
+    }
+
+    private void createMenuItem(SellerProfile profile, String name, String desc, String img, BigDecimal orig, BigDecimal disc, int qty, LocalDateTime start, LocalDateTime end, ListingStatus status) {
+        menuItemRepository.save(MenuItem.builder()
+                .sellerProfile(profile)
+                .name(name)
+                .description(desc)
+                .imageUrl(img)
+                .originalPrice(orig)
+                .discountedPrice(disc)
+                .quantityAvailable(qty)
+                .displayStartTime(start)
+                .displayEndTime(end)
+                .status(status)
+                .build());
+    }
 }
+

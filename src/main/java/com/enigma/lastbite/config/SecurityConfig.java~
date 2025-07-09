@@ -74,7 +74,7 @@ public class SecurityConfig {
                         // =============================================================================
                         // AUTHENTICATION (PUBLIK & ADMIN)
                         // =============================================================================
-                        .requestMatchers("/api/auth/login", "/api/auth/refresh-token", "/api/auth/register-customer", "/api/auth/register-seller", "/api/auth/register-admin").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/refresh-token", "/api/auth/register-customer", "/api/auth/register-seller", "/api/auth/register-super-admin").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register-admin").hasAnyRole("SUPER_ADMIN")
 
                         // =============================================================================
@@ -143,7 +143,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/withdrawals").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/withdrawals/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/withdrawals/**").hasRole("ADMIN")
-
 
                         // Aturan default: semua request lain yang tidak cocok di atas harus terotentikasi
                         .anyRequest().authenticated()

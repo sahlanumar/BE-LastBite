@@ -190,9 +190,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     public MenuItemResponse update(String id, MenuItemUpdateRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userService.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        if(!user.getRoles().contains(UserRole.ROLE_SELLER)&&request.getIsDeleted() != null) {
-            throw new CustomException(ErrorCode.NOT_ADMIN);
-        }
+
         MenuItem menuItem = findByIdOrThrowNotFound(id);
 
         MenuMapper.updateFromDto(menuItem, request);
