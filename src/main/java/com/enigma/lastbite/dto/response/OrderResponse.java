@@ -18,6 +18,7 @@ public class OrderResponse {
     private String orderId;
     private String customerId;
     private String sellerId;
+    private String sellerImageUrl;
     private OrderStatus status;
     private BigDecimal totalAmount;
     private String verificationCode;

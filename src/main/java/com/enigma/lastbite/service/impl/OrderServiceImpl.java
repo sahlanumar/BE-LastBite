@@ -284,6 +284,7 @@ public class OrderServiceImpl implements OrderService {
                 sortField == null || sortField.isBlank() ? "createdAt" : sortField);
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Order> orders = orderRepository.findAll(OrderSpecification.build(filter), pageable);
+
         return orders.map(OrderMapper::toResponse);
     }
 
@@ -304,7 +305,8 @@ public class OrderServiceImpl implements OrderService {
         order.setUpdatedAt(LocalDateTime.now());
 
         SellerProfile sellerProfile = order.getSellerProfile();
-        sellerProfile.setBalance(sellerProfile.getBalance().add(order.getTotalAmount()));
+        BigDecimal totalAmount = order.getTotalAmount().multiply(BigDecimal.valueOf(0.9));
+        sellerProfile.setBalance(sellerProfile.getBalance().add(totalAmount));
 
         return OrderMapper.toResponse(orderRepository.save(order));
     }

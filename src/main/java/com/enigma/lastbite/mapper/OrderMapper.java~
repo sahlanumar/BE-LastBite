@@ -95,7 +95,6 @@ public class OrderMapper {
             return null;
         }
         return OrderItemResponse.builder()
-                .menuItemId(item.getMenuItem().getId())
                 .menuItemName(item.getMenuItem().getName())
                 .quantity(item.getQuantityPurchased())
                 .pricePerItem(item.getPricePerItem())
