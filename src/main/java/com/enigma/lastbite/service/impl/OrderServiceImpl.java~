@@ -195,10 +195,6 @@ public class OrderServiceImpl implements OrderService {
                 .build();
         PaymentResponse paymentResponse = paymentService.createPayment(paymentRequest);
 
-        savedOrder.setUrlMidtrans(paymentResponse.getRedirectUrl());
-
-        orderRepository.save(savedOrder);
-
         return OrderMapper.toResponse(savedOrder, paymentResponse);
     }
 
