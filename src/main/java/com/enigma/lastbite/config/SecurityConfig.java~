@@ -96,7 +96,7 @@ public class SecurityConfig {
                         // =============================================================================
                         .requestMatchers(HttpMethod.GET, "/api/menu-item-reviews/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/menu-item-reviews").hasRole("CUSTOMER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/menu-item-reviews/**").hasAnyRole("ADMIN", "CUSTOMER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/menu-item-reviews/**").permitAll()
 
                         // =============================================================================
                         // ORDERS (VARIOUS ROLES)
@@ -125,7 +125,7 @@ public class SecurityConfig {
                         // =============================================================================
                         // UPLOAD (AUTHENTICATED USERS)
                         // =============================================================================
-                        .requestMatchers("/api/upload/**").authenticated()
+                        .requestMatchers("/api/upload/**").permitAll()
 
                         // =============================================================================
                         // USERS (ADMIN & AUTHENTICATED)

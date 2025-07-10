@@ -116,9 +116,9 @@ public class MenuItemReviewServiceImpl implements MenuItemReviewService {
         MenuItemReview review = menuItemReviewRepository.findById(reviewId)
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
 
-//        if (!review.getOrder().getCustomer().getId().equals(customer.getId())&& !customer.getRoles().contains(UserRole.ROLE_ADMIN)) {
-//            throw new CustomException(ErrorCode.UNAUTHORIZED);
-//        }
+        if (!review.getOrder().getCustomer().getId().equals(customer.getId())&& !customer.getRoles().contains(UserRole.ROLE_ADMIN)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
 
         String menuItemId = review.getMenuItem().getId();
         menuItemReviewRepository.delete(review);
