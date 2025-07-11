@@ -104,6 +104,8 @@ public class MenuMapper {
                 .originalPrice(menuItem.getOriginalPrice())
                 .discountedPrice(menuItem.getDiscountedPrice())
                 .quantityAvailable(menuItem.getQuantityAvailable())
+                .latitude(menuItem.getSellerProfile().getLatitude())
+                .longitude(menuItem.getSellerProfile().getLongitude())
                 .displayStartTime(menuItem.getDisplayStartTime())
                 .displayEndTime(menuItem.getDisplayEndTime())
                 .status(menuItem.getStatus())
