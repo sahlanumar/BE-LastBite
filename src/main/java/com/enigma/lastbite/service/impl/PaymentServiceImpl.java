@@ -18,6 +18,7 @@ import com.midtrans.service.MidtransSnapApi;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderService orderService;
     private final MidtransSnapApi midtransSnapApi;
     private final MenuItemServiceImpl menuItemService;
+    private final SimpMessagingTemplate messagingTemplate;
     private final OrderServiceImpl orderServiceImpl;
 
     @Override
@@ -95,6 +97,7 @@ public class PaymentServiceImpl implements PaymentService {
             }
 
             paymentRepository.save(payment);
+            orderService.updateStatusToCancelled(orderId);
         } else if ("deny".equalsIgnoreCase(transactionStatus) || "cancel".equalsIgnoreCase(transactionStatus)) {
             payment.setStatus(PaymentStatus.FAILED);
             for (OrderItem orderItem : order.getOrderItems()) {
@@ -103,6 +106,10 @@ public class PaymentServiceImpl implements PaymentService {
                 menuItemService.save(menuItem);
             }
             paymentRepository.save(payment);
+            orderService.updateStatusToCancelled(orderId);
         }
+//
+//        PaymentResponse paymentResponse = PaymentMapper.toResponse(payment, "", "");
+//        messagingTemplate.convertAndSend("/topic/payment/" + order.getId(), paymentResponse);
     }
 }

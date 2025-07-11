@@ -36,6 +36,8 @@ public interface OrderService {
 
     void updateStatusToPaid(String orderId);
 
+    void updateStatusToCancelled(String orderId);
+
     Page<OrderResponse> getAllOrdersForCustomer(OrderFilterRequest filter,
                                                 int page, int size,
                                                 String sortField, String sortDir);

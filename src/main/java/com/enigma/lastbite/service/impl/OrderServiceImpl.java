@@ -227,6 +227,25 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public void updateStatusToCancelled(String orderId) {
+        Order order = findOrderByIdOrThrow(orderId);
+        if (order.getOrderStatus() != OrderStatus.PENDING_PAYMENT) {
+            throw new CustomException(ErrorCode.ORDER_NOT_PENDING_PAYMENT);
+        }
+        order.setOrderStatus(OrderStatus.CANCELLED);
+        System.out.println("masuk sini");
+        order.setUpdatedAt(LocalDateTime.now());
+        Order updatedOrder = orderRepository.save(order);
+
+        String sellerId = updatedOrder.getSellerProfile().getId();
+        String destination = String.format("/topic/seller/%s", sellerId);
+        log.info("WebSocket: Sent PAID notification for order {}", orderId);
+
+        OrderResponse response = OrderMapper.toResponse(updatedOrder);
+        messagingTemplate.convertAndSend(destination, response);
+    }
+
+    @Override
     @Transactional(rollbackOn = Exception.class)
     public OrderResponse acceptOrder(String orderId) {
         Order order = findOrderByIdOrThrow(orderId);
