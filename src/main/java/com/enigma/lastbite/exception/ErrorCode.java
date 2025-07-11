@@ -36,6 +36,7 @@ public enum ErrorCode {
     PASSWORD_REQUIRED(HttpStatus.BAD_REQUEST, "Kata sandi diperlukan"),
     USERNAME_OR_EMAIL_REQUIRED(HttpStatus.BAD_REQUEST, "Username atau email harus diisi"),
     SELLER_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "Profil penjual tidak ditemukan"),
+    SELLER_INACTIVE(HttpStatus.BAD_REQUEST, "Penjual belum diaktifkan oleh admin"),
 
     //====================================================================
     // TOKEN OTENTIKASI (AUTHENTICATION TOKEN)

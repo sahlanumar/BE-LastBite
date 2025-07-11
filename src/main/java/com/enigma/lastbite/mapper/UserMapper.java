@@ -18,9 +18,6 @@ public class UserMapper {
             user.setPhoneNumber(request.getPhoneNumber());
         }
         if (request.getSuspendedUntil() != null) {
-            if (user.getRoles().contains(UserRole.ROLE_ADMIN)) {
-                throw new RuntimeException("Admin cannot be suspended");
-            }
             user.setSuspendedUntil(request.getSuspendedUntil());
             user.setSuspendReason(request.getSuspendedReason());
         }

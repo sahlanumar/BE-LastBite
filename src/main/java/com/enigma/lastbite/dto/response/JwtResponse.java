@@ -24,4 +24,5 @@ public class JwtResponse {
     private List<String> roles;
     private String fullName;
     private UserStatus status;
+    private String messageSuspend;
 }

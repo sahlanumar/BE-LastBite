@@ -97,6 +97,14 @@ public class SellerServiceImpl implements SellerService {
 
         SellerMapper.updateFromDto(sellerProfile, request);
 
+        if(request.getSuspendedUntil() != null) {
+            User user = sellerProfile.getUser();
+            user.setSuspendedUntil(request.getSuspendedUntil());
+            user.setSuspendReason(request.getSuspendedReason());
+            userService.save(user);
+            sellerProfile.setStatus(UserStatus.SUSPENDED);
+        }
+
         sellerProfileRepository.save(sellerProfile);
 
         return SellerMapper.toSellerResponse(sellerProfile);

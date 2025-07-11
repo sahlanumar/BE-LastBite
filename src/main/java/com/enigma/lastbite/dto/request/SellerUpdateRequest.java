@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * DTO untuk memperbarui data profil seorang seller.
@@ -40,6 +41,10 @@ public class SellerUpdateRequest {
 
     // Status baru untuk user/seller (misal: ACTIVE, INACTIVE). Opsional.
     private UserStatus status;
+
+    private LocalDateTime suspendedUntil;
+
+    private String suspendedReason;
 
     private String cancelReason;
 

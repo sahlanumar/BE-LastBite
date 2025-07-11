@@ -4,6 +4,7 @@ import com.enigma.lastbite.constant.UserRole;
 import com.enigma.lastbite.constant.UserStatus;
 import com.enigma.lastbite.dto.request.*;
 import com.enigma.lastbite.dto.response.JwtResponse;
+import com.enigma.lastbite.dto.response.LoginSuspendResponse;
 import com.enigma.lastbite.dto.response.RegisterResponse;
 import com.enigma.lastbite.dto.response.TokenRefreshResponse;
 import com.enigma.lastbite.entity.Role;
@@ -20,6 +21,7 @@ import com.enigma.lastbite.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -74,29 +76,47 @@ public class AuthServiceImpl implements AuthService {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         User user = userService.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+
+
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
         String accessToken = jwtUtils.generateJwtToken(authentication);
         String refreshToken = jwtUtils.generateRefreshToken(userDetails.getUsername());
         SellerProfile sellerProfile = sellerProfileRepository.findByUserId(user.getId()).orElse(null);
-        UserStatus status = null;
-        if (sellerProfile != null) {
-            status = sellerProfile.getStatus();
-        }else {
-            if(user.getSuspendedUntil() == null|| user.getSuspendedUntil().isBefore(LocalDateTime.now())) {
-                status = UserStatus.ACTIVE;
-            }else {
-                status = UserStatus.INACTIVE;
+//        UserStatus status = null;
+//        String message = null;
+//        if (sellerProfile != null) {
+//            status = sellerProfile.getStatus();
+//        }else {
+//            if(user.getSuspendedUntil() == null|| user.getSuspendedUntil().isBefore(LocalDateTime.now())) {
+//                status = UserStatus.ACTIVE;
+//            }else {
+//                status = UserStatus.INACTIVE;
+//                message = user.getSuspendReason();
+//                accessToken="";
+//                refreshToken="";
+//            }
+//        }
+        if(user.getSuspendedUntil() != null&& user.getSuspendedUntil().isAfter(LocalDateTime.now())) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED, "Akun anda di suspend dengan alasan " + user.getSuspendReason());
+        }
+        if(sellerProfile != null) {
+            if(sellerProfile.getStatus() == UserStatus.INACTIVE) {
+                throw new CustomException(ErrorCode.SELLER_INACTIVE);
+            }
+            if(sellerProfile.getStatus() == UserStatus.CANCELLED) {
+                throw new CustomException(HttpStatus.UNAUTHORIZED, "Akun anda di cancel dengan alasan " + sellerProfile.getCancelReason());
             }
         }
+
         return JwtResponse.builder()
                 .token(accessToken)
                 .refreshToken(refreshToken)
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .fullName(user.getFullName())
-                .status(status)
                 .roles(roles)
                 .build();
     }
