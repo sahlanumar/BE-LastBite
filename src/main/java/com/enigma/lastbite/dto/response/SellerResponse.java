@@ -26,6 +26,8 @@ public class SellerResponse {
     private UserStatus status;
     private BigDecimal averageRating;
     private BigDecimal balance;
+    private LocalDateTime suspendedUntil;
+    private String suspendedReason;
     private String cancellationReason;
     private String profileImageUrl;
     private String phoneNumber;

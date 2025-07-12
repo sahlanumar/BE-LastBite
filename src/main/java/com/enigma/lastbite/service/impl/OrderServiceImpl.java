@@ -257,7 +257,7 @@ public class OrderServiceImpl implements OrderService {
         Order updatedOrder = orderRepository.save(order);
         OrderResponse response = OrderMapper.toResponse(updatedOrder);
 
-        String destination = String.format("/topic/order/%s", orderId);
+        String destination = String.format("/topic/customer/%s", order.getCustomer().getId());
         messagingTemplate.convertAndSend(destination, response);
 
         return response;
@@ -275,7 +275,7 @@ public class OrderServiceImpl implements OrderService {
         Order updatedOrder = orderRepository.save(order);
         OrderResponse response = OrderMapper.toResponse(updatedOrder);
 
-        String destination = String.format("/topic/order/%s", orderId);
+        String destination = String.format("/topic/customer/%s", order.getCustomer().getId());
         messagingTemplate.convertAndSend(destination, response);
         log.info("WebSocket: Sent READY_FOR_PICKUP notification for order {}", orderId);
 
@@ -326,6 +326,9 @@ public class OrderServiceImpl implements OrderService {
         SellerProfile sellerProfile = order.getSellerProfile();
         BigDecimal totalAmount = order.getTotalAmount().multiply(BigDecimal.valueOf(0.9));
         sellerProfile.setBalance(sellerProfile.getBalance().add(totalAmount));
+        String destination = String.format("/topic/customer/%s", order.getCustomer().getId());
+        messagingTemplate.convertAndSend(destination, OrderMapper.toResponse(order));
+        log.info("WebSocket: Sent COMPLETED notification for order {}", orderId);
 
         return OrderMapper.toResponse(orderRepository.save(order));
     }

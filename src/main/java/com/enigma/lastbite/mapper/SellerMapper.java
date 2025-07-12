@@ -69,6 +69,8 @@ public class SellerMapper {
                 .longitude(sellerProfile.getLongitude())
                 .status(sellerProfile.getStatus())
                 .cancellationReason(sellerProfile.getCancelReason())
+                .suspendedReason(sellerProfile.getUser().getSuspendReason())
+                .suspendedUntil(sellerProfile.getUser().getSuspendedUntil())
                 .averageRating(sellerProfile.getAverageRatingMenu())
                 .balance(sellerProfile.getBalance())
                 .phoneNumber(sellerProfile.getUser().getPhoneNumber())
