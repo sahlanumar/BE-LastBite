@@ -27,6 +27,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @Slf4j
 public class SellerServiceImpl implements SellerService {
@@ -104,7 +106,9 @@ public class SellerServiceImpl implements SellerService {
             userService.save(user);
             sellerProfile.setStatus(UserStatus.SUSPENDED);
         }
-
+        if(request.getSuspendedUntil().isBefore(LocalDateTime.now()) || request.getSuspendedUntil().isEqual(LocalDateTime.now())) {
+            sellerProfile.setStatus(UserStatus.ACTIVE);
+        }
         sellerProfileRepository.save(sellerProfile);
 
         return SellerMapper.toSellerResponse(sellerProfile);

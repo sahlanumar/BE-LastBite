@@ -37,6 +37,7 @@ public enum ErrorCode {
     USERNAME_OR_EMAIL_REQUIRED(HttpStatus.BAD_REQUEST, "Username atau email harus diisi"),
     SELLER_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "Profil penjual tidak ditemukan"),
     SELLER_INACTIVE(HttpStatus.BAD_REQUEST, "Penjual belum diaktifkan oleh admin"),
+    USER_SUSPENDED(HttpStatus.BAD_REQUEST, "Akun Anda telah dinonaktifkan"),
 
     //====================================================================
     // TOKEN OTENTIKASI (AUTHENTICATION TOKEN)

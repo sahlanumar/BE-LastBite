@@ -99,6 +99,8 @@ public class AuthServiceImpl implements AuthService {
 //                refreshToken="";
 //            }
 //        }
+
+        log.info("user suspended until: {}", user.getSuspendedUntil());
         if(user.getSuspendedUntil() != null&& user.getSuspendedUntil().isAfter(LocalDateTime.now())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "Akun anda di suspend dengan alasan " + user.getSuspendReason());
         }

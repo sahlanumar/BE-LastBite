@@ -1,5 +1,8 @@
 package com.enigma.lastbite.security;
 
+import com.enigma.lastbite.entity.User;
+import com.enigma.lastbite.exception.CustomException;
+import com.enigma.lastbite.exception.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -37,6 +41,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUsernameFromJwtToken(jwt);
+                User user = (User) userDetailsService.loadUserByUsername(username);
+
+                if(user.getSuspendedUntil() != null && user.getSuspendedUntil().isAfter(LocalDateTime.now())) {
+                    throw new CustomException(ErrorCode.USER_SUSPENDED);
+                }
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
