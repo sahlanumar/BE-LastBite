@@ -106,7 +106,7 @@ public class SellerServiceImpl implements SellerService {
             userService.save(user);
             sellerProfile.setStatus(UserStatus.SUSPENDED);
         }
-        if(request.getSuspendedUntil().isBefore(LocalDateTime.now()) || request.getSuspendedUntil().isEqual(LocalDateTime.now())) {
+        if(request.getSuspendedUntil() != null && (request.getSuspendedUntil().isBefore(LocalDateTime.now()) || request.getSuspendedUntil().isEqual(LocalDateTime.now()))) {
             sellerProfile.setStatus(UserStatus.ACTIVE);
         }
         sellerProfileRepository.save(sellerProfile);

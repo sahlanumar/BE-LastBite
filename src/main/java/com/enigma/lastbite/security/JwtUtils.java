@@ -7,7 +7,9 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import com.auth0.jwt.interfaces.JWTVerifier;
+import com.enigma.lastbite.constant.UserRole;
 import com.enigma.lastbite.dto.response.JwtClaims;
+import com.enigma.lastbite.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -169,6 +171,11 @@ public class JwtUtils {
         }
 
         return null;
+    }
+
+    public boolean hasRole(User user, UserRole userRole) {
+        return user.getRoles().stream()
+                .anyMatch(role -> role.getName() == userRole);
     }
 
 }

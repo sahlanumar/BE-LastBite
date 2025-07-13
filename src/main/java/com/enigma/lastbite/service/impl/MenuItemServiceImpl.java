@@ -128,7 +128,9 @@ public class MenuItemServiceImpl implements MenuItemService {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userService.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        if(user.getRoles().contains(UserRole.ROLE_CUSTOMER)) {
+
+
+        if(jwtUtils.hasRole(user, UserRole.ROLE_CUSTOMER)) {
             pagedList = pagedList.stream().filter(menuItemResponse -> {
                 if(menuItemResponse.getQuantityAvailable() > 0 && menuItemResponse.getDisplayEndTime().isAfter(LocalDateTime.now())) {
                     return true;
