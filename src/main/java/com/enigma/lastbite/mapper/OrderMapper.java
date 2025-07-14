@@ -69,6 +69,19 @@ public class OrderMapper {
             itemResponses = Collections.emptyList();
         }
 
+        boolean allReviewed = false;
+        if (order.getOrderItems() != null && !order.getOrderItems().isEmpty()) {
+            List<String> orderedItemIds = order.getOrderItems().stream()
+                    .map(item -> item.getMenuItem().getId())
+                    .toList();
+
+            List<String> reviewedItemIds = order.getReviews().stream()
+                    .map(review -> review.getMenuItem().getId())
+                    .toList();
+
+            allReviewed = reviewedItemIds.containsAll(orderedItemIds);
+        }
+
         return OrderResponse.builder()
                 .orderId(order.getId())
                 .customerId(order.getCustomer().getId())
@@ -87,6 +100,7 @@ public class OrderMapper {
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
                 .payment(payment)
+                .isReviewed(allReviewed)
                 .build();
     }
 

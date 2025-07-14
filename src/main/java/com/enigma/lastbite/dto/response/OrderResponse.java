@@ -28,6 +28,7 @@ public class OrderResponse {
     private String longitude;
     private String latitude;
     private String urlMidtrans;
+    private Boolean isReviewed;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<OrderItemResponse> orderItems;
