@@ -71,6 +71,7 @@ public class SecurityConfig {
 
                         .requestMatchers(SWAGGER_URL_PATHS).permitAll()
                         .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // =============================================================================
                         // AUTHENTICATION (PUBLIK & ADMIN)
                         // =============================================================================
@@ -156,9 +157,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://10.10.102.16:5173", "http://10.10.102.138:5173"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://10.10.102.16:5173", "http://10.10.102.138:5173","https://055815270714.ngrok-free.app", "https://fe-dashboard-last-bite.vercel.app/"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "ngrok-skip-browser-warning"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

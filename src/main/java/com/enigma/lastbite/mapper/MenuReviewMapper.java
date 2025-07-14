@@ -22,6 +22,7 @@ public class MenuReviewMapper {
                 .id(menuItemReview.getId())
                 .rating(menuItemReview.getRating())
                 .comment(menuItemReview.getComment())
+                .profileImageUrl(menuItemReview.getOrder().getCustomer().getProfileImageUrl())
                 .createdAt(menuItemReview.getCreatedAt())
                 .orderId(menuItemReview.getOrder().getId())
                 .menuItemId(menuItemReview.getMenuItem().getId())

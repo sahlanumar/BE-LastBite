@@ -15,6 +15,7 @@ public class MenuItemReviewResponse {
     private Integer rating;
     private String comment;
     private LocalDateTime createdAt;
+    private String profileImageUrl;
     private String orderId;
     private String menuItemId;
     private String menuItemName;
