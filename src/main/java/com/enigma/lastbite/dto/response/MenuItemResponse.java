@@ -28,6 +28,7 @@ public class MenuItemResponse {
     private ListingStatus status;
     private BigDecimal longitude;
     private BigDecimal latitude;
+    private String address;
     private String storeDescription;
     private Boolean isDelleted;
     private BigDecimal averageRating;

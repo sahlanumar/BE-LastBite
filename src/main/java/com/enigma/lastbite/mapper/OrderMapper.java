@@ -70,15 +70,13 @@ public class OrderMapper {
         }
 
         boolean allReviewed = false;
-        if (order.getOrderItems() != null && !order.getOrderItems().isEmpty()) {
+        if (order.getOrderItems() != null && order.getReviews() != null && !order.getOrderItems().isEmpty()) {
             List<String> orderedItemIds = order.getOrderItems().stream()
                     .map(item -> item.getMenuItem().getId())
                     .toList();
-
             List<String> reviewedItemIds = order.getReviews().stream()
                     .map(review -> review.getMenuItem().getId())
                     .toList();
-
             allReviewed = reviewedItemIds.containsAll(orderedItemIds);
         }
 

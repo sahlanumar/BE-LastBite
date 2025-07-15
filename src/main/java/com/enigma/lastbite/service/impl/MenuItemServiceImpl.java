@@ -106,10 +106,28 @@ public class MenuItemServiceImpl implements MenuItemService {
 
             Pageable pageable = PageRequest.of(page, size, sort);
             Page<MenuItem> menuItems = menuItemRepository.findAll(spec, pageable);
+            menuItems.map(item -> {
+                if(item.getQuantityAvailable() > 0 && item.getDisplayEndTime().isAfter(LocalDateTime.now())) {
+                    item.setStatus(ListingStatus.AVAILABLE);
+                }else {
+                    item.setStatus(ListingStatus.NOT_AVAILABLE);
+                }
+                return item;
+            }
+            );
             return menuItems.map(item -> MenuMapper.toMenuItemResponse(item, userLat, userLon));
         }
 
         List<MenuItem> allItems = menuItemRepository.findAll(spec);
+        allItems.stream().map(item -> {
+            if(item.getQuantityAvailable() > 0 && item.getDisplayEndTime().isAfter(LocalDateTime.now())) {
+                item.setStatus(ListingStatus.AVAILABLE);
+            }else {
+                item.setStatus(ListingStatus.NOT_AVAILABLE);
+            }
+            return item;
+        });
+        System.out.println("allItems: " + allItems);
         List<MenuItemResponse> responses = allItems.stream()
                 .map(item -> MenuMapper.toMenuItemResponse(item, userLat, userLon))
                 .sorted((a, b) -> {
