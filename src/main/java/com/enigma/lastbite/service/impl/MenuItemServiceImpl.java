@@ -188,7 +188,7 @@ public class MenuItemServiceImpl implements MenuItemService {
 
         Page<MenuItem> menuItems = menuItemRepository.findAll(spec, pageable);
         menuItems.map(item -> {
-            if(item.getQuantityAvailable() > 0 && item.getDisplayEndTime().isAfter(LocalDateTime.now())) {
+            if(item.getQuantityAvailable() > 0 && item.getDisplayEndTime().isAfter(LocalDateTime.now())&&item.getDisplayStartTime().isBefore(LocalDateTime.now())) {
                 item.setStatus(ListingStatus.AVAILABLE);
             }else {
                 item.setStatus(ListingStatus.NOT_AVAILABLE);

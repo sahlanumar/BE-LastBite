@@ -96,7 +96,6 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         wr.setProcessedDate(OffsetDateTime.now());
         wr.setProofOfPaymentUrl(proofUrl);
 
-        seller.setBalance(seller.getBalance().subtract(wr.getAmount()));
         sellerRepo.saveAndFlush(seller);
         log.info("Seller balance updated. New balance: {}", seller.getBalance());
 
